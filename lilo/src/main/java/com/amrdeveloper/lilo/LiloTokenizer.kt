@@ -39,6 +39,14 @@ class LiloTokenizer(private val script : String) {
         "repeat" to TokenType.TOKEN_REPEAT,
         "true" to TokenType.TOKEN_TRUE,
         "false" to TokenType.TOKEN_FALSE,
+        "cube" to TokenType.TOKEN_CUBE,
+        "circle" to TokenType.TOKEN_CIRCLE,
+        "move" to TokenType.TOKEN_MOVE,
+        "movex" to TokenType.TOKEN_MOVE_X,
+        "movey" to TokenType.TOKEN_MOVE_Y,
+        "color" to TokenType.TOKEN_COLOR,
+        "sleep" to TokenType.TOKEN_SLEEP,
+        "stop" to TokenType.TOKEN_STOP,
     )
 
     fun scanTokens() : List<Token> {

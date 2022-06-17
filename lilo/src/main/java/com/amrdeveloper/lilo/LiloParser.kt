@@ -40,7 +40,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 statements.add(statement)
             }
         } catch (e: Exception) {
-            Timber.tag(TAG).d("Exception")
+            Timber.tag(TAG).d("Exception: ${e.message}")
         }
         return LiloScript(statements)
     }
@@ -69,7 +69,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
 
         val parameters = mutableListOf<Token>()
         if (checkPeek(TokenType.TOKEN_OPEN_PAREN)) {
-            while (isAtEnd() && peek().type != TokenType.TOKEN_CLOSE_PAREN) {
+            while (isAtEnd().not() && peek().type != TokenType.TOKEN_CLOSE_PAREN) {
                 parameters.add(peek())
                 advance()
             }

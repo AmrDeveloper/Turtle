@@ -47,6 +47,11 @@ class LiloTokenizer(private val script : String) {
         "color" to TokenType.TOKEN_COLOR,
         "sleep" to TokenType.TOKEN_SLEEP,
         "stop" to TokenType.TOKEN_STOP,
+        "rotate" to TokenType.TOKEN_ROTATE,
+        "forward" to TokenType.TOKEN_FORWARD,
+        "backward" to TokenType.TOKEN_BACKWARD,
+        "right" to TokenType.TOKEN_RIGHT,
+        "left" to TokenType.TOKEN_LEFT,
     )
 
     fun scanTokens() : List<Token> {

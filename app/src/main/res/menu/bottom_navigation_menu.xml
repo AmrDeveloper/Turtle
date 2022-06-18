@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/editorFragment"
+        android:icon="@drawable/ic_turtle_pointer"
+        android:title="@string/editor" />
+
+    <item
+        android:id="@+id/previewFragment"
+        android:icon="@drawable/ic_turtle_pointer"
+        android:title="@string/preview" />
+
+    <item
+        android:id="@+id/packagesFragment"
+        android:icon="@drawable/ic_turtle_pointer"
+        android:title="@string/packages" />
+    <item
+
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/ic_turtle_pointer"
+        android:title="@string/settings" />
+</menu>

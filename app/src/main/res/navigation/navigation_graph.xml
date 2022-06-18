@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/editorFragment">
+
+    <fragment
+        android:id="@+id/editorFragment"
+        android:name="com.amrdeveloper.turtle.ui.editor.EditorFragment"
+        android:label="fragment_editor"
+        tools:layout="@layout/fragment_editor" />
+
+    <fragment
+        android:id="@+id/previewFragment"
+        android:name="com.amrdeveloper.turtle.ui.preview.PreviewFragment"
+        android:label="fragment_preview"
+        tools:layout="@layout/fragment_preview" />
+
+    <fragment
+        android:id="@+id/packagesFragment"
+        android:name="com.amrdeveloper.turtle.ui.packages.PackagesFragment"
+        android:label="fragment_packages"
+        tools:layout="@layout/fragment_packages" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.amrdeveloper.turtle.ui.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

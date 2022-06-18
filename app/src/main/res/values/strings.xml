@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Turtle</string>
+    <string name="editor">Editor</string>
+    <string name="preview">Preview</string>
+    <string name="packages">Packages</string>
+    <string name="settings">Settings</string>
 </resources>

@@ -31,29 +31,6 @@ class LiloTokenizer(private val script : String) {
     private var startColumn = 1
     private var currentColumn = 1
 
-    private val keywords = mapOf (
-        "let" to TokenType.TOKEN_LET,
-        "fun" to TokenType.TOKEN_FUN,
-        "if" to TokenType.TOKEN_IF,
-        "while" to TokenType.TOKEN_WHILE,
-        "repeat" to TokenType.TOKEN_REPEAT,
-        "true" to TokenType.TOKEN_TRUE,
-        "false" to TokenType.TOKEN_FALSE,
-        "cube" to TokenType.TOKEN_CUBE,
-        "circle" to TokenType.TOKEN_CIRCLE,
-        "move" to TokenType.TOKEN_MOVE,
-        "movex" to TokenType.TOKEN_MOVE_X,
-        "movey" to TokenType.TOKEN_MOVE_Y,
-        "color" to TokenType.TOKEN_COLOR,
-        "sleep" to TokenType.TOKEN_SLEEP,
-        "stop" to TokenType.TOKEN_STOP,
-        "rotate" to TokenType.TOKEN_ROTATE,
-        "forward" to TokenType.TOKEN_FORWARD,
-        "backward" to TokenType.TOKEN_BACKWARD,
-        "right" to TokenType.TOKEN_RIGHT,
-        "left" to TokenType.TOKEN_LEFT,
-    )
-
     fun scanTokens() : List<Token> {
         val tokens = mutableListOf<Token>()
         while (isAtEnd().not()) {
@@ -168,5 +145,30 @@ class LiloTokenizer(private val script : String) {
 
     private fun isAtEnd() : Boolean {
         return currentPosition >= script.length
+    }
+
+    companion object {
+        val keywords = mapOf(
+            "let" to TokenType.TOKEN_LET,
+            "fun" to TokenType.TOKEN_FUN,
+            "if" to TokenType.TOKEN_IF,
+            "while" to TokenType.TOKEN_WHILE,
+            "repeat" to TokenType.TOKEN_REPEAT,
+            "true" to TokenType.TOKEN_TRUE,
+            "false" to TokenType.TOKEN_FALSE,
+            "cube" to TokenType.TOKEN_CUBE,
+            "circle" to TokenType.TOKEN_CIRCLE,
+            "move" to TokenType.TOKEN_MOVE,
+            "movex" to TokenType.TOKEN_MOVE_X,
+            "movey" to TokenType.TOKEN_MOVE_Y,
+            "color" to TokenType.TOKEN_COLOR,
+            "sleep" to TokenType.TOKEN_SLEEP,
+            "stop" to TokenType.TOKEN_STOP,
+            "rotate" to TokenType.TOKEN_ROTATE,
+            "forward" to TokenType.TOKEN_FORWARD,
+            "backward" to TokenType.TOKEN_BACKWARD,
+            "right" to TokenType.TOKEN_RIGHT,
+            "left" to TokenType.TOKEN_LEFT,
+        )
     }
 }

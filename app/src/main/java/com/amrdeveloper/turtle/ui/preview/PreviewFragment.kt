@@ -28,19 +28,48 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.amrdeveloper.turtle.R
+import androidx.fragment.app.activityViewModels
+import com.amrdeveloper.lilo.LiloInterpreter
+import com.amrdeveloper.turtle.databinding.FragmentPreviewBinding
+import com.amrdeveloper.turtle.ui.MainViewModel
 
 class PreviewFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var _binding: FragmentPreviewBinding? = null
+    private val binding get() = _binding!!
+
+    private val mainViewModel : MainViewModel by activityViewModels()
+    private val liloInterpreter: LiloInterpreter by lazy { LiloInterpreter() }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentPreviewBinding.inflate(inflater, container, false)
+        setupTurtleInterpreter()
+        setupTurtleCanvasView()
+        setupObservers()
+        return binding.root
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_preview, container, false)
+    private fun setupTurtleCanvasView() {
+        binding.turtleCanvasView.setLiloInterpreter(liloInterpreter)
+    }
+
+    private fun setupTurtleInterpreter() {
+        liloInterpreter.setOnDegreeChangeListener(onDegreeChangeListener)
+    }
+
+    private fun setupObservers() {
+        mainViewModel.liloScript.observe(viewLifecycleOwner) {
+            mainViewModel.previewLiveData.value = false
+            binding.turtleCanvasView.loadLiloScript(it)
+        }
+    }
+
+    private val onDegreeChangeListener = { degree : Float ->
+        binding.turtlePointer.rotation = degree - 180
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

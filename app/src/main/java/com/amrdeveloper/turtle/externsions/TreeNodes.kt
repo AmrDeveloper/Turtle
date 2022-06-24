@@ -21,27 +21,12 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle.ui
+package com.amrdeveloper.turtle.externsions
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
-import com.amrdeveloper.turtle.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.amrdeveloper.treeview.TreeNode
 
-class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        bottomNavigationView.setOnItemSelectedListener {
-            if (navController.popBackStack(it.itemId, false).not()) {
-                navController.navigate(it.itemId)
-            }
-            true
-        }
-    }
+fun List<Any>.toTreeNodes(layout : Int) : List<TreeNode> {
+    val treeNodes = mutableListOf<TreeNode>()
+    this.forEach { treeNodes.add(TreeNode(it, layout)) }
+    return treeNodes
 }

@@ -21,27 +21,37 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle.ui
+package com.amrdeveloper.turtle.ui.preview
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
-import com.amrdeveloper.turtle.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.content.Context
+import android.graphics.Canvas
+import android.util.AttributeSet
+import android.view.View
+import com.amrdeveloper.lilo.LiloInterpreter
+import com.amrdeveloper.lilo.ast.LiloScript
 
-class MainActivity : AppCompatActivity() {
+class TurtleCanvasView : View {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    private var liloScript: LiloScript? = null
+    private var liloInterpreter : LiloInterpreter? = null
 
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        bottomNavigationView.setOnItemSelectedListener {
-            if (navController.popBackStack(it.itemId, false).not()) {
-                navController.navigate(it.itemId)
-            }
-            true
-        }
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+        canvas ?: return
+
+        if (liloInterpreter == null || liloScript == null) return
+        liloInterpreter?.executeLiloScript(canvas, liloScript!!)
+    }
+
+    fun setLiloInterpreter(interpreter : LiloInterpreter) {
+        liloInterpreter = interpreter
+    }
+
+    fun loadLiloScript(script : LiloScript) {
+        liloScript = script
     }
 }

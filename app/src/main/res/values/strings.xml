@@ -1,7 +1,15 @@
 <resources>
     <string name="app_name">Turtle</string>
+
+    <!-- Labels -->
     <string name="editor">Editor</string>
     <string name="preview">Preview</string>
     <string name="packages">Packages</string>
     <string name="settings">Settings</string>
+
+    <!-- Actions -->
+    <string name="execute">Execute</string>
+    <string name="save">Save</string>
+    <string name="diagnostics">Diagnostics</string>
+    <string name="turtle_pointer">Turtle Pointer</string>
 </resources>

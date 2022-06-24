@@ -23,25 +23,35 @@
 
 package com.amrdeveloper.turtle.ui
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
-import com.amrdeveloper.turtle.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.amrdeveloper.lilo.Diagnostic
+import com.amrdeveloper.lilo.LiloDiagnostics
+import com.amrdeveloper.lilo.LiloParser
+import com.amrdeveloper.lilo.LiloTokenizer
+import com.amrdeveloper.lilo.ast.LiloScript
 
-class MainActivity : AppCompatActivity() {
+class MainViewModel : ViewModel() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    private val _diagnosticsLiveData = MutableLiveData<List<Diagnostic>>()
+    val diagnosticsLiveData = _diagnosticsLiveData
 
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        bottomNavigationView.setOnItemSelectedListener {
-            if (navController.popBackStack(it.itemId, false).not()) {
-                navController.navigate(it.itemId)
-            }
-            true
+    private val _liloScript = MutableLiveData<LiloScript>()
+    val liloScript = _liloScript
+
+    private val _previewLiveData = MutableLiveData<Boolean>()
+    val previewLiveData = _previewLiveData
+
+    fun executeLiloScript(script : String) {
+        val tokenizer = LiloTokenizer(script)
+        val diagnostics = LiloDiagnostics()
+        val parser = LiloParser(tokenizer.scanTokens(), diagnostics)
+        val liloScript = parser.parseScript()
+        if (diagnostics.errorNumber() > 0) {
+            _diagnosticsLiveData.value = diagnostics.errorDiagnostics()
+            return
         }
+        _previewLiveData.value = true
+        _liloScript.value = liloScript
     }
 }

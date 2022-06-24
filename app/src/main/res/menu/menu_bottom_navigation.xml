@@ -2,21 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/editorFragment"
-        android:icon="@drawable/ic_turtle_pointer"
+        android:icon="@drawable/ic_code"
         android:title="@string/editor" />
 
     <item
         android:id="@+id/previewFragment"
-        android:icon="@drawable/ic_turtle_pointer"
+        android:icon="@drawable/ic_preview"
         android:title="@string/preview" />
 
     <item
         android:id="@+id/packagesFragment"
-        android:icon="@drawable/ic_turtle_pointer"
+        android:icon="@drawable/ic_list"
         android:title="@string/packages" />
-    <item
 
+    <item
         android:id="@+id/settingsFragment"
-        android:icon="@drawable/ic_turtle_pointer"
+        android:icon="@drawable/ic_settings"
         android:title="@string/settings" />
 </menu>

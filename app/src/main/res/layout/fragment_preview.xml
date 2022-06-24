@@ -5,11 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.preview.PreviewFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/preview" />
+    <com.amrdeveloper.turtle.ui.preview.TurtleCanvasView
+        android:id="@+id/turtle_canvas_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/turtle_pointer"
+        android:layout_width="@dimen/dimen45dp"
+        android:layout_height="@dimen/dimen45dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/dimen5dp"
+        android:contentDescription="@string/turtle_pointer"
+        android:src="@drawable/ic_turtle_pointer" />
 </RelativeLayout>

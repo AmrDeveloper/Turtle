@@ -21,27 +21,22 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle.ui
+package com.amrdeveloper.turtle.ui.editor
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.Navigation
+import androidx.core.content.ContextCompat
+import com.amrdeveloper.codeview.CodeView
+import com.amrdeveloper.lilo.LiloTokenizer
 import com.amrdeveloper.turtle.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.regex.Pattern
 
-class MainActivity : AppCompatActivity() {
+private val turtleKeywords = LiloTokenizer.keywords.keys
+private val PATTERN_KEYWORDS = Pattern.compile("\\b(${turtleKeywords.joinToString(separator = "|")})\\b")
+private val PATTERN_NUMBERS = Pattern.compile("\\b(\\d*[.]?\\d+)\\b")
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        bottomNavigationView.setOnItemSelectedListener {
-            if (navController.popBackStack(it.itemId, false).not()) {
-                navController.navigate(it.itemId)
-            }
-            true
-        }
-    }
+fun configCodeViewForTurtle(codeView: CodeView) {
+    val context = codeView.context ?: return
+    codeView.setBackgroundColor(ContextCompat.getColor(context, R.color.monokia_pro_black))
+    codeView.setTextColor(ContextCompat.getColor(context, R.color.monokia_pro_white))
+    codeView.addSyntaxPattern(PATTERN_KEYWORDS, ContextCompat.getColor(context, R.color.monokia_pro_pink))
+    codeView.addSyntaxPattern(PATTERN_NUMBERS, ContextCompat.getColor(context, R.color.monokia_pro_purple))
 }

@@ -1,15 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.editor.EditorFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/editor" />
+    <com.amrdeveloper.codeview.CodeView
+        android:id="@+id/editorView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/monokia_pro_black"
+        android:dropDownWidth="@dimen/dimen90dp"
+        android:dropDownHorizontalOffset="@dimen/dimen0dp"
+        android:dropDownSelector="@color/darkGrey"
+        android:gravity="top|start"
+        android:padding="@dimen/dimen5dp"
+        android:textColor="@color/white" />
 
-</RelativeLayout>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/outputBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/darkGrey"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="@dimen/dimen45dp"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dimen45dp"
+                android:gravity="center"
+                android:padding="@dimen/dimen5dp"
+                android:text="@string/diagnostics"
+                android:textColor="@color/grey"
+                android:textSize="@dimen/dimen16sp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/titleTextView"
+                android:fillViewport="true"
+                android:scrollbarSize="@dimen/dimen5dp"
+                android:scrollbarThumbHorizontal="@color/black">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/diagnostics_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/darkGrey"
+                    android:scrollbarSize="@dimen/dimen5dp"
+                    android:scrollbarThumbVertical="@color/black"
+                    android:scrollbars="vertical" />
+            </HorizontalScrollView>
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

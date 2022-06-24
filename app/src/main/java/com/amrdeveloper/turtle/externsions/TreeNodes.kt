@@ -25,8 +25,6 @@ package com.amrdeveloper.turtle.externsions
 
 import com.amrdeveloper.treeview.TreeNode
 
-fun List<Any>.toTreeNodes(layout : Int) : List<TreeNode> {
-    val treeNodes = mutableListOf<TreeNode>()
-    this.forEach { treeNodes.add(TreeNode(it, layout)) }
-    return treeNodes
+fun List<Any>.toTreeNodes(layout: Int): List<TreeNode> {
+    return this.map { TreeNode(it, layout) }
 }

@@ -23,6 +23,8 @@
 
 package com.amrdeveloper.lilo
 
+private const val TERMINATE_CHAR = '\u0000'
+
 class LiloTokenizer(private val script : String) {
 
     private var line = 1
@@ -117,16 +119,17 @@ class LiloTokenizer(private val script : String) {
     }
 
     private fun peek() : Char {
-        if (isAtEnd()) return '\u0000'
+        if (isAtEnd()) return TERMINATE_CHAR
         return script[currentPosition]
     }
 
     private fun peekNext() : Char {
-        if (currentPosition + 1 >= script.length) return '\u0000'
+        if (currentPosition + 1 >= script.length) return TERMINATE_CHAR
         return script[currentPosition + 1]
     }
 
     private fun advance() : Char {
+        if (isAtEnd()) return TERMINATE_CHAR
         currentColumn++
         return script[currentPosition++]
     }

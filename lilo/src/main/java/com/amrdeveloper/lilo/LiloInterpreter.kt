@@ -167,7 +167,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     override fun visit(statement: RotateStatement) {
         Timber.tag(TAG).d("Evaluate RotateStatement")
         val degree = statement.value
-        currentDegree = degree
+        currentDegree += degree
     }
 
     override fun visit(statement: ForwardStatement) {

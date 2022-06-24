@@ -23,28 +23,35 @@
 
 package com.amrdeveloper.turtle.ui.editor
 
-import androidx.core.content.ContextCompat
-import com.amrdeveloper.codeview.CodeView
-import com.amrdeveloper.codeview.Keyword
-import com.amrdeveloper.lilo.LiloTokenizer
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import com.amrdeveloper.codeview.Code
+import com.amrdeveloper.codeview.CodeViewAdapter
+import com.amrdeveloper.codeview.Snippet
 import com.amrdeveloper.turtle.R
-import java.util.regex.Pattern
 
-private val turtleKeywords = LiloTokenizer.keywords.keys
-private val PATTERN_KEYWORDS = Pattern.compile("\\b(${turtleKeywords.joinToString(separator = "|")})\\b")
-private val PATTERN_NUMBERS = Pattern.compile("\\b(\\d*[.]?\\d+)\\b")
+private const val LAYOUT_ID = R.layout.list_item_autocomplete
 
-fun configCodeViewForLiloScript(codeView: CodeView) {
-    val context = codeView.context ?: return
+class AutoCompleteAdapter(
+    private val context: Context,
+    private val codes: List<Code>
+) : CodeViewAdapter(context, LAYOUT_ID, 0, codes) {
 
-    // Config Syntax highlighter
-    codeView.setBackgroundColor(ContextCompat.getColor(context, R.color.monokia_pro_black))
-    codeView.setTextColor(ContextCompat.getColor(context, R.color.monokia_pro_white))
-    codeView.addSyntaxPattern(PATTERN_KEYWORDS, ContextCompat.getColor(context, R.color.monokia_pro_pink))
-    codeView.addSyntaxPattern(PATTERN_NUMBERS, ContextCompat.getColor(context, R.color.monokia_pro_purple))
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        val view = convertView ?: LayoutInflater.from(context).inflate(LAYOUT_ID, parent, false)
+        val currentCode = getItem(position) as Code
 
-    // Config Auto complete for keywords and snippets
-    val codes = turtleKeywords.map { Keyword(it) }
-    val autoCompleteAdapter = AutoCompleteAdapter(context, codes)
-    codeView.setAdapter(autoCompleteAdapter)
+        val codeTitle = view.findViewById<TextView>(R.id.code_title)
+        codeTitle.text = currentCode.codeTitle
+
+        val codeType = view.findViewById<ImageView>(R.id.code_type)
+        val icon = if (currentCode is Snippet) R.drawable.ic_snippet else R.drawable.ic_keyword
+        codeType.setImageResource(icon)
+
+        return view
+    }
 }

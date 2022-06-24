@@ -67,7 +67,7 @@ class EditorFragment : Fragment() {
         binding.editorView.setEnableLineNumber(true)
         binding.editorView.setLineNumberTextColor(Color.GRAY)
         binding.editorView.setLineNumberTextSize(25f)
-        configCodeViewForTurtle(binding.editorView)
+        configCodeViewForLiloScript(binding.editorView)
         binding.editorView.reHighlightSyntax()
     }
 

@@ -4,7 +4,10 @@
     <dimen name="dimen5dp">5dp</dimen>
     <dimen name="dimen16dp">16dp</dimen>
     <dimen name="dimen24dp">24dp</dimen>
+    <dimen name="dimen25dp">25dp</dimen>
+    <dimen name="dimen40dp">40dp</dimen>
     <dimen name="dimen45dp">45dp</dimen>
+    <dimen name="dimen50dp">50dp</dimen>
     <dimen name="dimen55dp">55dp</dimen>
     <dimen name="dimen90dp">90dp</dimen>
 

@@ -51,6 +51,7 @@ class MainViewModel : ViewModel() {
             _diagnosticsLiveData.value = diagnostics.errorDiagnostics()
             return
         }
+        _diagnosticsLiveData.value = listOf()
         _previewLiveData.value = true
         _liloScript.value = liloScript
     }

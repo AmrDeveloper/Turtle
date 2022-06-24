@@ -83,14 +83,18 @@ class EditorFragment : Fragment() {
     private fun setupObservers() {
         mainViewModel.previewLiveData.observe(viewLifecycleOwner) { shouldPreview ->
             if (shouldPreview) {
-                treeViewAdapter.updateTreeNodes(listOf())
-                findNavController().navigate(R.id.previewFragment)
+                findNavController().navigate(R.id.action_editorFragment_to_previewFragment)
             }
         }
 
         mainViewModel.diagnosticsLiveData.observe(viewLifecycleOwner) {
-            treeViewAdapter.updateTreeNodes(it.toTreeNodes(R.layout.list_item_diagnostic))
-            binding.titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+            if (it.isEmpty()) {
+                treeViewAdapter.updateTreeNodes(listOf())
+                binding.titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
+            } else {
+                treeViewAdapter.updateTreeNodes(it.toTreeNodes(R.layout.list_item_diagnostic))
+                binding.titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+            }
         }
     }
 

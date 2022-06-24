@@ -9,7 +9,11 @@
         android:id="@+id/editorFragment"
         android:name="com.amrdeveloper.turtle.ui.editor.EditorFragment"
         android:label="fragment_editor"
-        tools:layout="@layout/fragment_editor" />
+        tools:layout="@layout/fragment_editor" >
+        <action
+            android:id="@+id/action_editorFragment_to_previewFragment"
+            app:destination="@id/previewFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/previewFragment"

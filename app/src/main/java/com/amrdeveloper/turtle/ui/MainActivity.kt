@@ -25,6 +25,7 @@ package com.amrdeveloper.turtle.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.amrdeveloper.turtle.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -36,8 +37,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        bottomNavigationView.setOnItemSelectedListener {
+        val bottomNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        setupNavigationUI(navController, bottomNavView)
+    }
+
+    private fun setupNavigationUI(navController: NavController, bottomNav: BottomNavigationView) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            bottomNav.menu.findItem(destination.id).isChecked = true
+        }
+
+        bottomNav.setOnItemSelectedListener {
             if (navController.popBackStack(it.itemId, false).not()) {
                 navController.navigate(it.itemId)
             }

@@ -43,6 +43,12 @@ fun configCodeViewForLiloScript(codeView: CodeView) {
     codeView.addSyntaxPattern(PATTERN_KEYWORDS, ContextCompat.getColor(context, R.color.monokia_pro_pink))
     codeView.addSyntaxPattern(PATTERN_NUMBERS, ContextCompat.getColor(context, R.color.monokia_pro_purple))
 
+    // Config Pairs complete
+    val pairCompleteMap = mapOf('{' to '}', '(' to ')')
+    codeView.setPairCompleteMap(pairCompleteMap)
+    codeView.enablePairComplete(true)
+    codeView.enablePairCompleteCenterCursor(true)
+
     // Config Auto complete for keywords and snippets
     val codes = turtleKeywords.map { Keyword(it) }
     val autoCompleteAdapter = AutoCompleteAdapter(context, codes)

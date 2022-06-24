@@ -28,7 +28,7 @@ enum class DiagnosticType {
     WARN
 }
 
-data class Diagnostics(
+data class Diagnostic (
     val position: TokenPosition,
     val message: String,
     val type: DiagnosticType

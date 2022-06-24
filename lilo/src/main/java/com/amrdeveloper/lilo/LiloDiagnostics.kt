@@ -25,20 +25,20 @@ package com.amrdeveloper.lilo
 
 class LiloDiagnostics {
 
-    private val errorDiagnostics = mutableListOf<Diagnostics>()
-    private val warnsDiagnostics = mutableListOf<Diagnostics>()
+    private val errorDiagnostics = mutableListOf<Diagnostic>()
+    private val warnsDiagnostics = mutableListOf<Diagnostic>()
 
     fun reportError(position: TokenPosition, message : String) {
-        errorDiagnostics.add(Diagnostics(position, message, DiagnosticType.ERROR))
+        errorDiagnostics.add(Diagnostic(position, message, DiagnosticType.ERROR))
     }
 
     fun reportWarn(position: TokenPosition, message : String) {
-        warnsDiagnostics.add(Diagnostics(position, message, DiagnosticType.WARN))
+        warnsDiagnostics.add(Diagnostic(position, message, DiagnosticType.WARN))
     }
 
-    fun errorDiagnostics() : List<Diagnostics> = errorDiagnostics
+    fun errorDiagnostics() : List<Diagnostic> = errorDiagnostics
 
-    fun warnsDiagnostics() : List<Diagnostics> = warnsDiagnostics
+    fun warnsDiagnostics() : List<Diagnostic> = warnsDiagnostics
 
     fun clearErrors() {
         errorDiagnostics.clear()

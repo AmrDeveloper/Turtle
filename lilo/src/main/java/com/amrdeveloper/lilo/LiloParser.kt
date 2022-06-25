@@ -144,52 +144,52 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
     private fun parseCubeStatement(): Statement {
         Timber.tag(TAG).d("Parse Cube statement")
         consume(TokenType.TOKEN_CUBE, "Expect Cube keyword.")
-        val value = consume(TokenType.TOKEN_NUMBER, "Expect number as cube width.")
-        return CubeStatement(value.literal.toFloat())
+        val value =  parseExpression()
+        return CubeStatement(value)
     }
 
     private fun parseCircleStatement(): Statement {
         Timber.tag(TAG).d("Parse Circle statement")
         consume(TokenType.TOKEN_CIRCLE, "Expect Circle keyword.")
-        val radius = consume(TokenType.TOKEN_NUMBER, "Expect number as circle radius.")
-        return CircleStatement(radius.literal.toFloat())
+        val radius = parseExpression()
+        return CircleStatement(radius)
     }
 
     private fun parseMoveStatement(): Statement {
         Timber.tag(TAG).d("Parse Move statement")
         consume(TokenType.TOKEN_MOVE, "Expect Move keyword.")
-        val moveXAmount = consume(TokenType.TOKEN_NUMBER, "Expect number move x value.")
+        val moveXAmount = parseExpression()
         consume(TokenType.TOKEN_COMMA, "Expect , between 2 numbers of move instruction.")
-        val moveYAmount = consume(TokenType.TOKEN_NUMBER, "Expect number move y value.")
-        return MoveStatement(moveXAmount.literal.toFloat(), moveYAmount.literal.toFloat())
+        val moveYAmount = parseExpression()
+        return MoveStatement(moveXAmount, moveYAmount)
     }
 
     private fun parseMoveXStatement(): Statement {
         Timber.tag(TAG).d("Parse Move X statement")
         consume(TokenType.TOKEN_MOVE_X, "Expect Move X keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as amount of x movement.")
-        return MoveXStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return MoveXStatement(amount)
     }
 
     private fun parseMoveYStatement(): Statement {
         Timber.tag(TAG).d("Parse Move Y statement")
         consume(TokenType.TOKEN_MOVE_Y, "Expect Move Y keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as amount of y movement.")
-        return MoveYStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return MoveYStatement(amount)
     }
 
     private fun parseColorStatement(): Statement {
         Timber.tag(TAG).d("Parse Color statement")
         consume(TokenType.TOKEN_COLOR, "Expect Color keyword.")
-        val colorName = consume(TokenType.TOKEN_IDENTIFIER, "Expect color name for example red.")
-        return ColorStatement(colorName.literal)
+        val colorName = parseExpression()
+        return ColorStatement(colorName)
     }
 
     private fun parseSleepStatement(): Statement {
         Timber.tag(TAG).d("Parse Sleep statement")
         consume(TokenType.TOKEN_SLEEP, "Expect Sleep keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as amount of time to sleep.")
-        return SleepStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return SleepStatement(amount)
     }
 
     private fun parseStopStatement(): Statement {
@@ -201,36 +201,36 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
     private fun parseRotateStatement(): Statement {
         Timber.tag(TAG).d("Parse Rotate statement")
         consume(TokenType.TOKEN_ROTATE, "Expect Rotate keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as degree to rotate.")
-        return RotateStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return RotateStatement(amount)
     }
 
     private fun parseForwardStatement(): Statement {
         Timber.tag(TAG).d("Parse Forward statement")
         consume(TokenType.TOKEN_FORWARD, "Expect Forward keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as value to forward.")
-        return ForwardStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return ForwardStatement(amount)
     }
 
     private fun parseBackwardStatement(): Statement {
         Timber.tag(TAG).d("Parse Backward statement")
         consume(TokenType.TOKEN_BACKWARD, "Expect Backward keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as value to backward.")
-        return BackwardStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return BackwardStatement(amount)
     }
 
     private fun parseRightStatement(): Statement {
         Timber.tag(TAG).d("Parse Right statement")
         consume(TokenType.TOKEN_RIGHT, "Expect Right keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as value to right.")
-        return RightStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return RightStatement(amount)
     }
 
     private fun parseLeftStatement(): Statement {
         Timber.tag(TAG).d("Parse LEFT statement")
         consume(TokenType.TOKEN_LEFT, "Expect LEFT keyword.")
-        val amount = consume(TokenType.TOKEN_NUMBER, "Expect number as value to left.")
-        return LeftStatement(amount.literal.toFloat())
+        val amount = parseExpression()
+        return LeftStatement(amount)
     }
 
     private fun parseBlockStatement(): Statement {

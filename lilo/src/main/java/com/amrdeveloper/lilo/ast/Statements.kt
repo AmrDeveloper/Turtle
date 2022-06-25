@@ -100,7 +100,7 @@ data class RepeatStatement(
 }
 
 data class CubeStatement(
-    val radius: Float
+    val radius: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -108,7 +108,7 @@ data class CubeStatement(
 }
 
 data class CircleStatement(
-    val radius: Float
+    val radius: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -116,8 +116,8 @@ data class CircleStatement(
 }
 
 data class MoveStatement(
-    val xValue: Float,
-    val yValue: Float
+    val xValue: Expression,
+    val yValue: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -125,7 +125,7 @@ data class MoveStatement(
 }
 
 data class MoveXStatement(
-    val amount: Float
+    val amount: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -133,7 +133,7 @@ data class MoveXStatement(
 }
 
 data class MoveYStatement(
-    val amount: Float
+    val amount: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -141,7 +141,7 @@ data class MoveYStatement(
 }
 
 data class ColorStatement(
-    val color: String
+    val color: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -149,7 +149,7 @@ data class ColorStatement(
 }
 
 data class SleepStatement(
-    val amount: Float
+    val amount: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -157,7 +157,7 @@ data class SleepStatement(
 }
 
 data class RotateStatement(
-    val value: Float
+    val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -165,7 +165,7 @@ data class RotateStatement(
 }
 
 data class ForwardStatement(
-    val value: Float
+    val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -173,7 +173,7 @@ data class ForwardStatement(
 }
 
 data class BackwardStatement(
-    val value: Float
+    val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -181,7 +181,7 @@ data class BackwardStatement(
 }
 
 data class RightStatement(
-    val value: Float
+    val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
@@ -189,7 +189,7 @@ data class RightStatement(
 }
 
 data class LeftStatement(
-    val value: Float
+    val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)

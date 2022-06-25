@@ -116,7 +116,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
                 statement.body.accept(this)
             }
         } else {
-            Timber.tag(TAG).d("While condition must be a boolean")
+            Timber.tag(TAG).d("ERROR: While condition must be a boolean")
         }
     }
 
@@ -128,42 +128,71 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
                 statement.body.accept(this)
             }
         } else {
-            Timber.tag(TAG).d("Repeat counter must be a number")
+            Timber.tag(TAG).d("ERROR: Repeat counter must be a number")
         }
     }
 
     override fun visit(statement: CubeStatement) {
         Timber.tag(TAG).d("Evaluate CubeStatement")
-        val radius = statement.radius
-        canvas.drawRect(currentXPosition, currentYPosition, radius, radius, turtlePaint)
+        val value = statement.radius.accept(this)
+        if (value is Float) {
+            canvas.drawRect(currentXPosition, currentYPosition, value.toFloat(), value.toFloat(), turtlePaint)
+        } else {
+            Timber.tag(TAG).d("ERROR: Cube value must be a number")
+        }
     }
 
     override fun visit(statement: CircleStatement) {
         Timber.tag(TAG).d("Evaluate CircleStatement")
-        val radius = statement.radius
-        canvas.drawCircle(currentXPosition, currentYPosition, radius, turtlePaint)
+        val radius = statement.radius.accept(this)
+        if (radius is Float) {
+            canvas.drawCircle(currentXPosition, currentYPosition, radius.toFloat(), turtlePaint)
+        } else {
+            Timber.tag(TAG).d("ERROR: Circle radius must be a number")
+        }
     }
 
     override fun visit(statement: MoveStatement) {
         Timber.tag(TAG).d("Evaluate MoveStatement")
-        currentXPosition = statement.xValue
-        currentYPosition = statement.yValue
+        val xValue = statement.xValue.accept(this)
+        val yValue = statement.yValue.accept(this)
+        if (xValue is Float && yValue is Float) {
+            currentXPosition = xValue
+            currentYPosition = yValue
+        } else {
+            Timber.tag(TAG).d("ERROR: Move X and y values must be a numbers")
+        }
     }
 
     override fun visit(statement: MoveXStatement) {
         Timber.tag(TAG).d("Evaluate MoveXStatement")
-        currentXPosition = statement.amount
+        val value = statement.amount.accept(this)
+        if (value is Float) {
+            currentXPosition = value.toFloat()
+        } else {
+            Timber.tag(TAG).d("ERROR: Move X amount must be a number")
+        }
     }
 
     override fun visit(statement: MoveYStatement) {
         Timber.tag(TAG).d("Evaluate MoveYStatement")
-        currentYPosition = statement.amount
+        val value = statement.amount.accept(this)
+        if (value is Float) {
+            currentYPosition = value.toFloat()
+        } else {
+            Timber.tag(TAG).d("ERROR: Move Y amount must be a number")
+        }
     }
 
     override fun visit(statement: ColorStatement) {
         Timber.tag(TAG).d("Evaluate ColorStatement")
-        currentColor = Color.RED
-        turtlePaint.color = currentColor
+        val colorValue = statement.color.accept(this)
+        if (colorValue is String) {
+            currentColor = Color.RED
+            turtlePaint.color = currentColor
+        } else {
+            Timber.tag(TAG).d("ERROR: Color value must be identifier or hexadecimal")
+        }
     }
 
     override fun visit(statement: SleepStatement) {
@@ -177,35 +206,55 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     override fun visit(statement: RotateStatement) {
         Timber.tag(TAG).d("Evaluate RotateStatement")
-        val degree = statement.value
-        currentDegree += degree
+        val degree = statement.value.accept(this)
+        if (degree is Float) {
+            currentDegree += degree.toFloat()
+        } else {
+            Timber.tag(TAG).d("ERROR: Rotate degree must be a number")
+        }
     }
 
     override fun visit(statement: ForwardStatement) {
         Timber.tag(TAG).d("Evaluate ForwardStatement")
-        val value = statement.value
-        drawLineWithAngel(value)
+        val value = statement.value.accept(this)
+        if (value is Float) {
+            drawLineWithAngel(value)
+        } else {
+            Timber.tag(TAG).d("ERROR: Forward value must be a number")
+        }
     }
 
     override fun visit(statement: BackwardStatement) {
         Timber.tag(TAG).d("Evaluate BackwardStatement")
-        val value = statement.value
-        currentDegree -= 180
-        drawLineWithAngel(value)
+        val value = statement.value.accept(this)
+        if (value is Float) {
+            currentDegree -= 180
+            drawLineWithAngel(value)
+        } else {
+            Timber.tag(TAG).d("ERROR: Backward value must be a number")
+        }
     }
 
     override fun visit(statement: RightStatement) {
         Timber.tag(TAG).d("Evaluate RightStatement")
-        val value = statement.value
-        currentDegree -= 90
-        drawLineWithAngel(value)
+        val value = statement.value.accept(this)
+        if (value is Float) {
+            currentDegree -= 90
+            drawLineWithAngel(value)
+        } else {
+            Timber.tag(TAG).d("ERROR: Right value must be a number")
+        }
     }
 
     override fun visit(statement: LeftStatement) {
         Timber.tag(TAG).d("Evaluate LeftStatement")
-        val value = statement.value
-        currentDegree += 90
-        drawLineWithAngel(value)
+        val value = statement.value.accept(this)
+        if (value is Float) {
+            currentDegree += 90
+            drawLineWithAngel(value)
+        } else {
+            Timber.tag(TAG).d("ERROR: Left value must be a number")
+        }
     }
 
     override fun visit(statement: VariableExpression): Any {

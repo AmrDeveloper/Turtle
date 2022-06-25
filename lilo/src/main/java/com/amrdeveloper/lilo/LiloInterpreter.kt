@@ -51,6 +51,9 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     private val turtlePaint by lazy { Paint() }
     private lateinit var canvas: Canvas
 
+    private val globalsScope = LiloScope()
+    private var currentScope = globalsScope
+
     private lateinit var onDegreeChangeListener: OnDegreeChangeListener
 
     fun executeLiloScript(currentCanvas: Canvas, script: LiloScript): ExecutionState {
@@ -86,15 +89,19 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     override fun visit(statement: LetStatement) {
         Timber.tag(TAG).d("LetStatement yet implemented")
+        val values = statement.value.accept(this)
+        currentScope.define(statement.name, values)
     }
 
     override fun visit(statement: BlockStatement) {
-        Timber.tag(TAG).d("Evaluate BlockStatement)")
+        Timber.tag(TAG).d("Evaluate BlockStatement")
+        val previousScope = currentScope
         statement.statements.forEach { it.accept(this) }
+        currentScope = previousScope
     }
 
     override fun visit(statement: IfStatement) {
-        Timber.tag(TAG).d("Evaluate IfStatement)")
+        Timber.tag(TAG).d("Evaluate IfStatement")
         val condition = statement.condition.accept(this)
         if (condition is Boolean && condition == true) {
             statement.body.accept(this)
@@ -102,22 +109,26 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     }
 
     override fun visit(statement: WhileStatement) {
-        Timber.tag(TAG).d("Evaluate WhileStatement)")
+        Timber.tag(TAG).d("Evaluate WhileStatement")
         val condition = statement.condition.accept(this)
         if (condition is Boolean) {
             while (condition == true) {
                 statement.body.accept(this)
             }
+        } else {
+            Timber.tag(TAG).d("While condition must be a boolean")
         }
     }
 
     override fun visit(statement: RepeatStatement) {
-        Timber.tag(TAG).d("Evaluate RepeatStatement)")
+        Timber.tag(TAG).d("Evaluate RepeatStatement")
         val counter = statement.condition.accept(this)
         if (counter is Float) {
             repeat(counter.toInt()) {
                 statement.body.accept(this)
             }
+        } else {
+            Timber.tag(TAG).d("Repeat counter must be a number")
         }
     }
 
@@ -173,57 +184,33 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     override fun visit(statement: ForwardStatement) {
         Timber.tag(TAG).d("Evaluate ForwardStatement")
         val value = statement.value
-        val angel = currentDegree * Math.PI / 180
-        val endX = (currentXPosition + value * sin(angel)).toFloat()
-        val endY = (currentYPosition + value * cos(angel)).toFloat()
-        turtlePaint.color = Color.RED
-        canvas.drawLine(currentXPosition, currentYPosition, endX, endY, turtlePaint)
-        currentXPosition = endX
-        currentYPosition = endY
+        drawLineWithAngel(value)
     }
 
     override fun visit(statement: BackwardStatement) {
         Timber.tag(TAG).d("Evaluate BackwardStatement")
         val value = statement.value
         currentDegree -= 180
-        val angel = currentDegree * Math.PI / 180
-        val endX = (currentXPosition + value * sin(angel)).toFloat()
-        val endY = (currentYPosition + value * cos(angel)).toFloat()
-        turtlePaint.color = Color.RED
-        canvas.drawLine(currentXPosition, currentYPosition, endX, endY, turtlePaint)
-        currentXPosition = endX
-        currentYPosition = endY
+        drawLineWithAngel(value)
     }
 
     override fun visit(statement: RightStatement) {
         Timber.tag(TAG).d("Evaluate RightStatement")
         val value = statement.value
         currentDegree -= 90
-        val angel = currentDegree * Math.PI / 180
-        val endX = (currentXPosition + value * sin(angel)).toFloat()
-        val endY = (currentYPosition + value * cos(angel)).toFloat()
-        turtlePaint.color = Color.RED
-        canvas.drawLine(currentXPosition, currentYPosition, endX, endY, turtlePaint)
-        currentXPosition = endX
-        currentYPosition = endY
+        drawLineWithAngel(value)
     }
 
     override fun visit(statement: LeftStatement) {
         Timber.tag(TAG).d("Evaluate LeftStatement")
         val value = statement.value
         currentDegree += 90
-        val angel = currentDegree * Math.PI / 180
-        val endX = (currentXPosition + value * sin(angel)).toFloat()
-        val endY = (currentYPosition + value * cos(angel)).toFloat()
-        turtlePaint.color = Color.RED
-        canvas.drawLine(currentXPosition, currentYPosition, endX, endY, turtlePaint)
-        currentXPosition = endX
-        currentYPosition = endY
+        drawLineWithAngel(value)
     }
 
     override fun visit(statement: VariableExpression): Any {
-        Timber.tag(TAG).d("VariableExpression yet implemented")
-        return 0
+        Timber.tag(TAG).d("Evaluate VariableExpression")
+        return currentScope.lookup(statement.value) ?: 0
     }
 
     override fun visit(statement: NumberExpression): Any {
@@ -234,6 +221,15 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     override fun visit(statement: BooleanExpression): Any {
         Timber.tag(TAG).d("Evaluate BooleanExpression")
         return statement.value
+    }
+
+    private fun drawLineWithAngel(length : Float) {
+        val angel = currentDegree * Math.PI / 180
+        val endX = (currentXPosition + length * sin(angel)).toFloat()
+        val endY = (currentYPosition + length * cos(angel)).toFloat()
+        canvas.drawLine(currentXPosition, currentYPosition, endX, endY, turtlePaint)
+        currentXPosition = endX
+        currentYPosition = endY
     }
 
     fun setOnDegreeChangeListener(listener: OnDegreeChangeListener) {

@@ -257,19 +257,24 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         }
     }
 
-    override fun visit(statement: VariableExpression): Any {
+    override fun visit(expression: GroupExpression): Any {
+        Timber.tag(TAG).d("Evaluate GroupExpression")
+        return expression.expression.accept(this)
+    }
+
+    override fun visit(expression: VariableExpression): Any {
         Timber.tag(TAG).d("Evaluate VariableExpression")
-        return currentScope.lookup(statement.value) ?: 0
+        return currentScope.lookup(expression.value) ?: 0
     }
 
-    override fun visit(statement: NumberExpression): Any {
+    override fun visit(expression: NumberExpression): Any {
         Timber.tag(TAG).d("Evaluate NumberExpression")
-        return statement.value
+        return expression.value
     }
 
-    override fun visit(statement: BooleanExpression): Any {
+    override fun visit(expression: BooleanExpression): Any {
         Timber.tag(TAG).d("Evaluate BooleanExpression")
-        return statement.value
+        return expression.value
     }
 
     private fun drawLineWithAngel(length : Float) {

@@ -27,6 +27,14 @@ abstract class Expression {
     abstract fun <R> accept(visitor: ExpressionVisitor<R>): R
 }
 
+data class GroupExpression(
+    val expression: Expression
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
 data class VariableExpression(
     val value: String
 ) : Expression() {

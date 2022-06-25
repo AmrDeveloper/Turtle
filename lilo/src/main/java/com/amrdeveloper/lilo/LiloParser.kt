@@ -274,6 +274,12 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 advance()
                 VariableExpression(name)
             }
+            TokenType.TOKEN_OPEN_PAREN -> {
+                advance()
+                val expression = parseExpression()
+                consume(TokenType.TOKEN_CLOSE_PAREN, "Expect close paren ) at the end of group expression.")
+                GroupExpression(expression)
+            }
             else -> {
                 Timber.tag(TAG).d("Unexpected primary expression")
                 reportParserError(peek().position, "Unexpected primary expression")

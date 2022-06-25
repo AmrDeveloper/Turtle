@@ -48,7 +48,8 @@ interface StatementVisitor<R> {
 }
 
 interface ExpressionVisitor<R> {
-    fun visit(statement: VariableExpression): R
-    fun visit(statement: NumberExpression): R
-    fun visit(statement: BooleanExpression): R
+    fun visit(expression: GroupExpression): R
+    fun visit(expression: VariableExpression): R
+    fun visit(expression: NumberExpression): R
+    fun visit(expression: BooleanExpression): R
 }

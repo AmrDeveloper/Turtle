@@ -73,6 +73,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         currentDegree = 90.0f
         shouldTerminate = false
         currentColor = Color.BLACK
+        defineColorsInScope(globalsScope)
     }
 
     override fun visit(statement: ExpressionStatement) {
@@ -187,8 +188,8 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     override fun visit(statement: ColorStatement) {
         Timber.tag(TAG).d("Evaluate ColorStatement")
         val colorValue = statement.color.accept(this)
-        if (colorValue is String) {
-            currentColor = Color.RED
+        if (colorValue is Int) {
+            currentColor = colorValue
             turtlePaint.color = currentColor
         } else {
             Timber.tag(TAG).d("ERROR: Color value must be identifier or hexadecimal")

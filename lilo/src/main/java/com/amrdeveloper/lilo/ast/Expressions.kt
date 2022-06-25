@@ -23,6 +23,8 @@
 
 package com.amrdeveloper.lilo.ast
 
+import com.amrdeveloper.lilo.Token
+
 abstract class Expression {
     abstract fun <R> accept(visitor: ExpressionVisitor<R>): R
 }
@@ -35,8 +37,46 @@ data class GroupExpression(
     }
 }
 
+data class AssignExpression(
+    val name: Token,
+    val value: Expression
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+data class BinaryExpression(
+    val left: Expression,
+    val operator: Token,
+    val right: Expression,
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+data class LogicalExpression(
+    val left: Expression,
+    val operator: Token,
+    val right: Expression,
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+data class UnaryExpression(
+    val operator: Token,
+    val right: Expression,
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
 data class VariableExpression(
-    val value: String
+    val value: Token
 ) : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
         return visitor.visit(this)

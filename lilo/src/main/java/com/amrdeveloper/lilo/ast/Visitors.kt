@@ -48,7 +48,11 @@ interface StatementVisitor<R> {
 }
 
 interface ExpressionVisitor<R> {
+    fun visit(expression: AssignExpression): R
     fun visit(expression: GroupExpression): R
+    fun visit(expression: BinaryExpression): R
+    fun visit(expression: LogicalExpression): R
+    fun visit(expression: UnaryExpression): R
     fun visit(expression: VariableExpression): R
     fun visit(expression: NumberExpression): R
     fun visit(expression: BooleanExpression): R

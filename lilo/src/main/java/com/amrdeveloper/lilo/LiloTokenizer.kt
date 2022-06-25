@@ -56,6 +56,8 @@ class LiloTokenizer(private val script : String) {
             '-' -> makeToken(TokenType.TOKEN_MINUS)
             '*' -> makeToken(TokenType.TOKEN_MUL)
             '/' -> makeToken(TokenType.TOKEN_DIV)
+            '|' -> makeToken(if (match('|')) TokenType.TOKEN_LOGICAL_OR else TokenType.TOKEN_OR)
+            '&' -> makeToken(if (match('&')) TokenType.TOKEN_LOGICAL_AND else TokenType.TOKEN_AND)
             '=' -> makeToken(if (match('=')) TokenType.TOKEN_EQ_EQ else TokenType.TOKEN_EQ)
             '!' -> makeToken(if (match('=')) TokenType.TOKEN_BANG_EQ else TokenType.TOKEN_BANG)
             '>' -> makeToken(if (match('=')) TokenType.TOKEN_GT_EQ else TokenType.TOKEN_GT)

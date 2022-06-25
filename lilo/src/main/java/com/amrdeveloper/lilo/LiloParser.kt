@@ -254,6 +254,89 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
     }
 
     private fun parseExpression(): Expression {
+        return parseAssignExpression()
+    }
+
+    private fun parseAssignExpression() : Expression {
+        val expression = parseLogicalOrExpression()
+        if (checkPeek(TokenType.TOKEN_EQ)) {
+            val equal = previous()
+            val value = parseAssignExpression()
+            if (expression is VariableExpression) {
+                return AssignExpression(expression.value, value)
+            }
+            reportParserError(equal.position, "Invalid assignment target.")
+        }
+        return expression
+    }
+
+    private fun parseLogicalOrExpression() : Expression {
+        val expression = parseLogicalAndExpression()
+        while (checkPeek(TokenType.TOKEN_LOGICAL_OR)) {
+            val operator = previous()
+            val right = parseLogicalAndExpression()
+            return LogicalExpression(expression, operator, right)
+        }
+        return expression
+    }
+
+    private fun parseLogicalAndExpression() : Expression {
+        val expression = parseEqualityExpression()
+        while (checkPeek(TokenType.TOKEN_LOGICAL_OR)) {
+            val operator = previous()
+            val right = parseEqualityExpression()
+            return LogicalExpression(expression, operator, right)
+        }
+        return expression
+    }
+
+    private fun parseEqualityExpression() : Expression {
+        val expression = parseComparisonExpression()
+        while (checkPeek(TokenType.TOKEN_EQ_EQ) || checkPeek(TokenType.TOKEN_BANG_EQ)) {
+            val operator = previous()
+            val right = parseComparisonExpression()
+            return BinaryExpression(expression, operator, right)
+        }
+        return expression
+    }
+
+    private fun parseComparisonExpression() : Expression {
+        val expression = parseTermExpression()
+        while (checkPeek(TokenType.TOKEN_GT) || checkPeek(TokenType.TOKEN_GT_EQ) ||
+            checkPeek(TokenType.TOKEN_LS) || checkPeek(TokenType.TOKEN_LS_EQ)) {
+            val operator = previous()
+            val right = parseTermExpression()
+            return BinaryExpression(expression, operator, right)
+        }
+        return expression
+    }
+
+    private fun parseTermExpression() : Expression {
+        val expression = parseFactorExpression()
+        while (checkPeek(TokenType.TOKEN_PLUS) || checkPeek(TokenType.TOKEN_MINUS)) {
+            val operator = previous()
+            val right = parseFactorExpression()
+            return BinaryExpression(expression, operator, right)
+        }
+        return expression
+    }
+
+    private fun parseFactorExpression() : Expression {
+        val expression = parseUnaryExpression()
+        while (checkPeek(TokenType.TOKEN_MUL) || checkPeek(TokenType.TOKEN_DIV)) {
+            val operator = previous()
+            val right = parseUnaryExpression()
+            return BinaryExpression(expression, operator, right)
+        }
+        return expression
+    }
+
+    private fun parseUnaryExpression() : Expression {
+        if (checkPeek(TokenType.TOKEN_BANG) || checkPeek(TokenType.TOKEN_MINUS)) {
+            val operator = previous()
+            val right = parseUnaryExpression()
+            return UnaryExpression(operator, right)
+        }
         return parsePrimaryExpression()
     }
 
@@ -270,7 +353,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 NumberExpression(value)
             }
             TokenType.TOKEN_IDENTIFIER -> {
-                val name = peek().literal
+                val name = peek()
                 advance()
                 VariableExpression(name)
             }

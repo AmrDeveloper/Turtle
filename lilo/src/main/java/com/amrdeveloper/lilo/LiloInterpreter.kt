@@ -137,7 +137,13 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("Evaluate CubeStatement")
         val value = statement.radius.accept(this)
         if (value is Float) {
-            canvas.drawRect(currentXPosition, currentYPosition, value.toFloat(), value.toFloat(), turtlePaint)
+            canvas.drawRect(
+                currentXPosition,
+                currentYPosition,
+                value.toFloat(),
+                value.toFloat(),
+                turtlePaint
+            )
         } else {
             Timber.tag(TAG).d("ERROR: Cube value must be a number")
         }
@@ -258,6 +264,91 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         }
     }
 
+    override fun visit(expression: AssignExpression): Any {
+        val name = expression.name.literal
+        val value = expression.value.accept(this)
+        val isAssigned = currentScope.assign(name, value)
+        if (isAssigned.not()) {
+            Timber.tag(TAG).d("ERROR: Invalid assignment.")
+        }
+        return value
+    }
+
+    override fun visit(expression: BinaryExpression): Any {
+        val left = expression.left.accept(this)
+        val right = expression.right.accept(this)
+        val operatorType = expression.operator.type
+
+        if (operatorType == TokenType.TOKEN_EQ_EQ) return left == right
+        if (operatorType == TokenType.TOKEN_BANG_EQ) return left != right
+
+        if (left is Float && right is Float) {
+            when (operatorType) {
+                TokenType.TOKEN_PLUS -> return left + right
+                TokenType.TOKEN_MINUS -> return left - right
+                TokenType.TOKEN_MUL -> return left * right
+                TokenType.TOKEN_DIV -> return left / right
+
+                TokenType.TOKEN_GT -> return left > right
+                TokenType.TOKEN_GT_EQ -> return left >= right
+
+                TokenType.TOKEN_LS -> return left < right
+                TokenType.TOKEN_LS_EQ -> return left <= right
+
+                else -> {
+                    Timber.tag(TAG).d("ERROR: Invalid binary operator.")
+                }
+            }
+        }
+
+        Timber.tag(TAG).d("ERROR: Invalid binary expression.")
+        return 0
+    }
+
+    override fun visit(expression: LogicalExpression): Any {
+        val left = expression.left.accept(this)
+        when (expression.operator.type) {
+            TokenType.TOKEN_LOGICAL_OR -> {
+                if (left is Boolean && left == true) {
+                    return left
+                }
+            }
+            TokenType.TOKEN_LOGICAL_AND -> {
+                if (left is Boolean && left == false) {
+                    return left
+                }
+            }
+            else -> {
+                Timber.tag(TAG).d("ERROR: Invalid logical operator.")
+            }
+        }
+        return expression.right.accept(this)
+    }
+
+    override fun visit(expression: UnaryExpression): Any {
+        val right = expression.right.accept(this)
+        return when (expression.operator.type) {
+            TokenType.TOKEN_BANG -> {
+                if (right is Boolean) {
+                    return right.not()
+                } else {
+                    Timber.tag(TAG).d("ERROR: Unary (!) expect booleans only.")
+                }
+            }
+            TokenType.TOKEN_MINUS -> {
+                if (right is Float) {
+                    return -right
+                } else {
+                    Timber.tag(TAG).d("ERROR: Unary (-) expect numbers only.")
+                }
+            }
+            else -> {
+                Timber.tag(TAG).d("ERROR: Invalid unary operator.")
+                0
+            }
+        }
+    }
+
     override fun visit(expression: GroupExpression): Any {
         Timber.tag(TAG).d("Evaluate GroupExpression")
         return expression.expression.accept(this)
@@ -265,7 +356,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     override fun visit(expression: VariableExpression): Any {
         Timber.tag(TAG).d("Evaluate VariableExpression")
-        return currentScope.lookup(expression.value) ?: 0
+        return currentScope.lookup(expression.value.literal) ?: 0
     }
 
     override fun visit(expression: NumberExpression): Any {
@@ -278,7 +369,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         return expression.value
     }
 
-    private fun drawLineWithAngel(length : Float) {
+    private fun drawLineWithAngel(length: Float) {
         val angel = currentDegree * Math.PI / 180
         val endX = (currentXPosition + length * sin(angel)).toFloat()
         val endY = (currentYPosition + length * cos(angel)).toFloat()

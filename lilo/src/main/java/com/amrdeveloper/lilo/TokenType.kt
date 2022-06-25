@@ -60,6 +60,11 @@ enum class TokenType {
     TOKEN_LS,
     TOKEN_LS_EQ,
 
+    TOKEN_OR,
+    TOKEN_AND,
+    TOKEN_LOGICAL_OR,
+    TOKEN_LOGICAL_AND,
+
     TOKEN_PLUS,
     TOKEN_MINUS,
     TOKEN_MUL,

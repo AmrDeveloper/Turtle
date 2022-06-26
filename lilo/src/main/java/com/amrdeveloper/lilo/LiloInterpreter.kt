@@ -55,14 +55,21 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     private var currentScope = globalsScope
 
     private lateinit var onDegreeChangeListener: OnDegreeChangeListener
+    private lateinit var onExceptionListener: OnExceptionListener
 
     fun executeLiloScript(currentCanvas: Canvas, script: LiloScript): ExecutionState {
         canvas = currentCanvas
         preExecuteLiloScript()
-        val nodes = script.statements
-        for (node in nodes) {
-            if (shouldTerminate) return ExecutionState.FAILURE
-            node.accept(this)
+        try {
+            script.statements.forEach { node ->
+                if (shouldTerminate) return ExecutionState.FAILURE
+                node.accept(this)
+            }
+        } catch (exception: LiloException) {
+            if (::onExceptionListener.isInitialized) {
+                onExceptionListener.onException(exception)
+            }
+            return ExecutionState.FAILURE
         }
         return ExecutionState.SUCCESS
     }
@@ -82,10 +89,12 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     override fun visit(statement: FunctionStatement) {
         Timber.tag(TAG).d("FunctionStatement yet implemented")
+        // TODO: Unimplemented yet
     }
 
     override fun visit(statement: ReturnStatement) {
         Timber.tag(TAG).d("ReturnStatement yet implemented")
+        // TODO: Unimplemented yet
     }
 
     override fun visit(statement: LetStatement) {
@@ -106,6 +115,9 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val condition = statement.condition.accept(this)
         if (condition is Boolean && condition == true) {
             statement.body.accept(this)
+        } else {
+            Timber.tag(TAG).d("If condition must be boolean")
+            throw LiloException(statement.keyword.position, "If condition must be boolean")
         }
     }
 
@@ -118,6 +130,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             }
         } else {
             Timber.tag(TAG).d("ERROR: While condition must be a boolean")
+            throw LiloException(statement.keyword.position, "If condition must be boolean")
         }
     }
 
@@ -130,6 +143,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             }
         } else {
             Timber.tag(TAG).d("ERROR: Repeat counter must be a number")
+            throw LiloException(statement.keyword.position, "Repeat counter must be a number")
         }
     }
 
@@ -137,15 +151,10 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("Evaluate CubeStatement")
         val value = statement.radius.accept(this)
         if (value is Float) {
-            canvas.drawRect(
-                currentXPosition,
-                currentYPosition,
-                value.toFloat(),
-                value.toFloat(),
-                turtlePaint
-            )
+            canvas.drawRect(currentXPosition, currentYPosition, value.toFloat(), value.toFloat(), turtlePaint)
         } else {
             Timber.tag(TAG).d("ERROR: Cube value must be a number")
+            throw LiloException(statement.keyword.position, "Cube value must be a number")
         }
     }
 
@@ -156,6 +165,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             canvas.drawCircle(currentXPosition, currentYPosition, radius.toFloat(), turtlePaint)
         } else {
             Timber.tag(TAG).d("ERROR: Circle radius must be a number")
+            throw LiloException(statement.keyword.position, "Circle radius must be a number")
         }
     }
 
@@ -168,6 +178,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             currentYPosition = yValue
         } else {
             Timber.tag(TAG).d("ERROR: Move X and y values must be a numbers")
+            throw LiloException(statement.keyword.position, "Move X and y values must be a numbers")
         }
     }
 
@@ -178,6 +189,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             currentXPosition = value.toFloat()
         } else {
             Timber.tag(TAG).d("ERROR: Move X amount must be a number")
+            throw LiloException(statement.keyword.position, "Move X amount must be a number")
         }
     }
 
@@ -188,6 +200,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             currentYPosition = value.toFloat()
         } else {
             Timber.tag(TAG).d("ERROR: Move Y amount must be a number")
+            throw LiloException(statement.keyword.position, "Move Y amount must be a number")
         }
     }
 
@@ -198,7 +211,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             currentColor = colorValue
             turtlePaint.color = currentColor
         } else {
-            Timber.tag(TAG).d("ERROR: Color value must be identifier or hexadecimal")
+            throw LiloException(statement.keyword.position, "Color value must be Identifier")
         }
     }
 
@@ -218,6 +231,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             currentDegree += degree.toFloat()
         } else {
             Timber.tag(TAG).d("ERROR: Rotate degree must be a number")
+            throw LiloException(statement.keyword.position, "Rotate degree must be a number")
         }
     }
 
@@ -228,6 +242,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             drawLineWithAngel(value)
         } else {
             Timber.tag(TAG).d("ERROR: Forward value must be a number")
+            throw LiloException(statement.keyword.position, "Forward value must be a number")
         }
     }
 
@@ -239,6 +254,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             drawLineWithAngel(value)
         } else {
             Timber.tag(TAG).d("ERROR: Backward value must be a number")
+            throw LiloException(statement.keyword.position, "Backward value must be a number")
         }
     }
 
@@ -250,6 +266,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             drawLineWithAngel(value)
         } else {
             Timber.tag(TAG).d("ERROR: Right value must be a number")
+            throw LiloException(statement.keyword.position, "Right value must be a number")
         }
     }
 
@@ -261,6 +278,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             drawLineWithAngel(value)
         } else {
             Timber.tag(TAG).d("ERROR: Left value must be a number")
+            throw LiloException(statement.keyword.position, "Left value must be a number")
         }
     }
 
@@ -270,6 +288,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val isAssigned = currentScope.assign(name, value)
         if (isAssigned.not()) {
             Timber.tag(TAG).d("ERROR: Invalid assignment.")
+            throw LiloException(expression.name.position, "Invalid assignment.")
         }
         return value
     }
@@ -294,32 +313,32 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
                 TokenType.TOKEN_LS -> return left < right
                 TokenType.TOKEN_LS_EQ -> return left <= right
-
-                else -> {
-                    Timber.tag(TAG).d("ERROR: Invalid binary operator.")
-                }
             }
         }
 
-        Timber.tag(TAG).d("ERROR: Invalid binary expression.")
-        return 0
+        throw LiloException(expression.operator.position, "Invalid binary expression.")
     }
 
     override fun visit(expression: LogicalExpression): Any {
         val left = expression.left.accept(this)
         when (expression.operator.type) {
             TokenType.TOKEN_LOGICAL_OR -> {
-                if (left is Boolean && left == true) {
-                    return left
+                if (left is Boolean) {
+                    if (left == true) return left
+                } else {
+                    throw LiloException(expression.operator.position, "Logical or (||) requires booleans")
                 }
             }
             TokenType.TOKEN_LOGICAL_AND -> {
-                if (left is Boolean && left == false) {
-                    return left
+                if (left is Boolean) {
+                    if (left == false) return left
+                } else {
+                    throw LiloException(expression.operator.position, "Logical and (&&) requires booleans")
                 }
             }
             else -> {
                 Timber.tag(TAG).d("ERROR: Invalid logical operator.")
+                throw LiloException(expression.operator.position, "Invalid logical operator.")
             }
         }
         return expression.right.accept(this)
@@ -333,6 +352,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
                     return right.not()
                 } else {
                     Timber.tag(TAG).d("ERROR: Unary (!) expect booleans only.")
+                    throw LiloException(expression.operator.position, "Unary (!) expect booleans only.")
                 }
             }
             TokenType.TOKEN_MINUS -> {
@@ -340,11 +360,12 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
                     return -right
                 } else {
                     Timber.tag(TAG).d("ERROR: Unary (-) expect numbers only.")
+                    throw LiloException(expression.operator.position, "Unary (-) expect numbers only.")
                 }
             }
             else -> {
                 Timber.tag(TAG).d("ERROR: Invalid unary operator.")
-                0
+                throw LiloException(expression.operator.position, "ERROR: Invalid unary operator.")
             }
         }
     }
@@ -356,7 +377,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     override fun visit(expression: VariableExpression): Any {
         Timber.tag(TAG).d("Evaluate VariableExpression")
-        return currentScope.lookup(expression.value.literal) ?: 0
+        val value = currentScope.lookup(expression.value.literal)
+        if (value == null) {
+            throw LiloException(expression.value.position, "Can't resolve variable ${expression.value.literal}")
+        }
+        return value
     }
 
     override fun visit(expression: NumberExpression): Any {
@@ -380,5 +405,9 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     fun setOnDegreeChangeListener(listener: OnDegreeChangeListener) {
         onDegreeChangeListener = listener
+    }
+
+    fun setOnExceptionListener(listener: OnExceptionListener) {
+        onExceptionListener = listener
     }
 }

@@ -73,6 +73,7 @@ data class BlockStatement(
 }
 
 data class IfStatement(
+    val keyword: Token,
     val condition: Expression,
     val body: Statement,
 ) : Statement() {
@@ -82,6 +83,7 @@ data class IfStatement(
 }
 
 data class WhileStatement(
+    val keyword: Token,
     val condition: Expression,
     val body: Statement,
 ) : Statement() {
@@ -91,6 +93,7 @@ data class WhileStatement(
 }
 
 data class RepeatStatement(
+    val keyword: Token,
     val condition: Expression,
     val body: Statement,
 ) : Statement() {
@@ -100,6 +103,7 @@ data class RepeatStatement(
 }
 
 data class CubeStatement(
+    val keyword: Token,
     val radius: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -108,6 +112,7 @@ data class CubeStatement(
 }
 
 data class CircleStatement(
+    val keyword: Token,
     val radius: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -116,6 +121,7 @@ data class CircleStatement(
 }
 
 data class MoveStatement(
+    val keyword: Token,
     val xValue: Expression,
     val yValue: Expression
 ) : Statement() {
@@ -125,6 +131,7 @@ data class MoveStatement(
 }
 
 data class MoveXStatement(
+    val keyword: Token,
     val amount: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -133,6 +140,7 @@ data class MoveXStatement(
 }
 
 data class MoveYStatement(
+    val keyword: Token,
     val amount: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -141,6 +149,7 @@ data class MoveYStatement(
 }
 
 data class ColorStatement(
+    val keyword: Token,
     val color: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -149,6 +158,7 @@ data class ColorStatement(
 }
 
 data class SleepStatement(
+    val keyword: Token,
     val amount: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -157,6 +167,7 @@ data class SleepStatement(
 }
 
 data class RotateStatement(
+    val keyword: Token,
     val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -165,6 +176,7 @@ data class RotateStatement(
 }
 
 data class ForwardStatement(
+    val keyword: Token,
     val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -173,6 +185,7 @@ data class ForwardStatement(
 }
 
 data class BackwardStatement(
+    val keyword: Token,
     val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -181,6 +194,7 @@ data class BackwardStatement(
 }
 
 data class RightStatement(
+    val keyword: Token,
     val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -189,6 +203,7 @@ data class RightStatement(
 }
 
 data class LeftStatement(
+    val keyword: Token,
     val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {

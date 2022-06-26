@@ -28,10 +28,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import com.amrdeveloper.lilo.LiloException
 import com.amrdeveloper.lilo.LiloInterpreter
+import com.amrdeveloper.lottiedialog.LottieDialog
+import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.databinding.FragmentPreviewBinding
 import com.amrdeveloper.turtle.ui.MainViewModel
+import timber.log.Timber
+
+private const val TAG = "PreviewFragment"
 
 class PreviewFragment : Fragment() {
 
@@ -55,6 +62,7 @@ class PreviewFragment : Fragment() {
 
     private fun setupTurtleInterpreter() {
         liloInterpreter.setOnDegreeChangeListener(onDegreeChangeListener)
+        liloInterpreter.setOnExceptionListener(onExceptionListener)
     }
 
     private fun setupObservers() {
@@ -66,6 +74,24 @@ class PreviewFragment : Fragment() {
 
     private val onDegreeChangeListener = { degree : Float ->
         binding.turtlePointer.rotation = degree - 180
+    }
+
+    private val onExceptionListener = { exception : LiloException ->
+        Timber.tag(TAG).d("Lilo Runtime exception ${exception.message}")
+        launchLiloExceptionDialog(exception)
+    }
+
+    private fun launchLiloExceptionDialog(exception: LiloException) {
+        val lottieDialog = LottieDialog(requireContext())
+            .setAnimation(R.raw.turtle_flail)
+            .setAnimationRepeatCount(LottieDialog.INFINITE)
+            .setAutoPlayAnimation(true)
+            .setTitle("Runtime Exception")
+            .setTitleColor(ContextCompat.getColor(requireContext(), R.color.monokia_pro_pink))
+            .setDialogBackground(ContextCompat.getColor(requireContext(), R.color.monokia_pro_black))
+            .setMessage("${exception.message} at line ${exception.position.line}")
+            .setMessageColor(ContextCompat.getColor(requireContext(), R.color.monokia_pro_purple))
+        lottieDialog.show()
     }
 
     override fun onDestroyView() {

@@ -125,7 +125,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("Evaluate WhileStatement")
         val condition = statement.condition.accept(this)
         if (condition is Boolean) {
-            while (condition == true) {
+            while (statement.condition.accept(this) == true) {
                 statement.body.accept(this)
             }
         } else {

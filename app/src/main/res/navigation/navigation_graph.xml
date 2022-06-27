@@ -28,6 +28,12 @@
         tools:layout="@layout/fragment_packages" />
 
     <fragment
+        android:id="@+id/documentsFragment"
+        android:name="com.amrdeveloper.turtle.ui.documents.DocumentsFragment"
+        android:label="fragment_documents"
+        tools:layout="@layout/fragment_documents" />
+
+    <fragment
         android:id="@+id/settingsFragment"
         android:name="com.amrdeveloper.turtle.ui.settings.SettingsFragment"
         android:label="fragment_settings"

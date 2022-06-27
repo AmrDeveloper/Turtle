@@ -16,6 +16,11 @@
         android:title="@string/packages" />
 
     <item
+        android:id="@+id/documentsFragment"
+        android:icon="@drawable/ic_text_snippet"
+        android:title="@string/documents" />
+
+    <item
         android:id="@+id/settingsFragment"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings" />

@@ -5,6 +5,7 @@
     <string name="editor">Editor</string>
     <string name="preview">Preview</string>
     <string name="packages">Packages</string>
+    <string name="documents">Documents</string>
     <string name="settings">Settings</string>
 
     <!-- Actions -->

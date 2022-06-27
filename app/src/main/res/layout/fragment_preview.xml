@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/monokia_pro_black"
     tools:context=".ui.preview.PreviewFragment">
 
     <com.amrdeveloper.turtle.ui.preview.TurtleCanvasView

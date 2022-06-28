@@ -1,15 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/monokia_pro_black"
+    android:orientation="vertical"
     tools:context=".ui.settings.SettingsFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/settings" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:src="@drawable/ic_turtle_pack" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/version_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dimen10dp"
+        android:fontFamily="serif"
+        android:padding="@dimen/dimen10dp"
+        android:textColor="@color/monokia_pro_pink"
+        android:textSize="@dimen/dimen20sp"
+        app:drawableStartCompat="@drawable/ic_version"
+        tools:text="Version 1.0.0" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/monokia_pro_green" />
+
+    <TextView
+        android:id="@+id/source_code_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dimen10dp"
+        android:fontFamily="serif"
+        android:padding="@dimen/dimen10dp"
+        android:text="@string/source_code"
+        android:textColor="@color/monokia_pro_pink"
+        android:textSize="@dimen/dimen20sp"
+        app:drawableStartCompat="@drawable/ic_source_code" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/monokia_pro_green" />
+
+    <TextView
+        android:id="@+id/contributors_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dimen10dp"
+        android:fontFamily="serif"
+        android:padding="@dimen/dimen10dp"
+        android:text="@string/contributors"
+        android:textColor="@color/monokia_pro_pink"
+        android:textSize="@dimen/dimen20sp"
+        app:drawableStartCompat="@drawable/ic_team" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/monokia_pro_green" />
+
+    <TextView
+        android:id="@+id/issues_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dimen10dp"
+        android:fontFamily="serif"
+        android:padding="@dimen/dimen10dp"
+        android:text="@string/issues"
+        android:textColor="@color/monokia_pro_pink"
+        android:textSize="@dimen/dimen20sp"
+        app:drawableStartCompat="@drawable/ic_problems" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/monokia_pro_green" />
+
+    <TextView
+        android:id="@+id/share_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dimen10dp"
+        android:fontFamily="serif"
+        android:padding="@dimen/dimen10dp"
+        android:text="@string/share"
+        android:textColor="@color/monokia_pro_pink"
+        android:textSize="@dimen/dimen20sp"
+        app:drawableStartCompat="@drawable/ic_share" />
+</LinearLayout>

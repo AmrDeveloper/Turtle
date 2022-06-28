@@ -23,24 +23,60 @@
 
 package com.amrdeveloper.turtle.ui.settings
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.amrdeveloper.turtle.R
+import com.amrdeveloper.turtle.BuildConfig
+import com.amrdeveloper.turtle.data.GITHUB_CONTRIBUTORS
+import com.amrdeveloper.turtle.data.GITHUB_ISSUES
+import com.amrdeveloper.turtle.data.GITHUB_SOURCE
+import com.amrdeveloper.turtle.data.GOOGLE_PLAY_URL
+import com.amrdeveloper.turtle.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        setupSettingsListeners()
+        return binding.root
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+    private fun setupSettingsListeners() {
+        binding.versionTxt.text = "Version ${BuildConfig.VERSION_NAME}"
+
+        binding.sourceCodeTxt.setOnClickListener {
+            val viewIntent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(GITHUB_SOURCE))
+            startActivity(viewIntent)
+        }
+
+        binding.contributorsTxt.setOnClickListener {
+            val viewIntent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(GITHUB_CONTRIBUTORS))
+            startActivity(viewIntent)
+        }
+
+        binding.issuesTxt.setOnClickListener {
+            val viewIntent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(GITHUB_ISSUES))
+            startActivity(viewIntent)
+        }
+
+        binding.shareTxt.setOnClickListener {
+            val sendIntent = Intent(Intent.ACTION_SEND)
+            sendIntent.putExtra(Intent.EXTRA_TEXT, GOOGLE_PLAY_URL)
+            sendIntent.type = "text/plain"
+            val shareIndent = Intent.createChooser(sendIntent, null)
+            startActivity(shareIndent)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

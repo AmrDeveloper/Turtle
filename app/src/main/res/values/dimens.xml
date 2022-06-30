@@ -10,6 +10,7 @@
     <dimen name="dimen45dp">45dp</dimen>
     <dimen name="dimen50dp">50dp</dimen>
     <dimen name="dimen55dp">55dp</dimen>
+    <dimen name="dimen75dp">75dp</dimen>
     <dimen name="dimen90dp">90dp</dimen>
 
     <dimen name="dimen16sp">16sp</dimen>

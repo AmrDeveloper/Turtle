@@ -9,10 +9,19 @@
         android:id="@+id/editorFragment"
         android:name="com.amrdeveloper.turtle.ui.editor.EditorFragment"
         android:label="fragment_editor"
-        tools:layout="@layout/fragment_editor" >
+        tools:layout="@layout/fragment_editor">
+
+        <argument
+            android:name="lilo_package"
+            app:argType="com.amrdeveloper.turtle.data.LiloPackage" />
+
         <action
             android:id="@+id/action_editorFragment_to_previewFragment"
             app:destination="@id/previewFragment" />
+
+        <action
+            android:id="@+id/action_editorFragment_to_packageFragment"
+            app:destination="@id/packageFragment" />
     </fragment>
 
     <fragment
@@ -25,7 +34,31 @@
         android:id="@+id/packagesFragment"
         android:name="com.amrdeveloper.turtle.ui.packages.PackagesFragment"
         android:label="fragment_packages"
-        tools:layout="@layout/fragment_packages" />
+        tools:layout="@layout/fragment_packages">
+
+        <action
+            android:id="@+id/action_packagesFragment_to_packageFragment"
+            app:destination="@id/packageFragment" />
+
+        <action
+            android:id="@+id/action_packagesFragment_to_editorFragment"
+            app:destination="@id/editorFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/packageFragment"
+        android:name="com.amrdeveloper.turtle.ui.pack.PackageFragment"
+        android:label="fragment_package"
+        tools:layout="@layout/fragment_package">
+
+        <argument
+            android:name="source_code"
+            app:argType="string" />
+
+        <argument
+            android:name="lilo_package"
+            app:argType="com.amrdeveloper.turtle.data.LiloPackage" />
+    </fragment>
 
     <fragment
         android:id="@+id/documentsFragment"

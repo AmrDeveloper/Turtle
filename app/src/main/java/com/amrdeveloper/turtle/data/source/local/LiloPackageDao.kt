@@ -21,20 +21,18 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle
+package com.amrdeveloper.turtle.data.source.local
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
+import androidx.room.Dao
+import androidx.room.Query
+import com.amrdeveloper.turtle.data.LiloPackage
 
-@HiltAndroidApp
-class TurtleApplication : Application() {
+@Dao
+interface LiloPackageDao : BaseDao<LiloPackage> {
 
-    override fun onCreate() {
-        super.onCreate()
+    @Query("SELECT * from lilo_package")
+    suspend fun loadLiloPackages(): List<LiloPackage>
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
-    }
+    @Query("DELETE FROM lilo_package")
+    suspend fun deleteAll(): Int
 }

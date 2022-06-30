@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DocumentsFragment">
+    tools:context=".ui.documents.DocumentsFragment">
 
     <ExpandableListView
+        tools:listitem="@layout/list_item_document_category"
         android:background="@color/black"
         android:id="@+id/documents_expandable_list"
         android:layout_width="match_parent"

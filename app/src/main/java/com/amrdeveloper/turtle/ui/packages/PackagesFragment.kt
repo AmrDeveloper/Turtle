@@ -28,20 +28,57 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.amrdeveloper.turtle.R
+import com.amrdeveloper.turtle.data.LiloPackageListAdapter
+import com.amrdeveloper.turtle.databinding.FragmentPackagesBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class PackagesFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var _binding: FragmentPackagesBinding? = null
+    private val binding get() = _binding!!
 
+    private val packagesViewModel : PackagesViewModel by viewModels()
+
+    private val packagesAdapter : LiloPackageListAdapter by lazy { LiloPackageListAdapter() }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentPackagesBinding.inflate(inflater, container, false)
+        setupPackagesList()
+        setupObservers()
+        packagesViewModel.loadLiloPackages()
+        return binding.root
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_packages, container, false)
+    private fun setupPackagesList() {
+        binding.packagesList.layoutManager = LinearLayoutManager(requireContext())
+        binding.packagesList.adapter = packagesAdapter
+
+        packagesAdapter.setOnLiloPackageItemViewClickListener { item , _ ->
+            val bundle = bundleOf("lilo_package" to item)
+            findNavController().navigate(R.id.action_packagesFragment_to_editorFragment, bundle)
+        }
+
+        packagesAdapter.setOnLiloPackageItemViewLongClickListener { item , _ ->
+            val bundle = bundleOf("lilo_package" to item)
+            findNavController().navigate(R.id.action_packagesFragment_to_packageFragment, bundle)
+            true
+        }
+    }
+
+    private fun setupObservers() {
+        packagesViewModel.liloPackagesLiveData.observe(viewLifecycleOwner) {
+            packagesAdapter.submitList(it)
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -29,7 +29,9 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.amrdeveloper.turtle.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupNavigationUI(navController: NavController, bottomNav: BottomNavigationView) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            bottomNav.menu.findItem(destination.id).isChecked = true
+            bottomNav.menu.findItem(destination.id)?.let { it.isChecked = true }
         }
 
         bottomNav.setOnItemSelectedListener {

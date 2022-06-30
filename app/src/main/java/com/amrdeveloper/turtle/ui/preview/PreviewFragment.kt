@@ -36,10 +36,12 @@ import com.amrdeveloper.lottiedialog.LottieDialog
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.databinding.FragmentPreviewBinding
 import com.amrdeveloper.turtle.ui.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 private const val TAG = "PreviewFragment"
 
+@AndroidEntryPoint
 class PreviewFragment : Fragment() {
 
     private var _binding: FragmentPreviewBinding? = null

@@ -21,41 +21,43 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle.ui
+package com.amrdeveloper.turtle.ui.pack
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.amrdeveloper.lilo.Diagnostic
-import com.amrdeveloper.lilo.LiloDiagnostics
-import com.amrdeveloper.lilo.LiloParser
-import com.amrdeveloper.lilo.LiloTokenizer
-import com.amrdeveloper.lilo.ast.LiloScript
+import androidx.lifecycle.viewModelScope
+import com.amrdeveloper.turtle.data.LiloPackage
+import com.amrdeveloper.turtle.data.source.LiloPackageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
+private const val TAG = "PackageViewModel"
+
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class PackageViewModel @Inject constructor(
+    private val liloPackageRepository: LiloPackageRepository
+) : ViewModel() {
 
-    private val _diagnosticsLiveData = MutableLiveData<List<Diagnostic>>()
-    val diagnosticsLiveData = _diagnosticsLiveData
-
-    private val _liloScript = MutableLiveData<LiloScript>()
-    val liloScript = _liloScript
-
-    private val _previewLiveData = MutableLiveData<Boolean>()
-    val previewLiveData = _previewLiveData
-
-    fun executeLiloScript(script : String) {
-        val tokenizer = LiloTokenizer(script)
-        val diagnostics = LiloDiagnostics()
-        val parser = LiloParser(tokenizer.scanTokens(), diagnostics)
-        val liloScript = parser.parseScript()
-        if (diagnostics.errorNumber() > 0) {
-            _diagnosticsLiveData.value = diagnostics.errorDiagnostics()
-            return
+    fun savePackage(liloPackage: LiloPackage) {
+        viewModelScope.launch {
+            val result = liloPackageRepository.insertLiloPackage(liloPackage)
+            if (result.isSuccess) {
+                Timber.tag(TAG).d("New lilo package inserted")
+            } else {
+                Timber.tag(TAG).d("New lilo package not inserted because ${result.exceptionOrNull()?.message}")
+            }
         }
-        _diagnosticsLiveData.value = listOf()
-        _previewLiveData.value = true
-        _liloScript.value = liloScript
+    }
+
+    fun updatePackage(liloPackage: LiloPackage) {
+        viewModelScope.launch {
+            val result = liloPackageRepository.updateLiloPackage(liloPackage)
+            if (result.isSuccess) {
+                Timber.tag(TAG).d("Lilo package updated")
+            } else {
+                Timber.tag(TAG).d("Lilo package not updated because ${result.exceptionOrNull()?.message}")
+            }
+        }
     }
 }

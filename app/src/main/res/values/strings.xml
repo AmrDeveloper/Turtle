@@ -14,10 +14,10 @@
 
     <!-- Actions -->
     <string name="execute">Execute</string>
-    <string name="save">Save</string>
     <string name="diagnostics">Diagnostics</string>
     <string name="turtle_pointer">Turtle Pointer</string>
     <string name="package_name">Package Name</string>
     <string name="package_icon">Package Icon</string>
-
+    <string name="save">Save</string>
+    <string name="close">Close</string>
 </resources>

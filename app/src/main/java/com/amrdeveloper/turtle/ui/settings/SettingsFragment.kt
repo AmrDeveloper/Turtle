@@ -36,7 +36,9 @@ import com.amrdeveloper.turtle.data.GITHUB_ISSUES
 import com.amrdeveloper.turtle.data.GITHUB_SOURCE
 import com.amrdeveloper.turtle.data.GOOGLE_PLAY_URL
 import com.amrdeveloper.turtle.databinding.FragmentSettingsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null

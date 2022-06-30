@@ -21,20 +21,21 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle
+package com.amrdeveloper.turtle.data.source.local
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Update
 
-@HiltAndroidApp
-class TurtleApplication : Application() {
+interface BaseDao<T> {
 
-    override fun onCreate() {
-        super.onCreate()
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(item: T): Long
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
-    }
+    @Update
+    suspend fun update(item: T): Int
+
+    @Delete
+    suspend fun delete(item: T): Int
 }

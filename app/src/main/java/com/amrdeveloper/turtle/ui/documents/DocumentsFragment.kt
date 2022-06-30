@@ -31,9 +31,11 @@ import android.view.ViewGroup
 import com.amrdeveloper.turtle.data.LiloDocuments
 import com.amrdeveloper.turtle.data.LiloDocumentsExpandableAdapter
 import com.amrdeveloper.turtle.databinding.FragmentDocumentsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "DocumentsFragment"
 
+@AndroidEntryPoint
 class DocumentsFragment : Fragment() {
 
     private var _binding: FragmentDocumentsBinding? = null

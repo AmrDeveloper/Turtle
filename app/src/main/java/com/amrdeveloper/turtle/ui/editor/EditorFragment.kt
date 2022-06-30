@@ -27,6 +27,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -34,13 +35,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.amrdeveloper.treeview.TreeViewAdapter
 import com.amrdeveloper.treeview.TreeViewHolderFactory
 import com.amrdeveloper.turtle.R
+import com.amrdeveloper.turtle.data.LiloPackage
 import com.amrdeveloper.turtle.databinding.FragmentEditorBinding
 import com.amrdeveloper.turtle.externsions.toTreeNodes
 import com.amrdeveloper.turtle.ui.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
 private const val TAG = "EditorFragment"
 
+@AndroidEntryPoint
 class EditorFragment : Fragment() {
 
     private var _binding: FragmentEditorBinding? = null
@@ -50,9 +54,15 @@ class EditorFragment : Fragment() {
 
     private lateinit var treeViewAdapter: TreeViewAdapter
 
+    private lateinit var currentLiloPackage : LiloPackage
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
+        (arguments?.get("lilo_package") as LiloPackage?)?.let {
+             currentLiloPackage = it
+         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -60,6 +70,11 @@ class EditorFragment : Fragment() {
         configCodeView()
         setupDiagnosticsTreeView()
         setupObservers()
+
+        if (::currentLiloPackage.isInitialized) {
+            binding.editorView.setTextHighlighted(currentLiloPackage.sourceCode)
+        }
+
         return binding.root
     }
 
@@ -128,8 +143,13 @@ class EditorFragment : Fragment() {
     private fun saveCurrentScript() {
         val script = binding.editorView.textWithoutTrailingSpace.trim()
         if (script.isNotEmpty()) {
-            // TODO: send it to PackageFragment to set title and save it
             Timber.tag(TAG).d("Save the current script")
+            val bundle = if (::currentLiloPackage.isInitialized) {
+                bundleOf("lilo_package" to currentLiloPackage)
+            } else {
+                bundleOf("source_code" to script)
+            }
+            findNavController().navigate(R.id.action_editorFragment_to_packageFragment, bundle)
         }
     }
 

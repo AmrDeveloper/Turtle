@@ -21,20 +21,39 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle
+package com.amrdeveloper.turtle.data.source.local
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.amrdeveloper.turtle.data.LiloPackage
 
-@HiltAndroidApp
-class TurtleApplication : Application() {
+const val DATABASE_NAME = "turtle_database"
+const val DATABASE_VERSION = 1
 
-    override fun onCreate() {
-        super.onCreate()
+@Database(
+    entities = [LiloPackage::class],
+    version = DATABASE_VERSION
+)
+abstract class TurtleDatabase : RoomDatabase() {
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
+    abstract fun liloPackageDao(): LiloPackageDao
+
+    companion object {
+
+        @Volatile
+        private var INSTANCE: TurtleDatabase? = null
+
+        fun getDatabase(context: Context): TurtleDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    TurtleDatabase::class.java, DATABASE_NAME
+                ).build()
+                INSTANCE = instance
+                instance
+            }
         }
     }
 }

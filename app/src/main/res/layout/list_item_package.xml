@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/document_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dimen75dp"
+    android:layout_margin="@dimen/dimen5dp"
+    card_view:cardBackgroundColor="@color/monokia_pro_black"
+    card_view:cardCornerRadius="@dimen/dimen5dp"
+    tools:viewBindingIgnore="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/package_icon"
+            android:layout_width="@dimen/dimen50dp"
+            android:layout_height="@dimen/dimen50dp"
+            android:layout_centerVertical="true"
+            android:contentDescription="@string/package_icon"
+            android:src="@drawable/ic_turtle_pack" />
+
+        <TextView
+            android:id="@+id/document_title_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/package_icon"
+            android:lines="1"
+            android:padding="@dimen/dimen5dp"
+            android:textColor="@color/monokia_pro_green"
+            android:textSize="@dimen/dimen16sp"
+            tools:text="Package" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

@@ -21,20 +21,31 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle
+package com.amrdeveloper.turtle.data
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
+import android.os.Parcelable
+import androidx.annotation.Keep
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import com.amrdeveloper.easyadapter.adapter.ListAdapter
+import com.amrdeveloper.easyadapter.bind.BindListener
+import com.amrdeveloper.easyadapter.bind.BindText
+import com.amrdeveloper.easyadapter.option.ListenerType
+import com.amrdeveloper.turtle.BuildConfig
+import kotlinx.parcelize.Parcelize
 
-@HiltAndroidApp
-class TurtleApplication : Application() {
-
-    override fun onCreate() {
-        super.onCreate()
-
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
-    }
-}
+@Keep
+@Parcelize
+@BindListener(ListenerType.OnClick)
+@BindListener(ListenerType.OnLongClick)
+@ListAdapter(BuildConfig.APPLICATION_ID, "list_item_package", "name")
+@Entity(tableName = "lilo_package", indices = [Index(value = ["name"], unique = true)])
+data class LiloPackage (
+    @BindText("document_title_txt") var name: String,
+    val sourceCode: String,
+    var creationTimeStamp: Long = System.currentTimeMillis(),
+    var updateTimeStamp: Long = -1,
+    var isUpdated: Boolean = false,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+) : Parcelable

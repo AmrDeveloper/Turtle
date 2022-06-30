@@ -21,20 +21,19 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle
+package com.amrdeveloper.turtle.data.source
 
-import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
+import com.amrdeveloper.turtle.data.LiloPackage
 
-@HiltAndroidApp
-class TurtleApplication : Application() {
+interface LiloPackageDataSource {
 
-    override fun onCreate() {
-        super.onCreate()
+    suspend fun loadLiloPackages() : Result<List<LiloPackage>>
 
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
-    }
+    suspend fun insertLiloPackage(liloPackage: LiloPackage): Result<Long>
+
+    suspend fun updateLiloPackage(liloPackage: LiloPackage): Result<Int>
+
+    suspend fun deleteLiloPackage(liloPackage: LiloPackage): Result<Int>
+
+    suspend fun deleteAllLiloPackage(): Result<Int>
 }

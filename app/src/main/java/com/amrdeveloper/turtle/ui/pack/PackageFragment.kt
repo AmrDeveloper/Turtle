@@ -104,8 +104,14 @@ class PackageFragment : Fragment() {
             binding.packageNameText.error = "Name can't be empty"
             return
         }
-        currentLiloPackage.name = name
-        packageViewModel.updatePackage(currentLiloPackage)
+        if (currentLiloPackage.name != name) {
+            currentLiloPackage.name = name
+            currentLiloPackage.updateTimeStamp = System.currentTimeMillis()
+            currentLiloPackage.isUpdated = true
+            packageViewModel.updatePackage(currentLiloPackage)
+        } else {
+            binding.packageNameText.error = "No thing to update"
+        }
     }
 
     override fun onDestroyView() {

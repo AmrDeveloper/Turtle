@@ -337,7 +337,25 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
             val right = parseUnaryExpression()
             return UnaryExpression(operator, right)
         }
-        return parsePrimaryExpression()
+        return parseCallExpression()
+    }
+
+    private fun parseCallExpression() : Expression {
+        var expression = parsePrimaryExpression()
+        while (true) {
+            if (checkPeek(TokenType.TOKEN_OPEN_PAREN)) {
+                val openParenToken = previous()
+                val arguments = mutableListOf<Expression>()
+                if (checkPeek(TokenType.TOKEN_CLOSE_PAREN).not()) {
+                    do { arguments.add(parseExpression()) }
+                    while (checkPeek(TokenType.TOKEN_COMMA))
+                }
+                expression = CallExpression(expression, openParenToken, arguments)
+            } else {
+                break
+            }
+        }
+        return expression
     }
 
     private fun parsePrimaryExpression(): Expression {

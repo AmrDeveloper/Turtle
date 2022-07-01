@@ -89,12 +89,13 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     override fun visit(statement: FunctionStatement) {
         Timber.tag(TAG).d("FunctionStatement yet implemented")
-        // TODO: Unimplemented yet
+        val function = LiloFunction(statement, currentScope)
+        currentScope.define(statement.name, function)
     }
 
     override fun visit(statement: ReturnStatement) {
         Timber.tag(TAG).d("ReturnStatement yet implemented")
-        // TODO: Unimplemented yet
+        statement.value.accept(this)
     }
 
     override fun visit(statement: LetStatement) {
@@ -382,6 +383,24 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             throw LiloException(expression.value.position, "Can't resolve variable ${expression.value.literal}")
         }
         return value
+    }
+
+    override fun visit(expression: CallExpression): Any {
+        val callee = expression.callee.accept(this)
+
+        val arguments = mutableListOf<Any>()
+        expression.arguments.forEach { arguments.add(it.accept(this)) }
+
+        if (callee !is LiloCallable) {
+            throw LiloException(expression.paren.position, "Can only call functions.")
+        }
+
+        val function = callee as LiloFunction
+        if (function.arity() != arguments.size) {
+            throw LiloException(expression.paren.position, "Expected ${function.arity()} arguments but got ${arguments.size}")
+        }
+
+        return function.call(this, arguments)
     }
 
     override fun visit(expression: NumberExpression): Any {

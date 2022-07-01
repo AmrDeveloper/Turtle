@@ -75,6 +75,16 @@ data class UnaryExpression(
     }
 }
 
+data class CallExpression(
+    val callee: Expression,
+    val paren : Token,
+    val arguments: List<Expression>
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
 data class VariableExpression(
     val value: Token
 ) : Expression() {

@@ -23,8 +23,10 @@
 
 package com.amrdeveloper.turtle.ui.pack
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.data.LiloPackage
 import com.amrdeveloper.turtle.data.source.LiloPackageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,13 +41,22 @@ class PackageViewModel @Inject constructor(
     private val liloPackageRepository: LiloPackageRepository
 ) : ViewModel() {
 
+    private val _stateMessage = MutableLiveData<Int>()
+    val stateMessage = _stateMessage
+
+    private val _operationState = MutableLiveData(false)
+    val operationState = _operationState
+
     fun savePackage(liloPackage: LiloPackage) {
         viewModelScope.launch {
             val result = liloPackageRepository.insertLiloPackage(liloPackage)
-            if (result.isSuccess) {
+            if (result.isSuccess && result.getOrDefault(-1) > 0) {
                 Timber.tag(TAG).d("New lilo package inserted")
+                _stateMessage.value = R.string.package_inserted_success
+                _operationState.value = true
             } else {
                 Timber.tag(TAG).d("New lilo package not inserted because ${result.exceptionOrNull()?.message}")
+                _stateMessage.value = R.string.package_inserted_errors
             }
         }
     }
@@ -53,10 +64,13 @@ class PackageViewModel @Inject constructor(
     fun updatePackage(liloPackage: LiloPackage) {
         viewModelScope.launch {
             val result = liloPackageRepository.updateLiloPackage(liloPackage)
-            if (result.isSuccess) {
+            if (result.isSuccess && result.getOrDefault(-1) > 0) {
                 Timber.tag(TAG).d("Lilo package updated")
+                _stateMessage.value = R.string.package_updated_success
+                _operationState.value = true
             } else {
                 Timber.tag(TAG).d("Lilo package not updated because ${result.exceptionOrNull()?.message}")
+                _stateMessage.value = R.string.package_updated_errors
             }
         }
     }

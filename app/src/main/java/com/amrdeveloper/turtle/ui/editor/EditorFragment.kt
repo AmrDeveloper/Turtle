@@ -26,6 +26,7 @@ package com.amrdeveloper.turtle.ui.editor
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -137,6 +138,8 @@ class EditorFragment : Fragment() {
         if (script.isNotEmpty()) {
             Timber.tag(TAG).d("Execute the current script")
             mainViewModel.executeLiloScript(script)
+        } else {
+            Toast.makeText(requireContext(), "You script is empty", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -150,6 +153,8 @@ class EditorFragment : Fragment() {
                 bundleOf("source_code" to script)
             }
             findNavController().navigate(R.id.action_editorFragment_to_packageFragment, bundle)
+        } else {
+            Toast.makeText(requireContext(), "You script is empty", Toast.LENGTH_SHORT).show()
         }
     }
 

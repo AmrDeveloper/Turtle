@@ -25,8 +25,10 @@ package com.amrdeveloper.turtle.ui.pack
 
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.data.LiloPackage
@@ -64,7 +66,19 @@ class PackageFragment : Fragment() {
             binding.packageNameText.setText(currentLiloPackage.name)
         }
 
+        setupObservers()
+
         return binding.root
+    }
+
+    private fun setupObservers() {
+        packageViewModel.stateMessage.observe(viewLifecycleOwner) {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+
+        packageViewModel.operationState.observe(viewLifecycleOwner) {
+            if (it) findNavController().navigateUp()
+        }
     }
 
    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -77,7 +91,6 @@ class PackageFragment : Fragment() {
             R.id.action_save -> {
                 if (::currentLiloPackage.isInitialized) updateCurrentPackage()
                 else saveNewPackage()
-                findNavController().navigateUp()
                 true
             }
             R.id.action_close -> {

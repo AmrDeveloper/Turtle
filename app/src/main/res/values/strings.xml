@@ -21,4 +21,10 @@
     <string name="save">Save</string>
     <string name="close">Close</string>
     <string name="search">Search</string>
+
+    <!--  Messages  -->
+    <string name="package_inserted_success">Lilo package inserted successfully</string>
+    <string name="package_updated_success">Lilo package updated successfully</string>
+    <string name="package_inserted_errors">Cannot insert new lilo package</string>
+    <string name="package_updated_errors">Cannot update lilo package</string>
 </resources>

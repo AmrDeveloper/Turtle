@@ -31,6 +31,10 @@ class LiloPackageRepository(private val liloPackageDataSource: LiloPackageDataSo
         return liloPackageDataSource.loadLiloPackages()
     }
 
+    suspend fun loadLiloPackagesByKeyword(keyword : String) : Result<List<LiloPackage>> {
+        return liloPackageDataSource.loadLiloPackagesByKeyword(keyword)
+    }
+
     suspend fun insertLiloPackage(liloPackage: LiloPackage): Result<Long> {
         return liloPackageDataSource.insertLiloPackage(liloPackage)
     }

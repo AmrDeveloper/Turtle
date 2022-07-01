@@ -25,4 +25,13 @@ class PackagesViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadLiloPackagesByKeyword(keyword : String) {
+        viewModelScope.launch {
+            val result = liloPackageRepository.loadLiloPackagesByKeyword(keyword)
+            if (result.isSuccess) {
+                _liloPackagesLiveData.value = result.getOrDefault(listOf())
+            }
+        }
+    }
 }

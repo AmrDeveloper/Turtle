@@ -33,6 +33,9 @@ interface LiloPackageDao : BaseDao<LiloPackage> {
     @Query("SELECT * from lilo_package")
     suspend fun loadLiloPackages(): List<LiloPackage>
 
+    @Query("SELECT * from lilo_package WHERE name LIKE '%' || :keyword || '%'")
+    suspend fun loadLiloPackagesByKeyword(keyword : String): List<LiloPackage>
+
     @Query("DELETE FROM lilo_package")
     suspend fun deleteAll(): Int
 }

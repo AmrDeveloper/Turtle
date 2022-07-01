@@ -43,6 +43,15 @@ class LiloPackageLocalDataSource(
             }
         }
 
+    override suspend fun loadLiloPackagesByKeyword(keyword: String): Result<List<LiloPackage>> =
+        withContext(dispatcher) {
+            return@withContext try {
+                Result.success(liloPackageDao.loadLiloPackagesByKeyword(keyword))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
     override suspend fun insertLiloPackage(liloPackage: LiloPackage): Result<Long> =
         withContext(dispatcher) {
             return@withContext try {

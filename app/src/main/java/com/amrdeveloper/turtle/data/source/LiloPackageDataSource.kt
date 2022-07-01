@@ -29,6 +29,8 @@ interface LiloPackageDataSource {
 
     suspend fun loadLiloPackages() : Result<List<LiloPackage>>
 
+    suspend fun loadLiloPackagesByKeyword(keyword : String) : Result<List<LiloPackage>>
+
     suspend fun insertLiloPackage(liloPackage: LiloPackage): Result<Long>
 
     suspend fun updateLiloPackage(liloPackage: LiloPackage): Result<Int>

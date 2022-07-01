@@ -24,10 +24,9 @@
 package com.amrdeveloper.turtle.ui.packages
 
 import android.os.Bundle
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -46,6 +45,11 @@ class PackagesFragment : Fragment() {
     private val packagesViewModel : PackagesViewModel by viewModels()
 
     private val packagesAdapter : LiloPackageListAdapter by lazy { LiloPackageListAdapter() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPackagesBinding.inflate(inflater, container, false)
@@ -77,7 +81,33 @@ class PackagesFragment : Fragment() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_search, menu)
+
+        val menuItem = menu.findItem(R.id.action_search)
+        val searchView = menuItem?.actionView as SearchView
+        searchView.queryHint = "Search keyword"
+        searchView.setIconifiedByDefault(true)
+        searchView.setOnQueryTextListener(searchViewQueryListener)
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    private val searchViewQueryListener = object : SearchView.OnQueryTextListener {
+
+        override fun onQueryTextSubmit(keyword: String?): Boolean {
+            return false
+        }
+
+        override fun onQueryTextChange(query: String?): Boolean {
+            if (query.isNullOrEmpty()) packagesViewModel.loadLiloPackages()
+            else packagesViewModel.loadLiloPackagesByKeyword(query)
+            return false
+        }
+    }
+
     override fun onDestroyView() {
+        binding.packagesList.adapter = null
         super.onDestroyView()
         _binding = null
     }

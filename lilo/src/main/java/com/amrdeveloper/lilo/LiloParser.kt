@@ -351,7 +351,14 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                     while (checkPeek(TokenType.TOKEN_COMMA))
                 }
                 expression = CallExpression(expression, openParenToken, arguments)
-            } else {
+            }
+            else if (checkPeek(TokenType.TOKEN_OPEN_BRACKET)) {
+                val openBracketToken = previous()
+                val index = parseExpression()
+                consume(TokenType.TOKEN_CLOSE_BRACKET, "Expect close bracket [ after index value.")
+                return IndexExpression(openBracketToken, expression, index)
+            }
+            else {
                 break
             }
         }
@@ -380,6 +387,17 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 val expression = parseExpression()
                 consume(TokenType.TOKEN_CLOSE_PAREN, "Expect close paren ) at the end of group expression.")
                 GroupExpression(expression)
+            }
+            TokenType.TOKEN_OPEN_BRACKET -> {
+                advance()
+                val values = mutableListOf<Expression>()
+                while (isAtEnd().not() && peek().type != TokenType.TOKEN_CLOSE_BRACKET) {
+                    val expression = parseExpression()
+                    values.add(expression)
+                    if (checkPeek(TokenType.TOKEN_COMMA).not()) break;
+                }
+                consume(TokenType.TOKEN_CLOSE_BRACKET, "Expect close bracket ] at the end of list expression.")
+                ListExpression(values)
             }
             else -> {
                 Timber.tag(TAG).d("Unexpected primary expression")

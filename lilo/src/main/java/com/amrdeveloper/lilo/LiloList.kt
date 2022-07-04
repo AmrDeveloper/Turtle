@@ -23,60 +23,6 @@
 
 package com.amrdeveloper.lilo
 
-enum class TokenType {
-    TOKEN_LET,
-    TOKEN_FUN,
-    TOKEN_IF,
-    TOKEN_WHILE,
-    TOKEN_REPEAT,
-
-    TOKEN_CUBE,
-    TOKEN_CIRCLE,
-    TOKEN_MOVE,
-    TOKEN_MOVE_X,
-    TOKEN_MOVE_Y,
-    TOKEN_COLOR,
-    TOKEN_SLEEP,
-    TOKEN_STOP,
-    TOKEN_ROTATE,
-    TOKEN_FORWARD,
-    TOKEN_BACKWARD,
-    TOKEN_RIGHT,
-    TOKEN_LEFT,
-
-    TOKEN_OPEN_PAREN,
-    TOKEN_CLOSE_PAREN,
-    TOKEN_OPEN_BRACE,
-    TOKEN_CLOSE_BRACE,
-    TOKEN_OPEN_BRACKET,
-    TOKEN_CLOSE_BRACKET,
-
-    TOKEN_COMMA,
-
-    TOKEN_EQ,
-    TOKEN_EQ_EQ,
-    TOKEN_BANG,
-    TOKEN_BANG_EQ,
-    TOKEN_GT,
-    TOKEN_GT_EQ,
-    TOKEN_LS,
-    TOKEN_LS_EQ,
-
-    TOKEN_OR,
-    TOKEN_AND,
-    TOKEN_LOGICAL_OR,
-    TOKEN_LOGICAL_AND,
-
-    TOKEN_PLUS,
-    TOKEN_MINUS,
-    TOKEN_MUL,
-    TOKEN_DIV,
-
-    TOKEN_IDENTIFIER,
-    TOKEN_NUMBER,
-    TOKEN_TRUE,
-    TOKEN_FALSE,
-
-    TOKEN_INVALID,
-    TOKEN_END_OF_INPUT,
-}
+data class LiloList(
+    val values: MutableList<Any>
+)

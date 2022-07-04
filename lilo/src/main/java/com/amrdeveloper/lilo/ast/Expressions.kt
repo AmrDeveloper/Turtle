@@ -85,8 +85,26 @@ data class CallExpression(
     }
 }
 
+data class IndexExpression(
+    val bracket : Token,
+    val left: Expression,
+    val index: Expression
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
 data class VariableExpression(
     val value: Token
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+data class ListExpression(
+    val values: List<Expression>
 ) : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
         return visitor.visit(this)

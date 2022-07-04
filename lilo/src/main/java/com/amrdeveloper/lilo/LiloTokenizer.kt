@@ -51,6 +51,8 @@ class LiloTokenizer(private val script : String) {
             ')' -> makeToken(TokenType.TOKEN_CLOSE_PAREN)
             '{' -> makeToken(TokenType.TOKEN_OPEN_BRACE)
             '}' -> makeToken(TokenType.TOKEN_CLOSE_BRACE)
+            '[' -> makeToken(TokenType.TOKEN_OPEN_BRACKET)
+            ']' -> makeToken(TokenType.TOKEN_CLOSE_BRACKET)
             ',' -> makeToken(TokenType.TOKEN_COMMA)
             '+' -> makeToken(TokenType.TOKEN_PLUS)
             '-' -> makeToken(TokenType.TOKEN_MINUS)

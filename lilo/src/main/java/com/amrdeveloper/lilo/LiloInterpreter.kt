@@ -403,6 +403,31 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         return function.call(this, arguments)
     }
 
+    override fun visit(expression: IndexExpression): Any {
+        Timber.tag(TAG).d("Evaluate IndexExpression")
+        val collection = expression.left.accept(this)
+        if (collection is LiloList) {
+            val index = expression.index.accept(this)
+            if (index is Float) {
+                if (collection.values.size <= index.toInt()) {
+                    throw LiloException(expression.bracket.position, "Index can't be large than collection size")
+                }
+                return collection.values[index.toInt()]
+            } else {
+                throw LiloException(expression.bracket.position, "Index must be a number")
+            }
+        }
+        throw LiloException(expression.bracket.position, "Index expression work only with collections.")
+    }
+
+    override fun visit(expression: ListExpression): Any {
+        val elements = mutableListOf<Any>()
+        for (element in expression.values) {
+            elements.add(element.accept(this))
+        }
+        return LiloList(elements)
+    }
+
     override fun visit(expression: NumberExpression): Any {
         Timber.tag(TAG).d("Evaluate NumberExpression")
         return expression.value

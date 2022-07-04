@@ -323,7 +323,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
 
     private fun parseFactorExpression() : Expression {
         val expression = parseUnaryExpression()
-        while (checkPeek(TokenType.TOKEN_MUL) || checkPeek(TokenType.TOKEN_DIV)) {
+        while (checkPeek(TokenType.TOKEN_MUL) || checkPeek(TokenType.TOKEN_DIV) || checkPeek(TokenType.TOKEN_REMINDER)) {
             val operator = previous()
             val right = parseUnaryExpression()
             return BinaryExpression(expression, operator, right)

@@ -71,6 +71,7 @@ enum class TokenType {
     TOKEN_MINUS,
     TOKEN_MUL,
     TOKEN_DIV,
+    TOKEN_REMINDER,
 
     TOKEN_IDENTIFIER,
     TOKEN_NUMBER,

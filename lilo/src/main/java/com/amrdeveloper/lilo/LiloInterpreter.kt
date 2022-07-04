@@ -308,6 +308,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
                 TokenType.TOKEN_MINUS -> return left - right
                 TokenType.TOKEN_MUL -> return left * right
                 TokenType.TOKEN_DIV -> return left / right
+                TokenType.TOKEN_REMINDER -> return left % right
 
                 TokenType.TOKEN_GT -> return left > right
                 TokenType.TOKEN_GT_EQ -> return left >= right

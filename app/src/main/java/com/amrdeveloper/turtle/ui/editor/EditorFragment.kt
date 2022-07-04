@@ -148,6 +148,7 @@ class EditorFragment : Fragment() {
         if (script.isNotEmpty()) {
             Timber.tag(TAG).d("Save the current script")
             val bundle = if (::currentLiloPackage.isInitialized) {
+                currentLiloPackage.sourceCode = script
                 bundleOf("lilo_package" to currentLiloPackage)
             } else {
                 bundleOf("source_code" to script)

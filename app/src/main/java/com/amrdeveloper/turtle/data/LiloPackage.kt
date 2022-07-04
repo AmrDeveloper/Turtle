@@ -43,7 +43,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "lilo_package", indices = [Index(value = ["name"], unique = true)])
 data class LiloPackage (
     @BindText("document_title_txt") var name: String,
-    val sourceCode: String,
+    var sourceCode: String,
     var creationTimeStamp: Long = System.currentTimeMillis(),
     var updateTimeStamp: Long = -1,
     var isUpdated: Boolean = false,

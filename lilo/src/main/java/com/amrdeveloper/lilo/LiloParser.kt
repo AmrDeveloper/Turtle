@@ -262,8 +262,8 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         if (checkPeek(TokenType.TOKEN_EQ)) {
             val equal = previous()
             val value = parseAssignExpression()
-            if (expression is VariableExpression) {
-                return AssignExpression(expression.value, value)
+            if (expression is VariableExpression || expression is IndexExpression) {
+                return AssignExpression(equal, expression, value)
             }
             reportParserError(equal.position, "Invalid assignment target.")
         }

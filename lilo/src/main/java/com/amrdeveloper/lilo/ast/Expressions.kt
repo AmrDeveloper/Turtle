@@ -38,7 +38,8 @@ data class GroupExpression(
 }
 
 data class AssignExpression(
-    val name: Token,
+    val operator: Token,
+    val left: Expression,
     val value: Expression
 ) : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {

@@ -99,7 +99,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     }
 
     override fun visit(statement: LetStatement) {
-        Timber.tag(TAG).d("LetStatement yet implemented")
+        Timber.tag(TAG).d("Evaluate LetStatement")
         val values = statement.value.accept(this)
         currentScope.define(statement.name, values)
     }
@@ -284,12 +284,38 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     }
 
     override fun visit(expression: AssignExpression): Any {
-        val name = expression.name.literal
+        val left = expression.left
         val value = expression.value.accept(this)
-        val isAssigned = currentScope.assign(name, value)
-        if (isAssigned.not()) {
-            Timber.tag(TAG).d("ERROR: Invalid assignment.")
-            throw LiloException(expression.name.position, "Invalid assignment.")
+        if (left is IndexExpression) {
+            val variable = left.left
+            if (variable is VariableExpression) {
+                val liloList = currentScope.lookup(variable.value.literal)
+                if (liloList is LiloList) {
+                    val index = left.index.accept(this)
+                    if (index is Float) {
+                        if (index.toInt() < liloList.values.size) {
+                            liloList.values[index.toInt()] = value
+                            currentScope.assign(variable.value.literal, liloList)
+                        } else {
+                            throw LiloException(expression.operator.position, "Index can't be large than collection size")
+                        }
+                    } else {
+                        throw LiloException(expression.operator.position, "Index must be a number")
+                    }
+                } else {
+                    throw LiloException(expression.operator.position, "Index expression work only with collections.")
+                }
+            } else {
+                throw LiloException(expression.operator.position, "Assign Collection index require variable in the left, x[i]=v")
+            }
+        }
+        else if (left is VariableExpression) {
+            val name = left.value.literal
+            val isAssigned = currentScope.assign(name, value)
+            if (isAssigned.not()) {
+                Timber.tag(TAG).d("ERROR: Invalid assignment.")
+                throw LiloException(expression.operator.position, "Invalid assignment.")
+            }
         }
         return value
     }

@@ -259,13 +259,22 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
 
     private fun parseAssignExpression() : Expression {
         val expression = parseLogicalOrExpression()
-        if (checkPeek(TokenType.TOKEN_EQ)) {
-            val equal = previous()
+        if (peek().type in assignOperators) {
+            advance()
+            val operator = previous()
             val value = parseAssignExpression()
             if (expression is VariableExpression || expression is IndexExpression) {
-                return AssignExpression(equal, expression, value)
+                return if (operator.type == TokenType.TOKEN_EQ) {
+                    AssignExpression(operator, expression, value)
+                } else {
+                    // x += y  ----> x = x + y ----> Assign(x, Binary(x, +, y))
+                    val binaryOperator = specialAssignToBinary[operator.type]!!
+                    val binaryOperatorToken = operator.copy(type = binaryOperator)
+                    val binaryExpression = BinaryExpression(expression, binaryOperatorToken, value)
+                    AssignExpression(operator, expression, binaryExpression)
+                }
             }
-            reportParserError(equal.position, "Invalid assignment target.")
+            reportParserError(operator.position, "Invalid assignment target.")
         }
         return expression
     }

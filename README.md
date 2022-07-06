@@ -10,6 +10,14 @@
 Turtle is an Android Application inspired from the original Turtle Graphics and Logo, Logo is an educational programming language designed in 1967 by Computer scientists Wally Feurzeig, Seymour Papert, and Cynthia Solomon and it known for its use of turtle graphics,
 this project has a simple tree walking interpreted language called Lilo (Inspired from Logo too :D), with declarations statements, control flow, collections, and instructions for control the turtle in 2D Space which is our case a custom Android Canvas View and also control colors
 
+## Screenshots
+
+<p align="center">
+  <img src="media/screenshots/screenshot_editor.png" width="30%" height="500">
+  <img src="media/screenshots/screenshot_preview.png" width="30%" height="500">
+  <img src="media/screenshots/screenshot_docs.png" width="30%" height="500">
+</p>
+
 ## Features
 - Free And open source with no ads.
 - Full Text Editor that support auto complete, snippets, highlighter for Lilo.

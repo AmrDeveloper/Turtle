@@ -57,6 +57,11 @@ private val liloFullDocuments = mapOf(
         Document("Right", "Used set move right with n space, right n"),
         Document("Left", "Used set move left with n space, left n"),
     ),
+    DocumentCategory("Collections") to listOf(
+        Document("Array", "You can easily create array inside [v1, v2, v3]"),
+        Document("Get Element from Array", "You can use index operator to get element with index array[i]"),
+        Document("Set Element from Array", "You can use index operator to set element with index array[i] = v")
+    ),
     DocumentCategory("Constants") to listOf(
         Document("Numbers", "Numbers can be integers or real"),
         Document("Booleans", "Booleans values can be true or false")

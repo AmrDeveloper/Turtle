@@ -40,6 +40,8 @@ private val liloFullDocuments = mapOf(
     ),
     DocumentCategory("Control flow") to listOf(
         Document("If Statement", "Take condition and body to execute if condition is true, if (condition) {}"),
+        Document("Else if Statement", "Execute the body if the condition is true and if not executed, elif (condition) {}"),
+        Document("Else Statement", "Execute the body if all if and elif branches not executed, else {}"),
         Document("while Statement", "Take condition and body to execute while condition is true, while (condition) {}"),
         Document("Repeat Statement", "Take number n and body to execute it n times, repeat (n) {}"),
     ),

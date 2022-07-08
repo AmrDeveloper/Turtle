@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/monokia_pro_black"
-        android:dropDownWidth="@dimen/dimen90dp"
+        android:dropDownWidth="@dimen/dimen120dp"
         android:dropDownHorizontalOffset="@dimen/dimen0dp"
         android:dropDownSelector="@color/darkGrey"
         android:gravity="top|start"

@@ -54,9 +54,10 @@ fun f4 = 1000
 - If statement to execute block if the condition is true
 
 ```
-if condition {
-   
-}
+if condition {}
+elif condition2 {}
+elif condition3 {}
+else {}
 ```
 
 - Repeat statement to execute block n times

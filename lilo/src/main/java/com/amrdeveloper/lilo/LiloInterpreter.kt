@@ -114,11 +114,28 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     override fun visit(statement: IfStatement) {
         Timber.tag(TAG).d("Evaluate IfStatement")
         val condition = statement.condition.accept(this)
-        if (condition is Boolean && condition == true) {
-            statement.body.accept(this)
-        } else {
+        if (condition !is Boolean) {
             Timber.tag(TAG).d("If condition must be boolean")
             throw LiloException(statement.keyword.position, "If condition must be boolean")
+        }
+
+        if (condition == true) {
+            statement.body.accept(this)
+            return
+        }
+
+        Timber.tag(TAG).d("Evaluate elif's statements if exists")
+        for (alternative in statement.alternatives) {
+            val alternativeCondition = alternative.condition.accept(this)
+            if (alternativeCondition !is Boolean) {
+                Timber.tag(TAG).d("condition must be boolean")
+                throw LiloException(alternative.keyword.position, "condition must be boolean")
+            }
+
+            if (alternativeCondition == true) {
+                alternative.body.accept(this)
+                return
+            }
         }
     }
 

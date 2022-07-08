@@ -160,6 +160,8 @@ class LiloTokenizer(private val script : String) {
             "let" to TokenType.TOKEN_LET,
             "fun" to TokenType.TOKEN_FUN,
             "if" to TokenType.TOKEN_IF,
+            "elif" to TokenType.TOKEN_ELIF,
+            "else" to TokenType.TOKEN_ELSE,
             "while" to TokenType.TOKEN_WHILE,
             "repeat" to TokenType.TOKEN_REPEAT,
             "true" to TokenType.TOKEN_TRUE,

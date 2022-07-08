@@ -122,7 +122,26 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         val keyword = consume(TokenType.TOKEN_IF, "Expect if keyword.")
         val condition = parseExpression()
         val statement = parseStatement()
-        return IfStatement(keyword, condition, statement)
+
+        Timber.tag(TAG).d("Parse else if (elif) statements if exists")
+        val alternatives = mutableListOf<IfStatement>()
+        while (checkPeek(TokenType.TOKEN_ELIF)) {
+            val token = previous()
+            val alternativeCondition = parseExpression()
+            val alternativeStatement = parseStatement()
+            val elseIfStatement = IfStatement(token, alternativeCondition, alternativeStatement)
+            alternatives.add(elseIfStatement)
+        }
+
+        Timber.tag(TAG).d("Parse else statements if exists")
+        if (checkPeek(TokenType.TOKEN_ELSE)) {
+            val token = previous()
+            val alternativeStatement = parseStatement()
+            val elseStatement = IfStatement(token, BooleanExpression(true), alternativeStatement)
+            alternatives.add(elseStatement)
+        }
+
+        return IfStatement(keyword, condition, statement, alternatives)
     }
 
     private fun parseWhileStatement(): Statement {

@@ -27,6 +27,8 @@ enum class TokenType {
     TOKEN_LET,
     TOKEN_FUN,
     TOKEN_IF,
+    TOKEN_ELIF,
+    TOKEN_ELSE,
     TOKEN_WHILE,
     TOKEN_REPEAT,
 

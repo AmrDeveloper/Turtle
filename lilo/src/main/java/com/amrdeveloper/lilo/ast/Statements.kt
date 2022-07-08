@@ -76,6 +76,7 @@ data class IfStatement(
     val keyword: Token,
     val condition: Expression,
     val body: Statement,
+    val alternatives : List<IfStatement> = listOf()
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)

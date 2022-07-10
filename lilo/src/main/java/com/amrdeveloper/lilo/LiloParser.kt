@@ -377,6 +377,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 if (checkPeek(TokenType.TOKEN_CLOSE_PAREN).not()) {
                     do { arguments.add(parseExpression()) }
                     while (checkPeek(TokenType.TOKEN_COMMA))
+                    consume(TokenType.TOKEN_CLOSE_PAREN, "Expect close paren ) after call arguments.")
                 }
                 expression = CallExpression(expression, openParenToken, arguments)
             }
@@ -384,7 +385,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 val openBracketToken = previous()
                 val index = parseExpression()
                 consume(TokenType.TOKEN_CLOSE_BRACKET, "Expect close bracket [ after index value.")
-                return IndexExpression(openBracketToken, expression, index)
+                expression = IndexExpression(openBracketToken, expression, index)
             }
             else {
                 break

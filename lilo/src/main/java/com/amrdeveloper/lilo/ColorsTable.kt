@@ -39,6 +39,6 @@ val colorsTable = mapOf (
     "YELLOW" to Color.YELLOW,
 )
 
-fun defineColorsInScope(scope: LiloScope) {
+fun bindBuiltinColors(scope: LiloScope) {
     colorsTable.forEach { scope.define(it.key, it.value) }
 }

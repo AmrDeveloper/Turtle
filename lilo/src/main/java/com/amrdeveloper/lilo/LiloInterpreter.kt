@@ -81,7 +81,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         currentDegree = 90.0f
         shouldTerminate = false
         currentColor = Color.BLACK
-        defineColorsInScope(globalsScope)
+        bindBuiltinColors(globalsScope)
         bindStandardModules(globalsScope)
     }
 

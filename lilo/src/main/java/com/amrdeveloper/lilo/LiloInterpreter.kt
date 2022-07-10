@@ -27,6 +27,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import com.amrdeveloper.lilo.ast.*
+import com.amrdeveloper.lilo.std.bindStandardModules
 import timber.log.Timber
 import kotlin.math.cos
 import kotlin.math.sin
@@ -81,6 +82,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         shouldTerminate = false
         currentColor = Color.BLACK
         defineColorsInScope(globalsScope)
+        bindStandardModules(globalsScope)
     }
 
     override fun visit(statement: ExpressionStatement) {
@@ -439,12 +441,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             throw LiloException(expression.paren.position, "Can only call functions.")
         }
 
-        val function = callee as LiloFunction
-        if (function.arity() != arguments.size) {
-            throw LiloException(expression.paren.position, "Expected ${function.arity()} arguments but got ${arguments.size}")
+        if (callee.arity() != arguments.size) {
+            throw LiloException(expression.paren.position, "Expected ${callee.arity()} arguments but got ${arguments.size}")
         }
 
-        return function.call(this, arguments)
+        return callee.call(this, arguments)
     }
 
     override fun visit(expression: IndexExpression): Any {

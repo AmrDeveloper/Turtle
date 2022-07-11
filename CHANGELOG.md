@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 1.2.0 *(2202-07-11)*
+-----------------------------
+
+* Add support for built in functions
+* Consume that call expression must end with `TOKEN_CLOSE_PAREN`
+
+
 Version 1.1.0 *(2022-07-09)*
 -----------------------------
 

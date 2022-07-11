@@ -108,9 +108,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     override fun visit(statement: BlockStatement) {
         Timber.tag(TAG).d("Evaluate BlockStatement")
-        val previousScope = currentScope
-        statement.statements.forEach { it.accept(this) }
-        currentScope = previousScope
+        executeBlockInScope(LiloScope(currentScope), *statement.statements.toTypedArray())
     }
 
     override fun visit(statement: IfStatement) {
@@ -481,6 +479,25 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     override fun visit(expression: BooleanExpression): Any {
         Timber.tag(TAG).d("Evaluate BooleanExpression")
         return expression.value
+    }
+
+    fun executeBlockInScope(scope : LiloScope, vararg statements: Statement) : Any {
+        val previousScope = currentScope
+        currentScope = scope
+        var returnValue : Any = 0.0f
+        for (statement in statements) {
+            if (statement is ReturnStatement) {
+                returnValue = statement.value.accept(this)
+                break
+            } else if (statement is ExpressionStatement) {
+                returnValue = statement.expression.accept(this)
+                break
+            } else {
+                statement.accept(this)
+            }
+        }
+        currentScope = previousScope
+        return returnValue
     }
 
     private fun drawLineWithAngel(length: Float) {

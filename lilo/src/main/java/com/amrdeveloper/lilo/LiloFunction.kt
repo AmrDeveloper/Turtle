@@ -39,28 +39,19 @@ class LiloFunction(
 
     override fun call(interpreter: LiloInterpreter, arguments: List<Any>): Any {
         val environment = LiloScope(closure)
-        declaration.parameters.forEach { environment.define(it.literal, it) }
-
-        val functionBody = declaration.body
-        if (functionBody is ReturnStatement) {
-            return functionBody.value.accept(interpreter)
+        val paramsSize = declaration.parameters.size
+        repeat(paramsSize) {
+            environment.define(declaration.parameters[it].literal, arguments[it])
         }
 
-        if (functionBody is ExpressionStatement) {
-            return functionBody.expression.accept(interpreter)
+        val functionBody = declaration.body
+        if (functionBody is ReturnStatement || functionBody is ExpressionStatement) {
+            return interpreter.executeBlockInScope(environment, functionBody)
         }
 
         if (functionBody is BlockStatement) {
-            val statements = functionBody.statements
-            for (statement in statements) {
-                if (statement is ReturnStatement) {
-                    return statement.value.accept(interpreter)
-                } else {
-                    statement.accept(interpreter)
-                }
-            }
+            return interpreter.executeBlockInScope(environment, *functionBody.statements.toTypedArray())
         }
-
         return 0
     }
 }

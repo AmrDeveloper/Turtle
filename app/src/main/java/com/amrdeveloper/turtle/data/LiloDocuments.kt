@@ -67,5 +67,8 @@ private val liloFullDocuments = mapOf(
     DocumentCategory("Constants") to listOf(
         Document("Numbers", "Numbers can be integers or real"),
         Document("Booleans", "Booleans values can be true or false")
+    ),
+    DocumentCategory("Builtin functions") to listOf(
+        Document("len", "Receive collection for example list and return the size of it, len([1, 2, 3])"),
     )
 )

@@ -64,6 +64,7 @@ class PreviewFragment : Fragment() {
 
     private fun setupTurtleInterpreter() {
         liloInterpreter.setOnDegreeChangeListener(onDegreeChangeListener)
+        liloInterpreter.setOnBackgroundChangeListener(onBackgroundChangeListener)
         liloInterpreter.setOnExceptionListener(onExceptionListener)
     }
 
@@ -76,6 +77,10 @@ class PreviewFragment : Fragment() {
 
     private val onDegreeChangeListener = { degree : Float ->
         binding.turtlePointer.rotation = degree - 180
+    }
+
+    private val onBackgroundChangeListener = { color : Int ->
+        binding.turtleCanvasView.setBackgroundColor(color)
     }
 
     private val onExceptionListener = { exception : LiloException ->

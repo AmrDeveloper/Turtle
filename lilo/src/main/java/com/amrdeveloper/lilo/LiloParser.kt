@@ -105,6 +105,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
             TokenType.TOKEN_MOVE_X -> parseMoveXStatement()
             TokenType.TOKEN_MOVE_Y -> parseMoveYStatement()
             TokenType.TOKEN_COLOR -> parseColorStatement()
+            TokenType.TOKEN_BACKGROUND -> parseBackgroundStatement()
             TokenType.TOKEN_SLEEP -> parseSleepStatement()
             TokenType.TOKEN_STOP -> parseStopStatement()
             TokenType.TOKEN_ROTATE -> parseRotateStatement()
@@ -202,6 +203,13 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         val keyword = consume(TokenType.TOKEN_COLOR, "Expect Color keyword.")
         val colorName = parseExpression()
         return ColorStatement(keyword, colorName)
+    }
+
+    private fun parseBackgroundStatement(): Statement {
+        Timber.tag(TAG).d("Parse background statement")
+        val keyword = consume(TokenType.TOKEN_BACKGROUND, "Expect background keyword.")
+        val colorName = parseExpression()
+        return BackgroundStatement(keyword, colorName)
     }
 
     private fun parseSleepStatement(): Statement {

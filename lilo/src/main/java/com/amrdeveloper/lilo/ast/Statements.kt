@@ -158,6 +158,16 @@ data class ColorStatement(
     }
 }
 
+data class BackgroundStatement(
+    val keyword: Token,
+    val color: Expression
+) : Statement() {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+
 data class SleepStatement(
     val keyword: Token,
     val amount: Expression

@@ -56,6 +56,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     private var currentScope = globalsScope
 
     private lateinit var onDegreeChangeListener: OnDegreeChangeListener
+    private lateinit var onBackgroundChangeListener: OnBackgroundChangeListener
     private lateinit var onExceptionListener: OnExceptionListener
 
     fun executeLiloScript(currentCanvas: Canvas, script: LiloScript): ExecutionState {
@@ -228,6 +229,18 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         if (colorValue is Int) {
             currentColor = colorValue
             turtlePaint.color = currentColor
+        } else {
+            throw LiloException(statement.keyword.position, "Color value must be Identifier")
+        }
+    }
+
+    override fun visit(statement: BackgroundStatement) {
+        Timber.tag(TAG).d("Evaluate BackgroundStatement")
+        val colorValue = statement.color.accept(this)
+        if (colorValue is Int) {
+            if (::onBackgroundChangeListener.isInitialized) {
+                onBackgroundChangeListener.onBackgroundChange(colorValue)
+            }
         } else {
             throw LiloException(statement.keyword.position, "Color value must be Identifier")
         }
@@ -512,6 +525,10 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
 
     fun setOnDegreeChangeListener(listener: OnDegreeChangeListener) {
         onDegreeChangeListener = listener
+    }
+
+    fun setOnBackgroundChangeListener(listener: OnBackgroundChangeListener) {
+        onBackgroundChangeListener = listener
     }
 
     fun setOnExceptionListener(listener: OnExceptionListener) {

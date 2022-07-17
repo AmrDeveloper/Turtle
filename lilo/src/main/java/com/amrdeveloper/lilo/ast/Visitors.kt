@@ -38,6 +38,7 @@ interface StatementVisitor<R> {
     fun visit(statement: MoveXStatement): R
     fun visit(statement: MoveYStatement): R
     fun visit(statement: ColorStatement): R
+    fun visit(statement: BackgroundStatement): R
     fun visit(statement: SleepStatement): R
     fun visit(statement: StopStatement): R
     fun visit(statement: RotateStatement): R

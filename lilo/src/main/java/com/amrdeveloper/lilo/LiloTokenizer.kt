@@ -172,6 +172,7 @@ class LiloTokenizer(private val script : String) {
             "movex" to TokenType.TOKEN_MOVE_X,
             "movey" to TokenType.TOKEN_MOVE_Y,
             "color" to TokenType.TOKEN_COLOR,
+            "background" to TokenType.TOKEN_BACKGROUND,
             "sleep" to TokenType.TOKEN_SLEEP,
             "stop" to TokenType.TOKEN_STOP,
             "rotate" to TokenType.TOKEN_ROTATE,

@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.2.1 *(2202-08-30)*
+-----------------------------
+* Fix crash when user type wrong script many times
+* Add support for `background` instruction
+
 Version 1.2.0 *(2202-07-11)*
 -----------------------------
 

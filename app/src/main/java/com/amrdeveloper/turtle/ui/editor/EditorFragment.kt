@@ -108,9 +108,6 @@ class EditorFragment : Fragment() {
                 treeViewAdapter.updateTreeNodes(listOf())
                 binding.titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.grey))
             } else {
-                // This 2 lines of code will be removed after next update of TreeView
-                treeViewAdapter.updateTreeNodes(listOf())
-                treeViewAdapter.notifyDataSetChanged()
                 treeViewAdapter.updateTreeNodes(it.toTreeNodes(R.layout.list_item_diagnostic))
                 binding.titleTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
             }

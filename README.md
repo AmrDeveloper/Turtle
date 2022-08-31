@@ -6,6 +6,7 @@
 
 <a href='https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle'><img alt='Get it on Google Play' src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/512px-Google_Play_Store_badge_EN.svg.png' width="20%" height="60"/></a>
 <a href="https://www.amazon.com/dp/B0B5NN3Q4"><img src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png" alt="Amazon App Store" width="20%" height="60"></a>
+<a href="https://galaxystore.samsung.com/detail/com.amrdeveloper.turtle"><img src="https://img.samsungapps.com/seller/images/badges/galaxyStore/png_big/GalaxyStore_English.png" alt="Samsung Galaxy Store" width="20%" height="60"></a>
 
 Turtle is an Android Application inspired from the original Turtle Graphics and Logo, Logo is an educational programming language designed in 1967 by Computer scientists Wally Feurzeig, Seymour Papert, and Cynthia Solomon and it known for its use of turtle graphics,
 this project has a simple tree walking interpreted language called Lilo (Inspired from Logo too :D), with declarations statements, control flow, collections, and instructions for control the turtle in 2D Space which is our case a custom Android Canvas View and also control colors

@@ -167,6 +167,14 @@ data class BackgroundStatement(
     }
 }
 
+data class SpeedStatement(
+    val keyword: Token,
+    val amount: Expression
+) : Statement() {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
 
 data class SleepStatement(
     val keyword: Token,

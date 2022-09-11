@@ -28,9 +28,12 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
+
 import com.amrdeveloper.lilo.instruction.ColorInst
 import com.amrdeveloper.lilo.instruction.DrawInstruction
 import com.amrdeveloper.lilo.instruction.Instruction
+import com.amrdeveloper.lilo.instruction.SleepInst
+import com.amrdeveloper.lilo.instruction.SpeedInst
 
 class TurtleCanvasView : View {
 
@@ -40,24 +43,69 @@ class TurtleCanvasView : View {
 
     private val turtlePaint  = Paint()
 
-    private val instructionQueue = ArrayList<Instruction>()
+    private var instructionPointer = 0
+    private var instructionSpeed = 0L
+    private val instructionList = ArrayList<Instruction>()
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas ?: return
+        if (instructionPointer >= instructionList.size) return
 
-        for (instruction in instructionQueue) {
-            if (instruction is DrawInstruction) {
-                instruction.draw(canvas, turtlePaint)
+        // evaluate old UI only instructions previous instructions without sleep
+        var index = 0
+        while (index < instructionPointer) {
+            val inst = instructionList[index++]
+            if (inst is DrawInstruction) {
+                inst.draw(canvas, turtlePaint)
             }
 
-            if (instruction is ColorInst) {
-                turtlePaint.color = instruction.color
+            if (inst is ColorInst) {
+                turtlePaint.color = inst.color
             }
+        }
+
+        // Evaluate current instruction pointer with specific speed
+        val instruction = instructionList[instructionPointer]
+        if (instruction is DrawInstruction) {
+            // If this instruction is a draw instruction, evaluate it with canvas and paint
+            instruction.draw(canvas, turtlePaint)
+            // Update instruction pointer to point to next instruction
+            instructionPointer++
+            // Redraw the next instruction after instruction speed time
+            if (instructionPointer < instructionList.size) {
+                postInvalidateDelayed(instructionSpeed)
+            }
+        }
+
+        if (instruction is ColorInst) {
+            // Update the paint color
+            turtlePaint.color = instruction.color
+            // Update instruction pointer to point to next instruction
+            instructionPointer++
+            // Redraw the next instruction after instruction speed time
+            if (instructionPointer < instructionList.size) {
+                postInvalidateDelayed(instructionSpeed)
+            }
+        }
+
+        if (instruction is SpeedInst) {
+            // Update the instruction speed
+            instructionSpeed = instruction.time.toLong()
+            instructionPointer++
+        }
+
+        if (instruction is SleepInst) {
+            // Reset the instruction pointer
+            instructionPointer = 0
+            // Remove this sleep instruction because it should evaluated once
+            instructionList.remove(instruction)
+            // Redraw after n time
+            postInvalidateDelayed((instructionSpeed.plus(instruction.time)))
         }
     }
 
     fun addInstruction(instruction: Instruction) {
-        instructionQueue.add(instruction)
+        instructionList.add(instruction)
     }
 }

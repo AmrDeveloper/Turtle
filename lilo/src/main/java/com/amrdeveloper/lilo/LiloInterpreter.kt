@@ -30,6 +30,8 @@ import com.amrdeveloper.lilo.instruction.ColorInst
 import com.amrdeveloper.lilo.instruction.Instruction
 import com.amrdeveloper.lilo.instruction.LineInst
 import com.amrdeveloper.lilo.instruction.RectangleInst
+import com.amrdeveloper.lilo.instruction.SleepInst
+import com.amrdeveloper.lilo.instruction.SpeedInst
 import com.amrdeveloper.lilo.std.bindStandardModules
 import timber.log.Timber
 import kotlin.math.cos
@@ -247,8 +249,24 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         throw LiloException(statement.keyword.position, "Color value must be Identifier")
     }
 
+    override fun visit(statement: SpeedStatement) {
+        Timber.tag(TAG).d("SpeedStatement implemented")
+        val timeValue = statement.amount.accept(this)
+        if (timeValue is Number) {
+            emitInstructionsCallback(SpeedInst(timeValue.toInt()))
+            return
+        }
+        throw LiloException(statement.keyword.position, "Speed value must ba an integer")
+    }
+
     override fun visit(statement: SleepStatement) {
-        Timber.tag(TAG).d("SleepStatement yet implemented")
+        Timber.tag(TAG).d("SleepStatement implemented")
+        val timeValue = statement.amount.accept(this)
+        if (timeValue is Number) {
+            emitInstructionsCallback(SleepInst(timeValue.toInt()))
+            return
+        }
+        throw LiloException(statement.keyword.position, "Sleep value must ba an integer")
     }
 
     override fun visit(statement: StopStatement) {

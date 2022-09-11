@@ -39,6 +39,7 @@ enum class TokenType {
     TOKEN_MOVE_Y,
     TOKEN_COLOR,
     TOKEN_BACKGROUND,
+    TOKEN_SPEED,
     TOKEN_SLEEP,
     TOKEN_STOP,
     TOKEN_ROTATE,

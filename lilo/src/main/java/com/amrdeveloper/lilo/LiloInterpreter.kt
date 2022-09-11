@@ -23,10 +23,13 @@
 
 package com.amrdeveloper.lilo
 
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import com.amrdeveloper.lilo.ast.*
+import com.amrdeveloper.lilo.instruction.CircleInst
+import com.amrdeveloper.lilo.instruction.ColorInst
+import com.amrdeveloper.lilo.instruction.Instruction
+import com.amrdeveloper.lilo.instruction.LineInst
+import com.amrdeveloper.lilo.instruction.RectangleInst
 import com.amrdeveloper.lilo.std.bindStandardModules
 import timber.log.Timber
 import kotlin.math.cos
@@ -41,26 +44,21 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     private var currentDegree: Float = 0.0f
         set(value) {
             field = if (value < 0) value + 360 else if (value > 360) value - 360 else value
-            if (::onDegreeChangeListener.isInitialized) {
-                onDegreeChangeListener.onDegreeChange(value)
-            }
+            if (::onDegreeChangeListener.isInitialized) onDegreeChangeListener(value)
         }
 
     private var currentColor: Int = Color.BLACK
     private var shouldTerminate = false
 
-    private val turtlePaint by lazy { Paint() }
-    private lateinit var canvas: Canvas
-
     private val globalsScope = LiloScope()
     private var currentScope = globalsScope
 
-    private lateinit var onDegreeChangeListener: OnDegreeChangeListener
-    private lateinit var onBackgroundChangeListener: OnBackgroundChangeListener
-    private lateinit var onExceptionListener: OnExceptionListener
+    private lateinit var emitInstructionsCallback : (Instruction) -> Unit
+    private lateinit var onDegreeChangeListener: (Float) -> Unit
+    private lateinit var onBackgroundChangeListener: (Int) -> Unit
+    private lateinit var onExceptionListener: (LiloException) -> Unit
 
-    fun executeLiloScript(currentCanvas: Canvas, script: LiloScript): ExecutionState {
-        canvas = currentCanvas
+    fun executeLiloScript(script: LiloScript): ExecutionState {
         preExecuteLiloScript()
         try {
             script.statements.forEach { node ->
@@ -68,9 +66,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
                 node.accept(this)
             }
         } catch (exception: LiloException) {
-            if (::onExceptionListener.isInitialized) {
-                onExceptionListener.onException(exception)
-            }
+            if (::onExceptionListener.isInitialized) onExceptionListener(exception)
             return ExecutionState.FAILURE
         }
         return ExecutionState.SUCCESS
@@ -147,10 +143,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             while (statement.condition.accept(this) == true) {
                 statement.body.accept(this)
             }
-        } else {
-            Timber.tag(TAG).d("ERROR: While condition must be a boolean")
-            throw LiloException(statement.keyword.position, "If condition must be boolean")
+            return
         }
+
+        Timber.tag(TAG).d("ERROR: While condition must be a boolean")
+        throw LiloException(statement.keyword.position, "If condition must be boolean")
     }
 
     override fun visit(statement: RepeatStatement) {
@@ -160,28 +157,32 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             repeat(counter.toInt()) {
                 statement.body.accept(this)
             }
-        } else {
-            Timber.tag(TAG).d("ERROR: Repeat counter must be a number")
-            throw LiloException(statement.keyword.position, "Repeat counter must be a number")
+            return
         }
+
+        Timber.tag(TAG).d("ERROR: Repeat counter must be a number")
+        throw LiloException(statement.keyword.position, "Repeat counter must be a number")
     }
 
     override fun visit(statement: CubeStatement) {
         Timber.tag(TAG).d("Evaluate CubeStatement")
         val value = statement.radius.accept(this)
         if (value is Float) {
-            canvas.drawRect(currentXPosition, currentYPosition, value.toFloat(), value.toFloat(), turtlePaint)
-        } else {
-            Timber.tag(TAG).d("ERROR: Cube value must be a number")
-            throw LiloException(statement.keyword.position, "Cube value must be a number")
+            emitInstructionsCallback(RectangleInst(currentXPosition, currentYPosition, value.toFloat(), value.toFloat()))
+            return
         }
+
+        Timber.tag(TAG).d("ERROR: Cube value must be a number")
+        throw LiloException(statement.keyword.position, "Cube value must be a number")
     }
 
     override fun visit(statement: CircleStatement) {
         Timber.tag(TAG).d("Evaluate CircleStatement")
         val radius = statement.radius.accept(this)
         if (radius is Float) {
-            canvas.drawCircle(currentXPosition, currentYPosition, radius.toFloat(), turtlePaint)
+            //canvas.drawCircle(currentXPosition, currentYPosition, radius.toFloat(), turtlePaint)
+            val circleInst = CircleInst(currentXPosition, currentYPosition, radius.toFloat())
+            emitInstructionsCallback(circleInst)
         } else {
             Timber.tag(TAG).d("ERROR: Circle radius must be a number")
             throw LiloException(statement.keyword.position, "Circle radius must be a number")
@@ -228,10 +229,10 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val colorValue = statement.color.accept(this)
         if (colorValue is Int) {
             currentColor = colorValue
-            turtlePaint.color = currentColor
-        } else {
-            throw LiloException(statement.keyword.position, "Color value must be Identifier")
+            emitInstructionsCallback(ColorInst(colorValue))
+            return
         }
+        throw LiloException(statement.keyword.position, "Color value must be Identifier")
     }
 
     override fun visit(statement: BackgroundStatement) {
@@ -239,11 +240,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val colorValue = statement.color.accept(this)
         if (colorValue is Int) {
             if (::onBackgroundChangeListener.isInitialized) {
-                onBackgroundChangeListener.onBackgroundChange(colorValue)
+                onBackgroundChangeListener(colorValue)
             }
-        } else {
-            throw LiloException(statement.keyword.position, "Color value must be Identifier")
+            return
         }
+        throw LiloException(statement.keyword.position, "Color value must be Identifier")
     }
 
     override fun visit(statement: SleepStatement) {
@@ -260,10 +261,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val degree = statement.value.accept(this)
         if (degree is Float) {
             currentDegree += degree.toFloat()
-        } else {
-            Timber.tag(TAG).d("ERROR: Rotate degree must be a number")
-            throw LiloException(statement.keyword.position, "Rotate degree must be a number")
+            return
         }
+
+        Timber.tag(TAG).d("ERROR: Rotate degree must be a number")
+        throw LiloException(statement.keyword.position, "Rotate degree must be a number")
     }
 
     override fun visit(statement: ForwardStatement) {
@@ -271,10 +273,10 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val value = statement.value.accept(this)
         if (value is Float) {
             drawLineWithAngel(value)
-        } else {
-            Timber.tag(TAG).d("ERROR: Forward value must be a number")
-            throw LiloException(statement.keyword.position, "Forward value must be a number")
+            return
         }
+        Timber.tag(TAG).d("ERROR: Forward value must be a number")
+        throw LiloException(statement.keyword.position, "Forward value must be a number")
     }
 
     override fun visit(statement: BackwardStatement) {
@@ -283,10 +285,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         if (value is Float) {
             currentDegree -= 180
             drawLineWithAngel(value)
-        } else {
-            Timber.tag(TAG).d("ERROR: Backward value must be a number")
-            throw LiloException(statement.keyword.position, "Backward value must be a number")
+            return
         }
+
+        Timber.tag(TAG).d("ERROR: Backward value must be a number")
+        throw LiloException(statement.keyword.position, "Backward value must be a number")
     }
 
     override fun visit(statement: RightStatement) {
@@ -295,10 +298,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         if (value is Float) {
             currentDegree -= 90
             drawLineWithAngel(value)
-        } else {
-            Timber.tag(TAG).d("ERROR: Right value must be a number")
-            throw LiloException(statement.keyword.position, "Right value must be a number")
+            return
         }
+
+        Timber.tag(TAG).d("ERROR: Right value must be a number")
+        throw LiloException(statement.keyword.position, "Right value must be a number")
     }
 
     override fun visit(statement: LeftStatement) {
@@ -307,10 +311,11 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         if (value is Float) {
             currentDegree += 90
             drawLineWithAngel(value)
-        } else {
-            Timber.tag(TAG).d("ERROR: Left value must be a number")
-            throw LiloException(statement.keyword.position, "Left value must be a number")
+            return
         }
+
+        Timber.tag(TAG).d("ERROR: Left value must be a number")
+        throw LiloException(statement.keyword.position, "Left value must be a number")
     }
 
     override fun visit(expression: AssignExpression): Any {
@@ -518,20 +523,24 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val angel = currentDegree * Math.PI / 180
         val endX = (currentXPosition + length * sin(angel)).toFloat()
         val endY = (currentYPosition + length * cos(angel)).toFloat()
-        canvas.drawLine(currentXPosition, currentYPosition, endX, endY, turtlePaint)
+        emitInstructionsCallback(LineInst(currentXPosition, currentYPosition, endX, endY))
         currentXPosition = endX
         currentYPosition = endY
     }
 
-    fun setOnDegreeChangeListener(listener: OnDegreeChangeListener) {
+    fun setInstructionFlowCallback(instructionFlow : (Instruction) -> Unit) {
+        emitInstructionsCallback = instructionFlow
+    }
+
+    fun setOnDegreeChangeListener(listener : (Float) -> Unit) {
         onDegreeChangeListener = listener
     }
 
-    fun setOnBackgroundChangeListener(listener: OnBackgroundChangeListener) {
+    fun setOnBackgroundChangeListener(listener: (Int) -> Unit) {
         onBackgroundChangeListener = listener
     }
 
-    fun setOnExceptionListener(listener: OnExceptionListener) {
+    fun setOnExceptionListener(listener: (LiloException) -> Unit) {
         onExceptionListener = listener
     }
 }

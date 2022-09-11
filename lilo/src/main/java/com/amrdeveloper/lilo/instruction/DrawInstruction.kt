@@ -21,43 +21,11 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.turtle.ui.preview
+package com.amrdeveloper.lilo.instruction
 
-import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.util.AttributeSet
-import android.view.View
-import com.amrdeveloper.lilo.instruction.ColorInst
-import com.amrdeveloper.lilo.instruction.DrawInstruction
-import com.amrdeveloper.lilo.instruction.Instruction
 
-class TurtleCanvasView : View {
-
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
-    private val turtlePaint  = Paint()
-
-    private val instructionQueue = ArrayList<Instruction>()
-
-    override fun onDraw(canvas: Canvas?) {
-        super.onDraw(canvas)
-        canvas ?: return
-
-        for (instruction in instructionQueue) {
-            if (instruction is DrawInstruction) {
-                instruction.draw(canvas, turtlePaint)
-            }
-
-            if (instruction is ColorInst) {
-                turtlePaint.color = instruction.color
-            }
-        }
-    }
-
-    fun addInstruction(instruction: Instruction) {
-        instructionQueue.add(instruction)
-    }
+abstract class DrawInstruction : Instruction() {
+    abstract fun draw(canvas: Canvas, paint: Paint)
 }

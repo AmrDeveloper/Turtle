@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.amrdeveloper.lilo.LiloException
 import com.amrdeveloper.lilo.LiloInterpreter
+import com.amrdeveloper.lilo.instruction.Instruction
 import com.amrdeveloper.lottiedialog.LottieDialog
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.databinding.FragmentPreviewBinding
@@ -53,16 +54,12 @@ class PreviewFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentPreviewBinding.inflate(inflater, container, false)
         setupTurtleInterpreter()
-        setupTurtleCanvasView()
         setupObservers()
         return binding.root
     }
 
-    private fun setupTurtleCanvasView() {
-        binding.turtleCanvasView.setLiloInterpreter(liloInterpreter)
-    }
-
     private fun setupTurtleInterpreter() {
+        liloInterpreter.setInstructionFlowCallback(onInstructionFlow)
         liloInterpreter.setOnDegreeChangeListener(onDegreeChangeListener)
         liloInterpreter.setOnBackgroundChangeListener(onBackgroundChangeListener)
         liloInterpreter.setOnExceptionListener(onExceptionListener)
@@ -71,8 +68,12 @@ class PreviewFragment : Fragment() {
     private fun setupObservers() {
         mainViewModel.liloScript.observe(viewLifecycleOwner) {
             mainViewModel.previewLiveData.value = false
-            binding.turtleCanvasView.loadLiloScript(it)
+            liloInterpreter.executeLiloScript(it)
         }
+    }
+
+    private val onInstructionFlow = { instruction : Instruction ->
+        binding.turtleCanvasView.addInstruction(instruction)
     }
 
     private val onDegreeChangeListener = { degree : Float ->

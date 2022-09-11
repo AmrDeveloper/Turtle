@@ -25,6 +25,7 @@ package com.amrdeveloper.turtle.ui.preview
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
@@ -50,11 +51,13 @@ class TurtleCanvasView : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas ?: return
-        if (instructionPointer >= instructionList.size) return
+
+        // Set the default color
+        turtlePaint.color = Color.BLACK
 
         // evaluate old UI only instructions previous instructions without sleep
         var index = 0
-        while (index < instructionPointer) {
+        while (index <= instructionPointer) {
             val inst = instructionList[index++]
             if (inst is DrawInstruction) {
                 inst.draw(canvas, turtlePaint)
@@ -65,6 +68,8 @@ class TurtleCanvasView : View {
             }
         }
 
+        if (instructionPointer > instructionList.lastIndex) return
+
         // Evaluate current instruction pointer with specific speed
         val instruction = instructionList[instructionPointer]
         if (instruction is DrawInstruction) {
@@ -73,7 +78,7 @@ class TurtleCanvasView : View {
             // Update instruction pointer to point to next instruction
             instructionPointer++
             // Redraw the next instruction after instruction speed time
-            if (instructionPointer < instructionList.size) {
+            if (instructionPointer < instructionList.lastIndex) {
                 postInvalidateDelayed(instructionSpeed)
             }
         }
@@ -84,7 +89,7 @@ class TurtleCanvasView : View {
             // Update instruction pointer to point to next instruction
             instructionPointer++
             // Redraw the next instruction after instruction speed time
-            if (instructionPointer < instructionList.size) {
+            if (instructionPointer < instructionList.lastIndex) {
                 postInvalidateDelayed(instructionSpeed)
             }
         }

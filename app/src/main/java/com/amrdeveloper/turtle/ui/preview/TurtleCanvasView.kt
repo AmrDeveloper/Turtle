@@ -97,7 +97,10 @@ class TurtleCanvasView : View {
         if (instruction is SpeedInst) {
             // Update the instruction speed
             instructionSpeed = instruction.time.toLong()
+            // Update instruction pointer to point to next instruction
             instructionPointer++
+            // Redraw the next instruction after instruction speed time
+            invalidate()
         }
 
         if (instruction is SleepInst) {

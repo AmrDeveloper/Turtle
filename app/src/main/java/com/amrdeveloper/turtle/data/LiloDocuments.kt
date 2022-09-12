@@ -53,6 +53,7 @@ private val liloFullDocuments = mapOf(
         Document("Move Y", "Used set the current y position, movey y"),
         Document("Color", "Used set the current color, color RED"),
         Document("background", "Used set the current background, background RED"),
+        Document("Sleep", "Used set the speed of the execution and take time in ms, sleep 100"),
         Document("Stop", "Used set the stop the execution, stop"),
         Document("Rotate", "Used set the update the current degree, rotate n"),
         Document("Forward", "Used set move forward with n space, forward n"),

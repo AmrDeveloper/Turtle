@@ -76,6 +76,23 @@ while condition {
 
 }
 ```
+- Speed statement, take time in ms to wait before each next instruction
+
+```
+speed 100
+```
+
+- Sleep statement, take time in ms to wait before the next instruction
+
+```
+sleep 100
+```
+
+- Stop statement, to stop the current execution
+
+```
+stop
+```
 
 ## Collections
 

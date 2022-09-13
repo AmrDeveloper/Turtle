@@ -35,6 +35,7 @@ import com.amrdeveloper.lilo.instruction.DrawInstruction
 import com.amrdeveloper.lilo.instruction.Instruction
 import com.amrdeveloper.lilo.instruction.SleepInst
 import com.amrdeveloper.lilo.instruction.SpeedInst
+import timber.log.Timber
 
 class TurtleCanvasView : View {
 
@@ -46,18 +47,26 @@ class TurtleCanvasView : View {
 
     private var instructionPointer = 0
     private var instructionSpeed = 0L
+    private var shouldStopRendering = false
     private val instructionList = ArrayList<Instruction>()
+
+    private lateinit var onRenderStarted : () -> Unit
+    private lateinit var onRenderFinished : () -> Unit
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas ?: return
+
+        if (::onRenderStarted.isInitialized && instructionPointer == 0) {
+            onRenderStarted()
+        }
 
         // Set the default color
         turtlePaint.color = Color.BLACK
 
         // evaluate old UI only instructions previous instructions without sleep
         var index = 0
-        while (index <= instructionPointer) {
+        while (index < instructionPointer) {
             val inst = instructionList[index++]
             if (inst is DrawInstruction) {
                 inst.draw(canvas, turtlePaint)
@@ -66,6 +75,11 @@ class TurtleCanvasView : View {
             if (inst is ColorInst) {
                 turtlePaint.color = inst.color
             }
+        }
+
+        if (shouldStopRendering) {
+            if (::onRenderFinished.isInitialized) onRenderFinished()
+            return
         }
 
         if (instructionPointer > instructionList.lastIndex) return
@@ -111,9 +125,31 @@ class TurtleCanvasView : View {
             // Redraw after n time
             postInvalidateDelayed((instructionSpeed.plus(instruction.time)))
         }
+
+        if (::onRenderFinished.isInitialized && instructionPointer >= instructionList.lastIndex) {
+            onRenderFinished()
+        }
     }
 
     fun addInstruction(instruction: Instruction) {
         instructionList.add(instruction)
+    }
+
+    fun resetRenderAttributes() {
+        instructionPointer = 0
+        instructionSpeed = 0L
+        instructionList.clear()
+    }
+
+    fun setStoppingRenderScript(shouldStop : Boolean) {
+        shouldStopRendering = shouldStop
+    }
+
+    fun setOnRenderStartedListener(listener : () -> Unit) {
+        onRenderStarted = listener
+    }
+
+    fun setOnRenderFinishedListener(listener : () -> Unit) {
+        onRenderFinished = listener
     }
 }

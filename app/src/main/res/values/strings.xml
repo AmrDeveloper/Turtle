@@ -21,6 +21,8 @@
     <string name="save">Save</string>
     <string name="close">Close</string>
     <string name="search">Search</string>
+    <string name="re_evaluate">Re Evaluate</string>
+    <string name="stop">stop</string>
 
     <!--  Messages  -->
     <string name="package_inserted_success">Lilo package inserted successfully</string>

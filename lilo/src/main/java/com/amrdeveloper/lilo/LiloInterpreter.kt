@@ -55,13 +55,16 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
     private val globalsScope = LiloScope()
     private var currentScope = globalsScope
 
-    private lateinit var emitInstructionsCallback : (Instruction) -> Unit
+    private lateinit var onEvaluatorStarted : () -> Unit
+    private lateinit var onEvaluatorFinished : () -> Unit
+    private lateinit var onInstructionEmitterListener : (Instruction) -> Unit
     private lateinit var onDegreeChangeListener: (Float) -> Unit
     private lateinit var onBackgroundChangeListener: (Int) -> Unit
     private lateinit var onExceptionListener: (LiloException) -> Unit
 
     fun executeLiloScript(script: LiloScript): ExecutionState {
         preExecuteLiloScript()
+        if (::onEvaluatorStarted.isInitialized) onEvaluatorStarted()
         try {
             script.statements.forEach { node ->
                 if (shouldTerminate) return ExecutionState.FAILURE
@@ -69,8 +72,10 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             }
         } catch (exception: LiloException) {
             if (::onExceptionListener.isInitialized) onExceptionListener(exception)
+            if (::onEvaluatorFinished.isInitialized) onEvaluatorFinished()
             return ExecutionState.FAILURE
         }
+        if (::onEvaluatorFinished.isInitialized) onEvaluatorFinished()
         return ExecutionState.SUCCESS
     }
 
@@ -170,7 +175,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("Evaluate CubeStatement")
         val value = statement.radius.accept(this)
         if (value is Float) {
-            emitInstructionsCallback(RectangleInst(currentXPosition, currentYPosition, value.toFloat(), value.toFloat()))
+            emitInstruction(RectangleInst(currentXPosition, currentYPosition, value.toFloat(), value.toFloat()))
             return
         }
 
@@ -184,7 +189,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         if (radius is Float) {
             //canvas.drawCircle(currentXPosition, currentYPosition, radius.toFloat(), turtlePaint)
             val circleInst = CircleInst(currentXPosition, currentYPosition, radius.toFloat())
-            emitInstructionsCallback(circleInst)
+            onInstructionEmitterListener(circleInst)
         } else {
             Timber.tag(TAG).d("ERROR: Circle radius must be a number")
             throw LiloException(statement.keyword.position, "Circle radius must be a number")
@@ -231,7 +236,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val colorValue = statement.color.accept(this)
         if (colorValue is Int) {
             currentColor = colorValue
-            emitInstructionsCallback(ColorInst(colorValue))
+            emitInstruction(ColorInst(colorValue))
             return
         }
         throw LiloException(statement.keyword.position, "Color value must be Identifier")
@@ -253,7 +258,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("SpeedStatement implemented")
         val timeValue = statement.amount.accept(this)
         if (timeValue is Number) {
-            emitInstructionsCallback(SpeedInst(timeValue.toInt()))
+            emitInstruction(SpeedInst(timeValue.toInt()))
             return
         }
         throw LiloException(statement.keyword.position, "Speed value must ba an integer")
@@ -263,7 +268,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("SleepStatement implemented")
         val timeValue = statement.amount.accept(this)
         if (timeValue is Number) {
-            emitInstructionsCallback(SleepInst(timeValue.toInt()))
+            emitInstruction(SleepInst(timeValue.toInt()))
             return
         }
         throw LiloException(statement.keyword.position, "Sleep value must ba an integer")
@@ -541,13 +546,27 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val angel = currentDegree * Math.PI / 180
         val endX = (currentXPosition + length * sin(angel)).toFloat()
         val endY = (currentYPosition + length * cos(angel)).toFloat()
-        emitInstructionsCallback(LineInst(currentXPosition, currentYPosition, endX, endY))
+        emitInstruction(LineInst(currentXPosition, currentYPosition, endX, endY))
         currentXPosition = endX
         currentYPosition = endY
     }
 
-    fun setInstructionFlowCallback(instructionFlow : (Instruction) -> Unit) {
-        emitInstructionsCallback = instructionFlow
+    private fun emitInstruction(instruction: Instruction) {
+        if (::onInstructionEmitterListener.isInitialized) {
+            onInstructionEmitterListener(instruction)
+        }
+    }
+
+    fun setOnEvaluatorStartedListener(listener : () -> Unit) {
+        onEvaluatorStarted = listener
+    }
+
+    fun setOnEvaluatorFinishedListener(listener : () -> Unit) {
+        onEvaluatorFinished = listener
+    }
+
+    fun setOnInstructionEmitterListener(instructionFlow : (Instruction) -> Unit) {
+        onInstructionEmitterListener = instructionFlow
     }
 
     fun setOnDegreeChangeListener(listener : (Float) -> Unit) {

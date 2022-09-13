@@ -29,6 +29,7 @@ import com.amrdeveloper.lilo.instruction.CircleInst
 import com.amrdeveloper.lilo.instruction.ColorInst
 import com.amrdeveloper.lilo.instruction.Instruction
 import com.amrdeveloper.lilo.instruction.LineInst
+import com.amrdeveloper.lilo.instruction.PointerInst
 import com.amrdeveloper.lilo.instruction.RectangleInst
 import com.amrdeveloper.lilo.instruction.SleepInst
 import com.amrdeveloper.lilo.instruction.SpeedInst
@@ -47,6 +48,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         set(value) {
             field = if (value < 0) value + 360 else if (value > 360) value - 360 else value
             if (::onDegreeChangeListener.isInitialized) onDegreeChangeListener(value)
+            emitInstruction(PointerInst(currentXPosition, currentYPosition, field))
         }
 
     private var currentColor: Int = Color.BLACK

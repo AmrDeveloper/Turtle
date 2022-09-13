@@ -91,7 +91,6 @@ class PreviewFragment : Fragment() {
         liloInterpreter.setOnEvaluatorStartedListener(onEvaluatorStartedListener)
         liloInterpreter.setOnEvaluatorFinishedListener(onEvaluatorFinishedListener)
         liloInterpreter.setOnInstructionEmitterListener(onInstructionEmitterListener)
-        liloInterpreter.setOnDegreeChangeListener(onDegreeChangeListener)
         liloInterpreter.setOnBackgroundChangeListener(onBackgroundChangeListener)
         liloInterpreter.setOnExceptionListener(onExceptionListener)
     }
@@ -187,10 +186,6 @@ class PreviewFragment : Fragment() {
     private val onInstructionEmitterListener = { instruction : Instruction ->
         Timber.tag(TAG).d("Emit Instruction")
         binding.turtleCanvasView.addInstruction(instruction)
-    }
-
-    private val onDegreeChangeListener = { degree : Float ->
-        binding.turtlePointer.rotation = degree - 180
     }
 
     private val onBackgroundChangeListener = { color : Int ->

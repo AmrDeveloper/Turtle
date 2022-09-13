@@ -26,17 +26,25 @@ package com.amrdeveloper.turtle.ui.preview
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.amrdeveloper.lilo.instruction.ColorInst
 import com.amrdeveloper.lilo.instruction.DrawInstruction
 import com.amrdeveloper.lilo.instruction.Instruction
+import com.amrdeveloper.lilo.instruction.PointerInst
 import com.amrdeveloper.lilo.instruction.SleepInst
 import com.amrdeveloper.lilo.instruction.SpeedInst
-import timber.log.Timber
+import com.amrdeveloper.turtle.R
 
+/**
+ * Turtle Canvas View is a custom view that receive a list of instructions (Bytecode like),
+ * generated from the evaluator and render them, also can support do operations on them,
+ * such as modify, clear, delay ...etc
+ */
 class TurtleCanvasView : View {
 
     constructor(context: Context?) : super(context)
@@ -49,6 +57,9 @@ class TurtleCanvasView : View {
     private var instructionSpeed = 0L
     private var shouldStopRendering = false
     private val instructionList = ArrayList<Instruction>()
+
+    private val turtlePointerMatrix = Matrix()
+    private var turtlePointer = ContextCompat.getDrawable(context, R.drawable.ic_turtle_pointer)!!.toBitmap()
 
     private lateinit var onRenderStarted : () -> Unit
     private lateinit var onRenderFinished : () -> Unit
@@ -64,8 +75,11 @@ class TurtleCanvasView : View {
         // Set the default color
         turtlePaint.color = Color.BLACK
 
+        // TODO: optimize this code and cache it, no need to draw it each time
         // evaluate old UI only instructions previous instructions without sleep
+        // this approach is working for now but can be optimized and cashed later
         var index = 0
+        var lastPointerInstruction : PointerInst? = null
         while (index < instructionPointer) {
             val inst = instructionList[index++]
             if (inst is DrawInstruction) {
@@ -75,8 +89,21 @@ class TurtleCanvasView : View {
             if (inst is ColorInst) {
                 turtlePaint.color = inst.color
             }
+
+            if (inst is PointerInst) {
+                lastPointerInstruction = inst
+            }
         }
 
+        // Draw only the last pointer instruction if exists
+        if (lastPointerInstruction != null) {
+            turtlePointerMatrix.reset()
+            turtlePointerMatrix.postRotate(lastPointerInstruction.degree - 180)
+            turtlePointerMatrix.postTranslate(lastPointerInstruction.x, lastPointerInstruction.y)
+            canvas.drawBitmap(turtlePointer, turtlePointerMatrix, turtlePaint)
+        }
+
+        // Handle the terminate flag
         if (shouldStopRendering) {
             if (::onRenderFinished.isInitialized) onRenderFinished()
             return
@@ -95,6 +122,14 @@ class TurtleCanvasView : View {
             if (instructionPointer < instructionList.lastIndex) {
                 postInvalidateDelayed(instructionSpeed)
             }
+        }
+
+        // TODO: Can be optimized later
+        // Pointer instruction shouldn't drawn now
+        // but will draw only the last one when evaluate the prev instructions
+        if (instruction is PointerInst) {
+            instructionPointer++
+            postInvalidateDelayed(0)
         }
 
         if (instruction is ColorInst) {

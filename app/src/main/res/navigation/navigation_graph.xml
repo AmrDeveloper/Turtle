@@ -13,7 +13,9 @@
 
         <argument
             android:name="lilo_package"
-            app:argType="com.amrdeveloper.turtle.data.LiloPackage" />
+            android:defaultValue="@null"
+            app:argType="com.amrdeveloper.turtle.data.LiloPackage"
+            app:nullable="true" />
 
         <action
             android:id="@+id/action_editorFragment_to_previewFragment"
@@ -53,11 +55,15 @@
 
         <argument
             android:name="source_code"
-            app:argType="string" />
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
 
         <argument
             android:name="lilo_package"
-            app:argType="com.amrdeveloper.turtle.data.LiloPackage" />
+            android:defaultValue="@null"
+            app:argType="com.amrdeveloper.turtle.data.LiloPackage"
+            app:nullable="true" />
     </fragment>
 
     <fragment

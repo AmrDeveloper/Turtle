@@ -32,6 +32,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.amrdeveloper.treeview.TreeViewAdapter
 import com.amrdeveloper.treeview.TreeViewHolderFactory
@@ -51,6 +52,8 @@ class EditorFragment : Fragment() {
     private var _binding: FragmentEditorBinding? = null
     private val binding get() = _binding!!
 
+    private val safeArguments by navArgs<EditorFragmentArgs>()
+
     private val mainViewModel : MainViewModel by activityViewModels()
 
     private lateinit var treeViewAdapter: TreeViewAdapter
@@ -61,9 +64,7 @@ class EditorFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        (arguments?.get("lilo_package") as LiloPackage?)?.let {
-             currentLiloPackage = it
-         }
+        safeArguments.liloPackage?.let { currentLiloPackage = it }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

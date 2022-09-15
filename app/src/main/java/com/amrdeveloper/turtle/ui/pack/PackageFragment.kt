@@ -28,8 +28,8 @@ import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.data.LiloPackage
 import com.amrdeveloper.turtle.databinding.FragmentPackageBinding
@@ -41,6 +41,8 @@ class PackageFragment : Fragment() {
     private var _binding: FragmentPackageBinding? = null
     private val binding get() = _binding!!
 
+    private val safeArguments by navArgs<PackageFragmentArgs>()
+
     private val packageViewModel: PackageViewModel by viewModels()
 
     private var liloSourceCode : String = ""
@@ -50,13 +52,8 @@ class PackageFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        (arguments?.get("source_code") as String?)?.let {
-            liloSourceCode = it
-        }
-
-        (arguments?.get("lilo_package") as LiloPackage?)?.let {
-            currentLiloPackage = it
-        }
+        safeArguments.sourceCode?.let { liloSourceCode = it }
+        safeArguments.liloPackage?.let { currentLiloPackage = it }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -117,14 +114,12 @@ class PackageFragment : Fragment() {
             binding.packageNameText.error = "Name can't be empty"
             return
         }
-        if (currentLiloPackage.name != name) {
-            currentLiloPackage.name = name
-            currentLiloPackage.updateTimeStamp = System.currentTimeMillis()
-            currentLiloPackage.isUpdated = true
-            packageViewModel.updatePackage(currentLiloPackage)
-        } else {
-            binding.packageNameText.error = "No thing to update"
-        }
+
+        // Set package name if changed and update it
+        currentLiloPackage.name = name
+        currentLiloPackage.updateTimeStamp = System.currentTimeMillis()
+        currentLiloPackage.isUpdated = true
+        packageViewModel.updatePackage(currentLiloPackage)
     }
 
     override fun onDestroyView() {

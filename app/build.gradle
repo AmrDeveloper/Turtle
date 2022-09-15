@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id "androidx.navigation.safeargs"
+    id 'androidx.navigation.safeargs.kotlin'
     id "dagger.hilt.android.plugin"
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
@@ -14,8 +14,8 @@ android {
         applicationId "com.amrdeveloper.turtle"
         minSdk 21
         targetSdk 32
-        versionCode 4
-        versionName "1.2.1"
+        versionCode 5
+        versionName "1.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "turtle-" + versionName)
     }

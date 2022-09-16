@@ -5,7 +5,7 @@
 # Download
 
 <a href='https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle'><img alt='Get it on Google Play' src='https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/512px-Google_Play_Store_badge_EN.svg.png' width="20%" height="60"/></a>
-<a href="https://www.amazon.com/dp/B0B5NN3Q4"><img src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png" alt="Amazon App Store" width="20%" height="60"></a>
+<a href="https://www.amazon.com/AmrDeveloper-Turtle-Graphics/dp/B0B5NN3Q43"><img src="https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png" alt="Amazon App Store" width="20%" height="60"></a>
 <a href="https://galaxystore.samsung.com/detail/com.amrdeveloper.turtle"><img src="https://img.samsungapps.com/seller/images/badges/galaxyStore/png_big/GalaxyStore_English.png" alt="Samsung Galaxy Store" width="20%" height="60"></a>
 <a href="https://appgallery.huawei.com/#/app/C106630055"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Huawei_AppGallery_white_badge_EN.png" alt="Huawei AppGallery" width="20%" height="60"></a>
 

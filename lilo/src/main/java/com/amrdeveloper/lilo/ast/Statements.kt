@@ -230,6 +230,18 @@ data class LeftStatement(
     }
 }
 
+class ShowPointerStatement : Statement() {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+class HidePointerStatement : Statement() {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
 class StopStatement : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)

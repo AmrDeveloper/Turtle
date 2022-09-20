@@ -30,6 +30,7 @@ import com.amrdeveloper.lilo.instruction.ColorInst
 import com.amrdeveloper.lilo.instruction.Instruction
 import com.amrdeveloper.lilo.instruction.LineInst
 import com.amrdeveloper.lilo.instruction.PointerInst
+import com.amrdeveloper.lilo.instruction.PointerVisibilityInst
 import com.amrdeveloper.lilo.instruction.RectangleInst
 import com.amrdeveloper.lilo.instruction.SleepInst
 import com.amrdeveloper.lilo.instruction.SpeedInst
@@ -274,6 +275,14 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             return
         }
         throw LiloException(statement.keyword.position, "Sleep value must ba an integer")
+    }
+
+    override fun visit(statement: ShowPointerStatement) {
+        emitInstruction(PointerVisibilityInst(true))
+    }
+
+    override fun visit(statement: HidePointerStatement) {
+        emitInstruction(PointerVisibilityInst(false))
     }
 
     override fun visit(statement: StopStatement) {

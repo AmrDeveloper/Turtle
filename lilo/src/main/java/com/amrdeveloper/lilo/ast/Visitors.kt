@@ -41,6 +41,8 @@ interface StatementVisitor<R> {
     fun visit(statement: BackgroundStatement): R
     fun visit(statement: SpeedStatement): R
     fun visit(statement: SleepStatement): R
+    fun visit(statement: ShowPointerStatement): R
+    fun visit(statement: HidePointerStatement): R
     fun visit(statement: StopStatement): R
     fun visit(statement: RotateStatement): R
     fun visit(statement: ForwardStatement): R

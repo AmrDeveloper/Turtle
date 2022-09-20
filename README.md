@@ -89,6 +89,18 @@ speed 100
 sleep 100
 ```
 
+- Show statement, to show turtle pointer
+
+```
+show
+```
+
+- Hide statement, to hide turtle pointer
+
+```
+hide
+```
+
 - Stop statement, to stop the current execution
 
 ```

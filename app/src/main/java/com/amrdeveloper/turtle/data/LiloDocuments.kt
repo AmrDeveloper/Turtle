@@ -55,6 +55,8 @@ private val liloFullDocuments = mapOf(
         Document("background", "Used set the current background, background RED"),
         Document("Speed", "Used set the speed of the execution and take time in ms, sleep 100"),
         Document("Sleep", "Used set the sleep at current instruction and take time in ms, sleep 100"),
+        Document("Show", "Used to show the turtle pointer, show"),
+        Document("Hide", "Used set hide the turtle pointer, hide"),
         Document("Stop", "Used set the stop the execution, stop"),
         Document("Rotate", "Used set the update the current degree, rotate n"),
         Document("Forward", "Used set move forward with n space, forward n"),

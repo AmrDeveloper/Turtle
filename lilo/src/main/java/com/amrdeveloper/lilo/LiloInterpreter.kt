@@ -126,8 +126,9 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             throw LiloException(statement.keyword.position, "If condition must be boolean")
         }
 
+        // If condition is true execute the body in new sub scope
         if (condition == true) {
-            statement.body.accept(this)
+            executeBlockInScope(LiloScope(currentScope), statement.body)
             return
         }
 
@@ -139,8 +140,9 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
                 throw LiloException(alternative.keyword.position, "condition must be boolean")
             }
 
+            // If one of alternative conditions is true execute the body in new sub scope
             if (alternativeCondition == true) {
-                alternative.body.accept(this)
+                executeBlockInScope(LiloScope(currentScope), alternative.body)
                 return
             }
         }
@@ -151,7 +153,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         val condition = statement.condition.accept(this)
         if (condition is Boolean) {
             while (statement.condition.accept(this) == true) {
-                statement.body.accept(this)
+                executeBlockInScope(LiloScope(currentScope), statement.body)
             }
             return
         }
@@ -164,9 +166,7 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("Evaluate RepeatStatement")
         val counter = statement.condition.accept(this)
         if (counter is Float) {
-            repeat(counter.toInt()) {
-                statement.body.accept(this)
-            }
+            repeat(counter.toInt()) { executeBlockInScope(LiloScope(currentScope), statement.body) }
             return
         }
 
@@ -190,7 +190,6 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
         Timber.tag(TAG).d("Evaluate CircleStatement")
         val radius = statement.radius.accept(this)
         if (radius is Float) {
-            //canvas.drawCircle(currentXPosition, currentYPosition, radius.toFloat(), turtlePaint)
             val circleInst = CircleInst(currentXPosition, currentYPosition, radius.toFloat())
             onInstructionEmitterListener(circleInst)
         } else {
@@ -542,12 +541,8 @@ class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
             if (statement is ReturnStatement) {
                 returnValue = statement.value.accept(this)
                 break
-            } else if (statement is ExpressionStatement) {
-                returnValue = statement.expression.accept(this)
-                break
-            } else {
-                statement.accept(this)
             }
+            statement.accept(this)
         }
         currentScope = previousScope
         return returnValue

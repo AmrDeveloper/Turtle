@@ -70,8 +70,8 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         val parameters = mutableListOf<Token>()
         if (checkPeek(TokenType.TOKEN_OPEN_PAREN)) {
             while (isAtEnd().not() && peek().type != TokenType.TOKEN_CLOSE_PAREN) {
-                parameters.add(peek())
-                advance()
+                parameters.add(advance())
+                if (peek().type == TokenType.TOKEN_COMMA) advance()
             }
             consume(TokenType.TOKEN_CLOSE_PAREN, "Expect ) after function parameters.")
         }

@@ -96,6 +96,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
 
     private fun parseStatement(): Statement {
         return when (peek().type) {
+            TokenType.TOKEN_LET -> parseLetDeclaration()
             TokenType.TOKEN_IF -> parseIfStatement()
             TokenType.TOKEN_WHILE -> parseWhileStatement()
             TokenType.TOKEN_REPEAT -> parseRepeatStatement()

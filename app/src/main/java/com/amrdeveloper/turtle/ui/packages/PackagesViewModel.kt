@@ -34,4 +34,19 @@ class PackagesViewModel @Inject constructor(
             }
         }
     }
+
+    fun insertLiloPackage(liloPackage: LiloPackage) {
+        viewModelScope.launch {
+            liloPackageRepository.insertLiloPackage(liloPackage)
+        }
+    }
+
+    fun deleteLiloPackage(liloPackage : LiloPackage) {
+        viewModelScope.launch {
+            val result = liloPackageRepository.deleteLiloPackage(liloPackage)
+            if (result.isSuccess) {
+                liloPackagesLiveData.value?.toMutableList()?.remove(liloPackage)
+            }
+        }
+    }
 }

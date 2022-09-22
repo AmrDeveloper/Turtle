@@ -23,10 +23,12 @@
     <string name="search">Search</string>
     <string name="re_evaluate">Re Evaluate</string>
     <string name="stop">stop</string>
+    <string name="undo">undo</string>
 
     <!--  Messages  -->
     <string name="package_inserted_success">Lilo package inserted successfully</string>
     <string name="package_updated_success">Lilo package updated successfully</string>
+    <string name="package_deleted_success">Lilo package deleted successfully</string>
     <string name="package_inserted_errors">Cannot insert new lilo package</string>
     <string name="package_updated_errors">Cannot update lilo package</string>
 </resources>

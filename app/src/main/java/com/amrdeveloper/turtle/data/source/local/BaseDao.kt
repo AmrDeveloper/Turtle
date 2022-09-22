@@ -33,6 +33,9 @@ interface BaseDao<T> {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(item: T): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(item: List<T>) : Array<Long>
+
     @Update
     suspend fun update(item: T): Int
 

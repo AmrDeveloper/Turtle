@@ -28,14 +28,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.amrdeveloper.turtle.data.LiloPackage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
-const val DATABASE_NAME = "turtle_database"
-const val DATABASE_VERSION = 1
+private const val DATABASE_NAME = "turtle_database"
+private const val DATABASE_VERSION = 1
 
-@Database(
-    entities = [LiloPackage::class],
-    version = DATABASE_VERSION
-)
+@Database(entities = [LiloPackage::class], version = DATABASE_VERSION)
 abstract class TurtleDatabase : RoomDatabase() {
 
     abstract fun liloPackageDao(): LiloPackageDao
@@ -52,8 +52,18 @@ abstract class TurtleDatabase : RoomDatabase() {
                     TurtleDatabase::class.java, DATABASE_NAME
                 ).build()
                 INSTANCE = instance
+                instance.populateInitialData()
                 instance
             }
+        }
+    }
+
+    /**
+     * Helper function to init default data into db once created
+     */
+    private fun populateInitialData() {
+        GlobalScope.launch(Dispatchers.Main) {
+            liloPackageDao().insert(preloadedLiloPackages)
         }
     }
 }

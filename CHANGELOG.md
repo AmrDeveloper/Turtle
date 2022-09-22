@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 1.3.1 *(2202-09-21)*
+-----------------------------
+
+* Fix Number of parameter when parsing function declaration
+* Fix Control flow execution Scope
+* Fix Recursion functions
+* Add support for `show` keyword
+* Add support for `hide` keyword
+
 Version 1.3.0 *(2202-09-15)*
 -----------------------------
 

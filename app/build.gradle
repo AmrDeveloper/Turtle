@@ -14,10 +14,10 @@ android {
         applicationId "com.amrdeveloper.turtle"
         minSdk 21
         targetSdk 32
-        versionCode 6
-        versionName "1.3.1"
+        versionCode 7
+        versionName "1.3.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "turtle_" + versionName)
+        setProperty("archivesBaseName", "turtle" + "_v" + versionCode + "(" + versionName + ")")
     }
 
     buildTypes {

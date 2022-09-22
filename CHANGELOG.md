@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.3.2 *(2202-09-23)*
+-----------------------------
+
+* Add preloaded lilo packages for new users
+* Add support for delete on swapping
+
 Version 1.3.1 *(2202-09-21)*
 -----------------------------
 

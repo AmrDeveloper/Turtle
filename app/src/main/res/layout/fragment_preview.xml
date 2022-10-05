@@ -10,4 +10,17 @@
         android:id="@+id/turtle_canvas_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <SeekBar
+        android:id="@+id/execution_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/dimen16dp"
+        android:background="@color/monokia_pro_black"
+        android:padding="10dp"
+        android:progressBackgroundTint="@color/white"
+        android:progressTint="@color/red"
+        android:thumb="@drawable/ic_turtle_pointer" />
 </RelativeLayout>

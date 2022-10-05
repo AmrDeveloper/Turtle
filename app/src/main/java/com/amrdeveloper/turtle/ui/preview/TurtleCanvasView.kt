@@ -50,21 +50,28 @@ class TurtleCanvasView : View {
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
-    private val turtlePaint  = Paint()
+    private val turtlePaint = Paint()
 
     private var instructionPointer = 0
     private var instructionSpeed = 0L
+    private var instructionBreakPoint = Integer.MAX_VALUE
     private var shouldStopRendering = false
     private var shouldDrawPointer = true
     private val instructionList = ArrayList<Instruction>()
 
     private val turtlePointerMatrix = Matrix()
-    private var turtlePointer = ContextCompat.getDrawable(context, R.drawable.ic_turtle_pointer)!!.toBitmap()
+    private var turtlePointer =
+        ContextCompat.getDrawable(context, R.drawable.ic_turtle_pointer)!!.toBitmap()
 
-    private lateinit var onRenderStarted : () -> Unit
-    private lateinit var onRenderFinished : () -> Unit
+    private lateinit var onRenderStarted: () -> Unit
+    private lateinit var onRenderStopped: () -> Unit
+    private lateinit var onRenderFinished: () -> Unit
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
@@ -81,8 +88,8 @@ class TurtleCanvasView : View {
         // evaluate old UI only instructions previous instructions without sleep
         // this approach is working for now but can be optimized and cashed later
         var index = 0
-        var lastPointerInstruction : PointerInst? = null
-        while (index < instructionPointer) {
+        var lastPointerInstruction: PointerInst? = null
+        while (index < instructionPointer && index < instructionBreakPoint) {
             when (val inst = instructionList[index++]) {
                 is DrawInstruction -> {
                     inst.draw(canvas, turtlePaint)
@@ -106,7 +113,7 @@ class TurtleCanvasView : View {
 
         // Handle the terminate flag
         if (shouldStopRendering) {
-            if (::onRenderFinished.isInitialized) onRenderFinished()
+            if (::onRenderStopped.isInitialized) onRenderStopped()
             return
         }
 
@@ -182,21 +189,33 @@ class TurtleCanvasView : View {
         instructionList.add(instruction)
     }
 
+    fun getInstructionsSize() = instructionList.size
+
+    fun setInstructionLimit(limit: Int) {
+        instructionBreakPoint = limit
+        invalidate()
+    }
+
     fun resetRenderAttributes() {
         instructionPointer = 0
         instructionSpeed = 0L
+        instructionBreakPoint = Integer.MAX_VALUE
         instructionList.clear()
     }
 
-    fun setStoppingRenderScript(shouldStop : Boolean) {
+    fun setStoppingRenderScript(shouldStop: Boolean) {
         shouldStopRendering = shouldStop
     }
 
-    fun setOnRenderStartedListener(listener : () -> Unit) {
+    fun setOnRenderStartedListener(listener: () -> Unit) {
         onRenderStarted = listener
     }
 
-    fun setOnRenderFinishedListener(listener : () -> Unit) {
+    fun setOnRenderStoppedListener(listener: () -> Unit) {
+        onRenderStopped = listener
+    }
+
+    fun setOnRenderFinishedListener(listener: () -> Unit) {
         onRenderFinished = listener
     }
 }

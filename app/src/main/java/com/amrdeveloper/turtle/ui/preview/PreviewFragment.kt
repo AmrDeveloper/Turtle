@@ -31,6 +31,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.amrdeveloper.lilo.LiloException
@@ -63,6 +64,7 @@ class PreviewFragment : Fragment() {
     enum class RenderState {
         NONE,
         RUNNING,
+        STOPPED,
         FINISHED
     }
 
@@ -76,14 +78,18 @@ class PreviewFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentPreviewBinding.inflate(inflater, container, false)
+
         setupTurtleCanvasView()
         setupTurtleInterpreter()
+        setupTurtleExecutionSeekbar()
         setupObservers()
+
         return binding.root
     }
 
     private fun setupTurtleCanvasView() {
         binding.turtleCanvasView.setOnRenderStartedListener(onCanvasRenderStartedListener)
+        binding.turtleCanvasView.setOnRenderStoppedListener(onCanvasRenderStoppedListener)
         binding.turtleCanvasView.setOnRenderFinishedListener(onCanvasRenderFinishedListener)
     }
 
@@ -102,23 +108,43 @@ class PreviewFragment : Fragment() {
         }
     }
 
+    private fun setupTurtleExecutionSeekbar() {
+        binding.executionBar.visibility = View.GONE
+
+        binding.executionBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                Timber.tag(TAG).d("onProgressChanged")
+                binding.turtleCanvasView.setInstructionLimit(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        val menu = menu.findItem(R.id.action_eval_or_stop)
+        val item = menu.findItem(R.id.action_eval_or_stop)
         when (renderState) {
             RenderState.NONE -> {
-                menu.isVisible = false
+                item.isVisible = false
             }
             RenderState.RUNNING -> {
-                menu.isVisible = true
-                menu.setTitle(R.string.stop)
-                menu.setIcon(R.drawable.ic_stop)
+                item.isVisible = true
+                item.setTitle(R.string.stop)
+                item.setIcon(R.drawable.ic_stop)
+            }
+            RenderState.STOPPED -> {
+                item.isVisible = true
+                item.setTitle(R.string.stop)
+                item.setIcon(R.drawable.ic_replay)
             }
             RenderState.FINISHED -> {
-                menu.isVisible = true
-                menu.setTitle(R.string.re_evaluate)
-                menu.setIcon(R.drawable.ic_replay)
+                item.isVisible = true
+                item.setTitle(R.string.re_evaluate)
+                item.setIcon(R.drawable.ic_replay)
             }
         }
     }
@@ -133,6 +159,10 @@ class PreviewFragment : Fragment() {
             R.id.action_eval_or_stop -> {
                 if (renderState == RenderState.RUNNING) {
                     stopRunningScript()
+                }
+
+                if (renderState == RenderState.STOPPED){
+                    resumeRunningScript()
                 }
 
                 if (renderState == RenderState.FINISHED){
@@ -153,6 +183,13 @@ class PreviewFragment : Fragment() {
         binding.turtleCanvasView.invalidate()
     }
 
+    private fun resumeRunningScript() {
+        binding.turtleCanvasView.setStoppingRenderScript(false)
+        binding.turtleCanvasView.invalidate()
+        renderState = RenderState.RUNNING
+        requireActivity().invalidateOptionsMenu()
+    }
+
     private fun stopRunningScript() {
         binding.turtleCanvasView.setStoppingRenderScript(true)
     }
@@ -163,6 +200,16 @@ class PreviewFragment : Fragment() {
             renderState = RenderState.RUNNING
             requireActivity().invalidateOptionsMenu()
         }
+
+        binding.executionBar.visibility = View.GONE
+    }
+
+    private val onCanvasRenderStoppedListener = {
+        Timber.tag(TAG).d("Render Stopped Listener")
+        if (evaluatorState != EvaluatorState.NONE) {
+            renderState = RenderState.STOPPED
+            requireActivity().invalidateOptionsMenu()
+        }
     }
 
     private val onCanvasRenderFinishedListener = {
@@ -171,6 +218,10 @@ class PreviewFragment : Fragment() {
             renderState = RenderState.FINISHED
             requireActivity().invalidateOptionsMenu()
         }
+
+        binding.executionBar.visibility = View.VISIBLE
+        binding.executionBar.max = binding.turtleCanvasView.getInstructionsSize()
+        binding.executionBar.progress = binding.executionBar.max
     }
 
     private val onEvaluatorStartedListener = {

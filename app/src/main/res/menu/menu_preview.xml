@@ -7,4 +7,10 @@
         android:icon="@drawable/ic_stop"
         android:title="@string/stop"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_resume_or_pause"
+        android:icon="@drawable/ic_resume"
+        android:title="@string/stop"
+        app:showAsAction="ifRoom" />
 </menu>

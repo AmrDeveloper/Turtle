@@ -126,7 +126,14 @@ class PreviewFragment : Fragment() {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
 
-        val item = menu.findItem(R.id.action_eval_or_stop)
+        val evanStopMenuAction = menu.findItem(R.id.action_eval_or_stop)
+        prepareEvalStopMenuAction(evanStopMenuAction)
+
+        val pauseResumeMenuAction = menu.findItem(R.id.action_resume_or_pause)
+        preparePauseResumeMenuAction(pauseResumeMenuAction)
+    }
+
+    private fun prepareEvalStopMenuAction(item: MenuItem) {
         when (renderState) {
             RenderState.NONE -> {
                 item.isVisible = false
@@ -149,6 +156,24 @@ class PreviewFragment : Fragment() {
         }
     }
 
+    private fun preparePauseResumeMenuAction(item : MenuItem) {
+        when (renderState) {
+            RenderState.NONE -> {
+                item.isVisible = false
+            }
+            RenderState.RUNNING -> {
+                item.isVisible = false
+            }
+            RenderState.STOPPED -> {
+                item.isVisible = true
+                item.setIcon(R.drawable.ic_resume)
+            }
+            RenderState.FINISHED -> {
+                item.isEnabled = false
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_preview, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -157,16 +182,24 @@ class PreviewFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_eval_or_stop -> {
-                if (renderState == RenderState.RUNNING) {
-                    stopRunningScript()
+                if (renderState == RenderState.RUNNING || renderState == RenderState.STOPPED) {
+                    stopCurrentScript()
                 }
-
-                if (renderState == RenderState.STOPPED){
-                    resumeRunningScript()
-                }
-
-                if (renderState == RenderState.FINISHED){
+                if (renderState == RenderState.STOPPED) {
+                    binding.turtleCanvasView.setStoppingRenderScript(true)
                     executeLastScript()
+                }
+                if (renderState == RenderState.FINISHED) {
+                    executeLastScript()
+                }
+                return true
+            }
+            R.id.action_resume_or_pause -> {
+                if (renderState == RenderState.RUNNING) {
+                    pauseCurrentScript()
+                }
+                if (renderState == RenderState.STOPPED) {
+                    resumeCurrentScript()
                 }
                 return true
             }
@@ -175,7 +208,7 @@ class PreviewFragment : Fragment() {
     }
 
     private fun executeLastScript() {
-        Timber.tag(TAG).d("Execute last script")
+        Timber.tag(TAG).d("Execute Start")
         binding.turtleCanvasView.setStoppingRenderScript(false)
         binding.turtleCanvasView.resetRenderAttributes()
         val lastScript = mainViewModel.liloScript.value ?: return
@@ -183,14 +216,22 @@ class PreviewFragment : Fragment() {
         binding.turtleCanvasView.invalidate()
     }
 
-    private fun resumeRunningScript() {
+    private fun pauseCurrentScript() {
+        Timber.tag(TAG).d("Execute Pause")
+        binding.turtleCanvasView.setStoppingRenderScript(true)
+        binding.turtleCanvasView.invalidate()
+    }
+
+    private fun resumeCurrentScript() {
+        Timber.tag(TAG).d("Execute Resume")
         binding.turtleCanvasView.setStoppingRenderScript(false)
         binding.turtleCanvasView.invalidate()
         renderState = RenderState.RUNNING
         requireActivity().invalidateOptionsMenu()
     }
 
-    private fun stopRunningScript() {
+    private fun stopCurrentScript() {
+        Timber.tag(TAG).d("Execute Stop")
         binding.turtleCanvasView.setStoppingRenderScript(true)
     }
 

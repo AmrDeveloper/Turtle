@@ -169,7 +169,7 @@ class PreviewFragment : Fragment() {
                 item.setIcon(R.drawable.ic_resume)
             }
             RenderState.FINISHED -> {
-                item.isEnabled = false
+                item.isVisible = false
             }
         }
     }

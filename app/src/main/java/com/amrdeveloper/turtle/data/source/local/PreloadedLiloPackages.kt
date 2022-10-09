@@ -59,5 +59,21 @@ val preloadedLiloPackages = listOf (
             forward 500
             rotate170
         }
+    """.trimIndent()),
+
+    /**
+     * A Lilo package to draw vibrate circle
+     */
+    LiloPackage("Vibrate Circle", """
+        move 350, 650
+        let a = 0
+        let b = 0
+        color GREEN
+        repeat 210 {
+            forward a
+            rotate b
+            a += 3
+            b += 1
+        }
     """.trimIndent())
 )

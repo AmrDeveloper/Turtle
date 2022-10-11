@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 1.3.2 *(2202-10-11)*
+-----------------------------
+
+* Add support for execution seek bar
+* Add support for pause and consume menu icons
+* hide consume menu icon when execution is finished
+* Improve parse logical, factor and term expression
+* Add Vibrate circle to the preload examples
+
+
 Version 1.3.2 *(2202-09-23)*
 -----------------------------
 

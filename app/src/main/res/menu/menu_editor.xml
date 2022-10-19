@@ -9,6 +9,12 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_format"
+        android:icon="@drawable/ic_code"
+        android:title="@string/format"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_save"
         android:icon="@drawable/ic_save"
         android:title="@string/save"

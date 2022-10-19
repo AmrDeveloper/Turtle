@@ -126,6 +126,10 @@ class EditorFragment : Fragment() {
                 executeCurrentScript()
                 true
             }
+            R.id.action_format -> {
+                formatCurrentScript()
+                return true
+            }
             R.id.action_save -> {
                 saveCurrentScript()
                 true
@@ -155,6 +159,17 @@ class EditorFragment : Fragment() {
                 bundleOf("source_code" to script)
             }
             findNavController().navigate(R.id.action_editorFragment_to_packageFragment, bundle)
+        } else {
+            Toast.makeText(requireContext(), "You script is empty", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun formatCurrentScript() {
+        val script = binding.editorView.textWithoutTrailingSpace.trim()
+        if (script.isNotEmpty()) {
+            val formattedScript = mainViewModel.formatLiloScript(script)
+            binding.editorView.setTextHighlighted(formattedScript)
+            Toast.makeText(requireContext(), "Code formatted", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(requireContext(), "You script is empty", Toast.LENGTH_SHORT).show()
         }

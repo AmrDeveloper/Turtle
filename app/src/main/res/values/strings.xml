@@ -19,6 +19,7 @@
     <string name="package_name">Package Name</string>
     <string name="package_icon">Package Icon</string>
     <string name="save">Save</string>
+    <string name="format">Format</string>
     <string name="close">Close</string>
     <string name="search">Search</string>
     <string name="re_evaluate">Re Evaluate</string>

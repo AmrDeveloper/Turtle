@@ -30,6 +30,7 @@ import com.amrdeveloper.lilo.LiloDiagnostics
 import com.amrdeveloper.lilo.LiloParser
 import com.amrdeveloper.lilo.LiloTokenizer
 import com.amrdeveloper.lilo.ast.LiloScript
+import com.amrdeveloper.lilo.fmt.LiloFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -57,5 +58,19 @@ class MainViewModel @Inject constructor() : ViewModel() {
         _diagnosticsLiveData.value = listOf()
         _previewLiveData.value = true
         _liloScript.value = liloScript
+    }
+
+    fun formatLiloScript(script : String) : String {
+        val tokenizer = LiloTokenizer(script)
+        val diagnostics = LiloDiagnostics()
+        val parser = LiloParser(tokenizer.scanTokens(), diagnostics)
+        val liloScript = parser.parseScript()
+        if (diagnostics.errorNumber() > 0) {
+            _diagnosticsLiveData.value = diagnostics.errorDiagnostics()
+            return ""
+        }
+        _diagnosticsLiveData.value = listOf()
+        val formatter = LiloFormatter()
+        return formatter.formatLiloScript(liloScript)
     }
 }

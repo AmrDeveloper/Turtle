@@ -41,7 +41,7 @@ import kotlin.math.sin
 
 private const val TAG = "LiloInterpreter"
 
-class LiloInterpreter : StatementVisitor<Unit>, ExpressionVisitor<Any> {
+class LiloInterpreter : TreeVisitor<Unit, Any> {
 
     private var currentXPosition: Float = 0f
     private var currentYPosition: Float = 0f

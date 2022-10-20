@@ -36,7 +36,6 @@ import com.amrdeveloper.lilo.ast.CircleStatement
 import com.amrdeveloper.lilo.ast.ColorStatement
 import com.amrdeveloper.lilo.ast.CubeStatement
 import com.amrdeveloper.lilo.ast.ExpressionStatement
-import com.amrdeveloper.lilo.ast.ExpressionVisitor
 import com.amrdeveloper.lilo.ast.ForwardStatement
 import com.amrdeveloper.lilo.ast.FunctionStatement
 import com.amrdeveloper.lilo.ast.GroupExpression
@@ -59,15 +58,15 @@ import com.amrdeveloper.lilo.ast.RotateStatement
 import com.amrdeveloper.lilo.ast.ShowPointerStatement
 import com.amrdeveloper.lilo.ast.SleepStatement
 import com.amrdeveloper.lilo.ast.SpeedStatement
-import com.amrdeveloper.lilo.ast.StatementVisitor
 import com.amrdeveloper.lilo.ast.StopStatement
+import com.amrdeveloper.lilo.ast.TreeVisitor
 import com.amrdeveloper.lilo.ast.UnaryExpression
 import com.amrdeveloper.lilo.ast.VariableExpression
 import com.amrdeveloper.lilo.ast.WhileStatement
 
 private const val TAG = "LiloFormatter"
 
-class LiloFormatter : StatementVisitor<String>, ExpressionVisitor<String>  {
+class LiloFormatter : TreeVisitor<String, String> {
 
     private var indentation = 0
 

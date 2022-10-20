@@ -46,9 +46,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private val _previewLiveData = MutableLiveData<Boolean>()
     val previewLiveData = _previewLiveData
 
+    private val diagnostics = LiloDiagnostics()
+
+    private val formatter = LiloFormatter()
+
     fun executeLiloScript(script : String) {
+        diagnostics.clearErrors()
+        diagnostics.clearWarns()
         val tokenizer = LiloTokenizer(script)
-        val diagnostics = LiloDiagnostics()
         val parser = LiloParser(tokenizer.scanTokens(), diagnostics)
         val liloScript = parser.parseScript()
         if (diagnostics.errorNumber() > 0) {
@@ -61,8 +66,9 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun formatLiloScript(script : String) : String {
+        diagnostics.clearErrors()
+        diagnostics.clearWarns()
         val tokenizer = LiloTokenizer(script)
-        val diagnostics = LiloDiagnostics()
         val parser = LiloParser(tokenizer.scanTokens(), diagnostics)
         val liloScript = parser.parseScript()
         if (diagnostics.errorNumber() > 0) {
@@ -70,7 +76,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
             return ""
         }
         _diagnosticsLiveData.value = listOf()
-        val formatter = LiloFormatter()
         return formatter.formatLiloScript(liloScript)
     }
 }

@@ -72,6 +72,7 @@ class LiloFormatter : StatementVisitor<String>, ExpressionVisitor<String>  {
     private var indentation = 0
 
     fun formatLiloScript(script : LiloScript) : String {
+        indentation = 0
         val stringBuilder = StringBuilder()
         script.statements.forEach { node ->
             stringBuilder.append(node.accept(this))

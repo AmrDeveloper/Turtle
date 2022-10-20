@@ -21,9 +21,11 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.utils
 
-enum class ExecutionState {
-    SUCCESS,
-    FAILURE
-}
+import com.amrdeveloper.lilo.token.TokenPosition
+
+data class LiloException(
+    val position: TokenPosition,
+    override val message: String
+) : RuntimeException(message)

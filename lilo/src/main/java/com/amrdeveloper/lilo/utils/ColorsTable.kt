@@ -21,34 +21,25 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.utils
 
-class LiloDiagnostics {
+import android.graphics.Color
+import com.amrdeveloper.lilo.evaluator.LiloScope
 
-    private val errorDiagnostics = mutableListOf<Diagnostic>()
-    private val warnsDiagnostics = mutableListOf<Diagnostic>()
+val colorsTable = mapOf (
+    "RED" to Color.RED,
+    "BLUE" to Color.BLUE,
+    "BLACK" to Color.BLACK,
+    "CYAN" to Color.CYAN,
+    "DKGRAY" to Color.DKGRAY,
+    "GRAY" to Color.GRAY,
+    "GREEN" to Color.GREEN,
+    "LTGRAY" to Color.LTGRAY,
+    "MAGENTA" to Color.MAGENTA,
+    "WHITE" to Color.WHITE,
+    "YELLOW" to Color.YELLOW,
+)
 
-    fun reportError(position: TokenPosition, message : String) {
-        errorDiagnostics.add(Diagnostic(position, message, DiagnosticType.ERROR))
-    }
-
-    fun reportWarn(position: TokenPosition, message : String) {
-        warnsDiagnostics.add(Diagnostic(position, message, DiagnosticType.WARN))
-    }
-
-    fun errorDiagnostics() : List<Diagnostic> = errorDiagnostics
-
-    fun warnsDiagnostics() : List<Diagnostic> = warnsDiagnostics
-
-    fun clearErrors() {
-        errorDiagnostics.clear()
-    }
-
-    fun clearWarns() {
-        warnsDiagnostics.clear()
-    }
-
-    fun errorNumber() : Int = errorDiagnostics.size
-
-    fun warnsNumber() : Int = warnsDiagnostics.size
+fun bindBuiltinColors(scope: LiloScope) {
+    colorsTable.forEach { scope.define(it.key, it.value) }
 }

@@ -21,9 +21,17 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.utils
 
-data class LiloException(
+import com.amrdeveloper.lilo.token.TokenPosition
+
+enum class DiagnosticType {
+    ERROR,
+    WARN
+}
+
+data class Diagnostic (
     val position: TokenPosition,
-    override val message: String
-) : RuntimeException(message)
+    val message: String,
+    val type: DiagnosticType
+)

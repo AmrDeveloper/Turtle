@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.token
 
 enum class TokenType {
     TOKEN_LET,

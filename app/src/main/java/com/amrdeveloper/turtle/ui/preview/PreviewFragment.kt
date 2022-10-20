@@ -34,8 +34,8 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import com.amrdeveloper.lilo.LiloException
-import com.amrdeveloper.lilo.LiloInterpreter
+import com.amrdeveloper.lilo.utils.LiloException
+import com.amrdeveloper.lilo.evaluator.LiloEvaluator
 import com.amrdeveloper.lilo.instruction.Instruction
 import com.amrdeveloper.lottiedialog.LottieDialog
 import com.amrdeveloper.turtle.R
@@ -53,7 +53,7 @@ class PreviewFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val mainViewModel : MainViewModel by activityViewModels()
-    private val liloInterpreter: LiloInterpreter by lazy { LiloInterpreter() }
+    private val liloInterpreter: LiloEvaluator by lazy { LiloEvaluator() }
 
     enum class EvaluatorState {
         NONE,

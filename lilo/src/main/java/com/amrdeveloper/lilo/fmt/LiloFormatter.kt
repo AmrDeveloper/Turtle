@@ -23,8 +23,8 @@
 
 package com.amrdeveloper.lilo.fmt
 
-import com.amrdeveloper.lilo.Token
-import com.amrdeveloper.lilo.TokenType
+import com.amrdeveloper.lilo.token.Token
+import com.amrdeveloper.lilo.token.TokenType
 import com.amrdeveloper.lilo.ast.AssignExpression
 import com.amrdeveloper.lilo.ast.BackgroundStatement
 import com.amrdeveloper.lilo.ast.BackwardStatement

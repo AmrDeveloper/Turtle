@@ -21,10 +21,8 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.evaluator
 
-interface LiloCallable {
-    fun arity(): Int
-
-    fun call(interpreter: LiloInterpreter, arguments: List<Any>): Any
-}
+data class LiloList(
+    val values: MutableList<Any>
+)

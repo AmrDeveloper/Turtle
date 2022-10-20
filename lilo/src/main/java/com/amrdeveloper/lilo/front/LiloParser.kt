@@ -21,9 +21,15 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.front
 
 import com.amrdeveloper.lilo.ast.*
+import com.amrdeveloper.lilo.token.Token
+import com.amrdeveloper.lilo.token.TokenPosition
+import com.amrdeveloper.lilo.token.TokenType
+import com.amrdeveloper.lilo.token.assignOperators
+import com.amrdeveloper.lilo.token.specialAssignToBinary
+import com.amrdeveloper.lilo.utils.LiloDiagnostics
 import timber.log.Timber
 
 private const val TAG = "LiloParser"
@@ -382,7 +388,8 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
 
     private fun parseFactorExpression() : Expression {
         var expression = parseUnaryExpression()
-        while (checkPeek(TokenType.TOKEN_MUL) || checkPeek(TokenType.TOKEN_DIV) || checkPeek(TokenType.TOKEN_REMINDER)) {
+        while (checkPeek(TokenType.TOKEN_MUL) || checkPeek(TokenType.TOKEN_DIV) || checkPeek(
+                TokenType.TOKEN_REMINDER)) {
             val operator = previous()
             val right = parseUnaryExpression()
             expression =  BinaryExpression(expression, operator, right)

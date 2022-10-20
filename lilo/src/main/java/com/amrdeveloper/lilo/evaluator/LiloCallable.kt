@@ -21,15 +21,10 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.evaluator
 
-enum class DiagnosticType {
-    ERROR,
-    WARN
+interface LiloCallable {
+    fun arity(): Int
+
+    fun call(interpreter: LiloEvaluator, arguments: List<Any>): Any
 }
-
-data class Diagnostic (
-    val position: TokenPosition,
-    val message: String,
-    val type: DiagnosticType
-)

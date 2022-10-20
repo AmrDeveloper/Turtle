@@ -21,52 +21,37 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.evaluator
 
-class LiloScope(private val enclosing: LiloScope? = null) {
+import com.amrdeveloper.lilo.ast.BlockStatement
+import com.amrdeveloper.lilo.ast.ExpressionStatement
+import com.amrdeveloper.lilo.ast.FunctionStatement
+import com.amrdeveloper.lilo.ast.ReturnStatement
 
-    private val values = mutableMapOf<String, Any>()
+class LiloFunction(
+    private val declaration: FunctionStatement,
+    private val closure: LiloScope
+) : LiloCallable {
 
-    fun define(name : String, value : Any) {
-        values[name] = value
+    override fun arity(): Int {
+        return declaration.parameters.size
     }
 
-    fun ancestor(level: Int): LiloScope {
-        var environment = this
-        repeat(level) { environment.enclosing?.let { environment = it } }
-        return environment
-    }
-
-    fun assign(name : String, value : Any) : Boolean {
-        if (values.containsKey(name)) {
-            values[name] = value
-            return true
+    override fun call(interpreter: LiloEvaluator, arguments: List<Any>): Any {
+        val environment = LiloScope(closure)
+        val paramsSize = declaration.parameters.size
+        repeat(paramsSize) {
+            environment.define(declaration.parameters[it].literal, arguments[it])
         }
 
-        if (enclosing != null) {
-            return enclosing.assign(name, value)
+        val functionBody = declaration.body
+        if (functionBody is ReturnStatement || functionBody is ExpressionStatement) {
+            return interpreter.executeBlockInScope(environment, functionBody)
         }
 
-        return false
-    }
-
-    fun assignAt(level : Int, name : String, value : Any) : Boolean {
-        return ancestor(level).assign(name, value)
-    }
-
-    fun lookup(name : String) : Any? {
-        if (values.containsKey(name)) {
-            return values[name]
+        if (functionBody is BlockStatement) {
+            return interpreter.executeBlockInScope(environment, *functionBody.statements.toTypedArray())
         }
-
-        if (enclosing != null) {
-            return enclosing.lookup(name)
-        }
-
-        return null
-    }
-
-    fun lookupAt(level : Int, name : String) : Any? {
-        return ancestor(level).lookup(name)
+        return 0
     }
 }

@@ -21,10 +21,12 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.evaluator
 
 import android.graphics.Color
+import com.amrdeveloper.lilo.utils.LiloException
 import com.amrdeveloper.lilo.ast.*
+import com.amrdeveloper.lilo.utils.bindBuiltinColors
 import com.amrdeveloper.lilo.instruction.CircleInst
 import com.amrdeveloper.lilo.instruction.ColorInst
 import com.amrdeveloper.lilo.instruction.Instruction
@@ -35,13 +37,14 @@ import com.amrdeveloper.lilo.instruction.RectangleInst
 import com.amrdeveloper.lilo.instruction.SleepInst
 import com.amrdeveloper.lilo.instruction.SpeedInst
 import com.amrdeveloper.lilo.std.bindStandardModules
+import com.amrdeveloper.lilo.token.TokenType
 import timber.log.Timber
 import kotlin.math.cos
 import kotlin.math.sin
 
 private const val TAG = "LiloInterpreter"
 
-class LiloInterpreter : TreeVisitor<Unit, Any> {
+class LiloEvaluator : TreeVisitor<Unit, Any> {
 
     private var currentXPosition: Float = 0f
     private var currentYPosition: Float = 0f

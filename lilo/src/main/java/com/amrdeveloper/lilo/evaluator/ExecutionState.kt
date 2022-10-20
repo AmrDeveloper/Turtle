@@ -21,10 +21,9 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.evaluator
 
-data class TokenPosition (
-    var line: Int,
-    val columnStart: Int,
-    val columnEnd: Int
-)
+enum class ExecutionState {
+    SUCCESS,
+    FAILURE
+}

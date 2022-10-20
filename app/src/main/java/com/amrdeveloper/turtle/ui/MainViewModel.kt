@@ -25,12 +25,12 @@ package com.amrdeveloper.turtle.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.amrdeveloper.lilo.Diagnostic
-import com.amrdeveloper.lilo.LiloDiagnostics
-import com.amrdeveloper.lilo.LiloParser
-import com.amrdeveloper.lilo.LiloTokenizer
+import com.amrdeveloper.lilo.utils.Diagnostic
+import com.amrdeveloper.lilo.utils.LiloDiagnostics
 import com.amrdeveloper.lilo.ast.LiloScript
 import com.amrdeveloper.lilo.fmt.LiloFormatter
+import com.amrdeveloper.lilo.front.LiloParser
+import com.amrdeveloper.lilo.front.LiloTokenizer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

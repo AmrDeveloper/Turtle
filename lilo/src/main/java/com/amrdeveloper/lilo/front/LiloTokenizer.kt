@@ -21,7 +21,11 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.front
+
+import com.amrdeveloper.lilo.token.Token
+import com.amrdeveloper.lilo.token.TokenPosition
+import com.amrdeveloper.lilo.token.TokenType
 
 private const val TERMINATE_CHAR = '\u0000'
 

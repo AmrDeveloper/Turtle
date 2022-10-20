@@ -23,7 +23,7 @@
 
 package com.amrdeveloper.lilo.std
 
-import com.amrdeveloper.lilo.LiloScope
+import com.amrdeveloper.lilo.evaluator.LiloScope
 
 fun interface LiloModule {
     fun bindModule(scope: LiloScope)

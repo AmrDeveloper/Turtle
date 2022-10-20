@@ -26,8 +26,8 @@ package com.amrdeveloper.turtle.ui.editor
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.amrdeveloper.lilo.Diagnostic
-import com.amrdeveloper.lilo.DiagnosticType
+import com.amrdeveloper.lilo.utils.Diagnostic
+import com.amrdeveloper.lilo.utils.DiagnosticType
 import com.amrdeveloper.treeview.TreeNode
 import com.amrdeveloper.treeview.TreeViewHolder
 import com.amrdeveloper.turtle.R

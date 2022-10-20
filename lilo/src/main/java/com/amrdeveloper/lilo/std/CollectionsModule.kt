@@ -23,10 +23,10 @@
 
 package com.amrdeveloper.lilo.std
 
-import com.amrdeveloper.lilo.LiloCallable
-import com.amrdeveloper.lilo.LiloInterpreter
-import com.amrdeveloper.lilo.LiloList
-import com.amrdeveloper.lilo.LiloScope
+import com.amrdeveloper.lilo.evaluator.LiloCallable
+import com.amrdeveloper.lilo.evaluator.LiloEvaluator
+import com.amrdeveloper.lilo.evaluator.LiloList
+import com.amrdeveloper.lilo.evaluator.LiloScope
 
 class CollectionsModule : LiloModule {
 
@@ -34,7 +34,7 @@ class CollectionsModule : LiloModule {
 
         override fun arity(): Int = 1
 
-        override fun call(interpreter: LiloInterpreter, arguments: List<Any>): Any {
+        override fun call(interpreter: LiloEvaluator, arguments: List<Any>): Any {
             if (arguments.first() is LiloList) {
                 return (arguments.first() as LiloList).values.size.toFloat()
             }

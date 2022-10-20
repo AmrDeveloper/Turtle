@@ -26,7 +26,7 @@ package com.amrdeveloper.turtle.ui.editor
 import androidx.core.content.ContextCompat
 import com.amrdeveloper.codeview.CodeView
 import com.amrdeveloper.codeview.Keyword
-import com.amrdeveloper.lilo.LiloTokenizer
+import com.amrdeveloper.lilo.front.LiloTokenizer
 import com.amrdeveloper.turtle.R
 import java.util.regex.Pattern
 

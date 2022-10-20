@@ -21,24 +21,10 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.token
 
-import android.graphics.Color
-
-val colorsTable = mapOf (
-    "RED" to Color.RED,
-    "BLUE" to Color.BLUE,
-    "BLACK" to Color.BLACK,
-    "CYAN" to Color.CYAN,
-    "DKGRAY" to Color.DKGRAY,
-    "GRAY" to Color.GRAY,
-    "GREEN" to Color.GREEN,
-    "LTGRAY" to Color.LTGRAY,
-    "MAGENTA" to Color.MAGENTA,
-    "WHITE" to Color.WHITE,
-    "YELLOW" to Color.YELLOW,
+data class TokenPosition (
+    var line: Int,
+    val columnStart: Int,
+    val columnEnd: Int
 )
-
-fun bindBuiltinColors(scope: LiloScope) {
-    colorsTable.forEach { scope.define(it.key, it.value) }
-}

@@ -21,8 +21,36 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.utils
 
-data class LiloList(
-    val values: MutableList<Any>
-)
+import com.amrdeveloper.lilo.token.TokenPosition
+
+class LiloDiagnostics {
+
+    private val errorDiagnostics = mutableListOf<Diagnostic>()
+    private val warnsDiagnostics = mutableListOf<Diagnostic>()
+
+    fun reportError(position: TokenPosition, message : String) {
+        errorDiagnostics.add(Diagnostic(position, message, DiagnosticType.ERROR))
+    }
+
+    fun reportWarn(position: TokenPosition, message : String) {
+        warnsDiagnostics.add(Diagnostic(position, message, DiagnosticType.WARN))
+    }
+
+    fun errorDiagnostics() : List<Diagnostic> = errorDiagnostics
+
+    fun warnsDiagnostics() : List<Diagnostic> = warnsDiagnostics
+
+    fun clearErrors() {
+        errorDiagnostics.clear()
+    }
+
+    fun clearWarns() {
+        warnsDiagnostics.clear()
+    }
+
+    fun errorNumber() : Int = errorDiagnostics.size
+
+    fun warnsNumber() : Int = warnsDiagnostics.size
+}

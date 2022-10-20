@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.token
 
 data class Token (
     val type : TokenType,

@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 1.3.2 *(2202-10-11)*
+Version 1.4.1 *(2202-10-11)*
 -----------------------------
 
 * Add support for execution seek bar

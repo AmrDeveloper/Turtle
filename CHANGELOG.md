@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.4.2 *(2202-10-21)*
+-----------------------------
+
+* Introduce Code formatter for Lilo Programming language
+* Make diagnostic instance reusable
+
 Version 1.4.1 *(2202-10-11)*
 -----------------------------
 

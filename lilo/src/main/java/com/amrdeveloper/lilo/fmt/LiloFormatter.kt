@@ -80,7 +80,7 @@ class LiloFormatter : TreeVisitor<String, String> {
     }
 
     override fun visit(statement: ExpressionStatement): String {
-        return indentation() + statement.expression.accept(this)
+        return statement.expression.accept(this)
     }
 
     override fun visit(statement: FunctionStatement): String {
@@ -203,7 +203,7 @@ class LiloFormatter : TreeVisitor<String, String> {
     }
 
     override fun visit(statement: ColorStatement): String {
-        return "".repeat(indentation) + "color " + statement.color.accept(this) + "\n"
+        return indentation() + "color " + statement.color.accept(this) + "\n"
     }
 
     override fun visit(statement: BackgroundStatement): String {
@@ -259,15 +259,15 @@ class LiloFormatter : TreeVisitor<String, String> {
     }
 
     override fun visit(expression: BinaryExpression): String {
-        return indentation() + expression.left.accept(this) + operatorLiteral(expression.operator) + expression.right.accept(this)
+        return expression.left.accept(this) + operatorLiteral(expression.operator) + expression.right.accept(this)
     }
 
     override fun visit(expression: LogicalExpression): String {
-        return indentation() + operatorLiteral(expression.operator) + expression.right.accept(this) + "\n"
+        return expression.left.accept(this) + operatorLiteral(expression.operator) + expression.right.accept(this)
     }
 
     override fun visit(expression: UnaryExpression): String {
-        return indentation() + operatorLiteral(expression.operator) + expression.right.accept(this) + "\n"
+        return operatorLiteral(expression.operator) + expression.right.accept(this)
     }
 
     override fun visit(expression: CallExpression): String {
@@ -289,7 +289,7 @@ class LiloFormatter : TreeVisitor<String, String> {
     }
 
     override fun visit(expression: IndexExpression): String {
-        return indentation() + expression.left.accept(this) + "[" + expression.index.accept(this) + "]"
+        return expression.left.accept(this) + "[" + expression.index.accept(this) + "]"
     }
 
     override fun visit(expression: ListExpression): String {
@@ -321,16 +321,29 @@ class LiloFormatter : TreeVisitor<String, String> {
 
     private fun operatorLiteral(operator : Token) : String {
         return when (operator.type) {
+            // Binary Operators
             TokenType.TOKEN_PLUS -> "+"
             TokenType.TOKEN_MINUS -> "-"
             TokenType.TOKEN_MUL -> "*"
             TokenType.TOKEN_DIV -> "/"
+            TokenType.TOKEN_REMINDER -> "%"
+
+            // Comparisons Operators
+            TokenType.TOKEN_EQ -> "="
+            TokenType.TOKEN_EQ_EQ -> "=="
             TokenType.TOKEN_BANG -> "!"
+            TokenType.TOKEN_BANG_EQ -> "!="
+            TokenType.TOKEN_GT -> ">"
+            TokenType.TOKEN_GT_EQ -> ">="
+            TokenType.TOKEN_LS -> "<"
+            TokenType.TOKEN_LS_EQ -> "<="
+
+            // Logical Operators
             TokenType.TOKEN_OR -> "|"
             TokenType.TOKEN_LOGICAL_OR -> "||"
             TokenType.TOKEN_AND -> "&"
             TokenType.TOKEN_LOGICAL_AND -> "&&"
-            TokenType.TOKEN_REMINDER_EQ -> "%"
+
             else -> ""
         }
     }

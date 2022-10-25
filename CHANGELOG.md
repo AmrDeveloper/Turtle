@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.4.3 *(2202-10-25)*
+-----------------------------
+
+* Fix Code formatter issues, and improve format for binary expressions
+
 Version 1.4.2 *(2202-10-21)*
 -----------------------------
 

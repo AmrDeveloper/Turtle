@@ -21,7 +21,7 @@
         android:drawablePadding="@dimen/dimen10dp"
         android:fontFamily="serif"
         android:padding="@dimen/dimen10dp"
-        android:text="@string/theme"
+        android:text="@string/dark_theme"
         android:textColor="@color/monokia_pro_pink"
         android:textSize="@dimen/dimen20sp"
         app:drawableStartCompat="@drawable/ic_dark_mode"

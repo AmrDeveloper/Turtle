@@ -26,7 +26,7 @@
     <TextView
         android:id="@+id/code_title"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen40dp"
+        android:layout_height="@dimen/dimen50dp"
         android:layout_toEndOf="@id/code_container"
         android:layout_toRightOf="@id/code_container"
         android:gravity="start|center_vertical"

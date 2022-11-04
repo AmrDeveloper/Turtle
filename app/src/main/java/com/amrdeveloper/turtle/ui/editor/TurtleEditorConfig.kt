@@ -38,8 +38,6 @@ fun configCodeViewForLiloScript(codeView: CodeView) {
     val context = codeView.context ?: return
 
     // Config Syntax highlighter
-    codeView.setBackgroundColor(ContextCompat.getColor(context, R.color.monokia_pro_black))
-    codeView.setTextColor(ContextCompat.getColor(context, R.color.monokia_pro_white))
     codeView.addSyntaxPattern(PATTERN_KEYWORDS, ContextCompat.getColor(context, R.color.monokia_pro_pink))
     codeView.addSyntaxPattern(PATTERN_NUMBERS, ContextCompat.getColor(context, R.color.monokia_pro_purple))
 

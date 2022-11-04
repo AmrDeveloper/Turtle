@@ -25,9 +25,11 @@ package com.amrdeveloper.turtle.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.Navigation
 import com.amrdeveloper.turtle.R
+import com.amrdeveloper.turtle.data.AppTheme
+import com.amrdeveloper.turtle.util.UserPreferences
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,21 +40,30 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        val bottomNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        setupNavigationUI(navController, bottomNavView)
+        handleMultiThemePreferences()
+        setupNavigationUI()
     }
 
-    private fun setupNavigationUI(navController: NavController, bottomNav: BottomNavigationView) {
+    private fun setupNavigationUI() {
+        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
+        val bottomNavView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            bottomNav.menu.findItem(destination.id)?.let { it.isChecked = true }
+            bottomNavView.menu.findItem(destination.id)?.let { it.isChecked = true }
         }
 
-        bottomNav.setOnItemSelectedListener {
+        bottomNavView.setOnItemSelectedListener {
             if (navController.popBackStack(it.itemId, false).not()) {
                 navController.navigate(it.itemId)
             }
             true
         }
+    }
+
+    private fun handleMultiThemePreferences() {
+        val userPreferences = UserPreferences(this)
+        val currentTheme = userPreferences.getAppTheme()
+        val themeMode = if (currentTheme == AppTheme.DARK) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        AppCompatDelegate.setDefaultNightMode(themeMode)
     }
 }

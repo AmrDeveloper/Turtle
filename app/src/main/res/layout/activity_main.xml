@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/monokia_pro_black"
+        android:background="?android:colorPrimary"
         app:itemIconTint="@color/monokia_pro_green"
         app:itemTextColor="@color/monokia_pro_green"
         app:menu="@menu/menu_bottom_navigation" />

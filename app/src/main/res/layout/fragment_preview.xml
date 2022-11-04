@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/monokia_pro_black"
+    android:background="?android:colorPrimary"
     tools:context=".ui.preview.PreviewFragment">
 
     <com.amrdeveloper.turtle.ui.preview.TurtleCanvasView
@@ -17,8 +17,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/dimen16dp"
-        android:background="@color/monokia_pro_black"
+        android:layout_marginStart="@dimen/dimen16dp"
+        android:layout_marginTop="@dimen/dimen16dp"
+        android:layout_marginEnd="@dimen/dimen16dp"
+        android:layout_marginBottom="@dimen/dimen16dp"
+        android:background="?android:colorPrimary"
         android:padding="10dp"
         android:progressBackgroundTint="@color/white"
         android:progressTint="@color/red"

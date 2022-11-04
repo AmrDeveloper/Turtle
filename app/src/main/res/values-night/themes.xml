@@ -2,8 +2,8 @@
 
     <style name="Theme.Turtle" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/monokia_pro_green</item>
+        <item name="colorPrimary">@color/monokia_pro_black</item>
+        <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/monokia_pro_green</item>
 
         <!-- Secondary brand color. -->
@@ -15,22 +15,14 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
 
         <!-- Tool bar style -->
-        <item name="toolbarStyle">@style/LightToolBarStyle</item>
+        <item name="toolbarStyle">@style/DarkToolBarStyle</item>
 
-        <item name="actionBarTheme">@style/ActionBarStyle</item>
+        <!-- Input text color -->
+        <item name="android:editTextColor">@color/monokia_pro_green</item>
     </style>
 
-    <style name="LightToolBarStyle" parent="@style/Widget.MaterialComponents.Toolbar">
+    <style name="DarkToolBarStyle" parent="@style/Widget.MaterialComponents.Toolbar">
         <item name="titleTextColor">@color/monokia_pro_green</item>
-    </style>
-
-    <style name="ActionBarStyle" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="autoCompleteTextViewStyle">@style/SearchViewStyle</item>
-    </style>
-
-    <style name="SearchViewStyle" parent="Widget.AppCompat.AutoCompleteTextView">
-        <item name="android:textColor">@color/monokia_pro_green</item>
-        <item name="android:textColorHint">@color/grey</item>
     </style>
 
     <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">

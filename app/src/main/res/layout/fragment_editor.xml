@@ -10,19 +10,18 @@
         android:id="@+id/editorView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/monokia_pro_black"
+        android:background="?android:colorPrimary"
         android:dropDownWidth="@dimen/dimen120dp"
         android:dropDownHorizontalOffset="@dimen/dimen0dp"
         android:dropDownSelector="@color/darkGrey"
         android:gravity="top|start"
-        android:padding="@dimen/dimen5dp"
-        android:textColor="@color/white" />
+        android:padding="@dimen/dimen5dp" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/outputBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/darkGrey"
+        android:background="?android:colorPrimary"
         app:behavior_hideable="false"
         app:behavior_peekHeight="@dimen/dimen45dp"
         app:layout_behavior="@string/bottom_sheet_behavior">
@@ -40,6 +39,7 @@
                 android:gravity="center"
                 android:padding="@dimen/dimen5dp"
                 android:text="@string/diagnostics"
+                android:fontFamily="monospace"
                 android:textColor="@color/grey"
                 android:textSize="@dimen/dimen16sp" />
 
@@ -55,7 +55,6 @@
                     android:id="@+id/diagnostics_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/darkGrey"
                     android:scrollbarSize="@dimen/dimen5dp"
                     android:scrollbarThumbVertical="@color/black"
                     android:scrollbars="vertical" />

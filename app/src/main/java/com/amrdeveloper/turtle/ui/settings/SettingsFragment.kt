@@ -30,12 +30,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import com.amrdeveloper.turtle.BuildConfig
+import com.amrdeveloper.turtle.data.AppTheme
 import com.amrdeveloper.turtle.data.GITHUB_CONTRIBUTORS
 import com.amrdeveloper.turtle.data.GITHUB_ISSUES
 import com.amrdeveloper.turtle.data.GITHUB_SOURCE
 import com.amrdeveloper.turtle.data.GOOGLE_PLAY_URL
 import com.amrdeveloper.turtle.databinding.FragmentSettingsBinding
+import com.amrdeveloper.turtle.util.UserPreferences
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,15 +46,32 @@ class SettingsFragment : Fragment() {
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
+    private val userPreferences by lazy { UserPreferences(requireContext()) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+
+        setupSettingsInformation()
         setupSettingsListeners()
+
         return binding.root
     }
 
-    private fun setupSettingsListeners() {
+    private fun setupSettingsInformation() {
         binding.versionTxt.text = "Version ${BuildConfig.VERSION_NAME}"
+
+        val isDarkTheme = userPreferences.getAppTheme() == AppTheme.DARK
+        binding.themeSwitch.isChecked = isDarkTheme
+    }
+
+    private fun setupSettingsListeners() {
+        binding.themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            val themeMode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            AppCompatDelegate.setDefaultNightMode(themeMode)
+
+            val theme = if (isChecked) AppTheme.DARK else AppTheme.WHITE
+            userPreferences.setAppTheme(theme)
+        }
 
         binding.sourceCodeTxt.setOnClickListener {
             val viewIntent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(GITHUB_SOURCE))

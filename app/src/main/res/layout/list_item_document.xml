@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/dimen5dp"
-    card_view:cardBackgroundColor="@color/monokia_pro_black"
+    card_view:cardBackgroundColor="?android:colorPrimary"
     card_view:cardCornerRadius="@dimen/dimen5dp"
     tools:viewBindingIgnore="true">
 

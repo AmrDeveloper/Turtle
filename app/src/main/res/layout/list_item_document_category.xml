@@ -6,7 +6,7 @@
     android:id="@+id/document_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardBackgroundColor="@color/monokia_pro_black"
+    card_view:cardBackgroundColor="?android:colorPrimary"
     tools:viewBindingIgnore="true">
 
     <TextView

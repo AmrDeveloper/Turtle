@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/monokia_pro_black"
+    android:background="?android:colorPrimary"
     android:orientation="vertical"
     tools:context=".ui.settings.SettingsFragment">
 
@@ -12,6 +12,26 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:src="@drawable/ic_turtle_pack" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/theme_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:drawablePadding="@dimen/dimen10dp"
+        android:fontFamily="serif"
+        android:padding="@dimen/dimen10dp"
+        android:text="@string/theme"
+        android:textColor="@color/monokia_pro_pink"
+        android:textSize="@dimen/dimen20sp"
+        app:drawableStartCompat="@drawable/ic_dark_mode"
+        app:thumbTint="@color/monokia_pro_pink"
+        app:trackTint="@color/grey" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/monokia_pro_green" />
 
     <TextView
         android:id="@+id/version_txt"

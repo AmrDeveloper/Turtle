@@ -34,6 +34,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.amrdeveloper.lilo.utils.Diagnostic
 import com.amrdeveloper.treeview.TreeViewAdapter
 import com.amrdeveloper.treeview.TreeViewHolderFactory
 import com.amrdeveloper.turtle.R
@@ -95,6 +96,15 @@ class EditorFragment : Fragment() {
         binding.diagnosticsList.layoutManager = LinearLayoutManager(requireContext())
         binding.diagnosticsList.isNestedScrollingEnabled = false
         binding.diagnosticsList.adapter = treeViewAdapter
+
+        treeViewAdapter.setTreeNodeClickListener { treeNode, _ ->
+            if (treeNode.value is Diagnostic) {
+                val diagnostic = treeNode.value as Diagnostic
+                binding.editorView.removeAllErrorLines()
+                binding.editorView.addErrorLine(diagnostic.position.line.minus(1), Color.RED)
+                binding.editorView.reHighlightErrors()
+            }
+        }
     }
 
     private fun setupObservers() {

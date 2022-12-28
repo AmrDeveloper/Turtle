@@ -31,12 +31,6 @@ class LiloScope(private val enclosing: LiloScope? = null) {
         values[name] = value
     }
 
-    fun ancestor(level: Int): LiloScope {
-        var environment = this
-        repeat(level) { environment.enclosing?.let { environment = it } }
-        return environment
-    }
-
     fun assign(name : String, value : Any) : Boolean {
         if (values.containsKey(name)) {
             values[name] = value
@@ -50,10 +44,6 @@ class LiloScope(private val enclosing: LiloScope? = null) {
         return false
     }
 
-    fun assignAt(level : Int, name : String, value : Any) : Boolean {
-        return ancestor(level).assign(name, value)
-    }
-
     fun lookup(name : String) : Any? {
         if (values.containsKey(name)) {
             return values[name]
@@ -64,9 +54,5 @@ class LiloScope(private val enclosing: LiloScope? = null) {
         }
 
         return null
-    }
-
-    fun lookupAt(level : Int, name : String) : Any? {
-        return ancestor(level).lookup(name)
     }
 }

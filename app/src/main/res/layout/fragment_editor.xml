@@ -10,6 +10,7 @@
         android:id="@+id/editorView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/dimen45dp"
         android:background="?android:colorPrimary"
         android:dropDownWidth="@dimen/dimen120dp"
         android:dropDownHorizontalOffset="@dimen/dimen0dp"
@@ -36,10 +37,10 @@
                 android:id="@+id/titleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dimen45dp"
+                android:fontFamily="monospace"
                 android:gravity="center"
                 android:padding="@dimen/dimen5dp"
                 android:text="@string/diagnostics"
-                android:fontFamily="monospace"
                 android:textColor="@color/grey"
                 android:textSize="@dimen/dimen16sp" />
 

@@ -52,7 +52,7 @@ val preloadedLiloPackages = listOf (
     /**
      * A Lilo Package to draw a red sun
      */
-    LiloPackage("Nested Stars", """
+    LiloPackage("Red Sun", """
         move 100, 500
         color RED
         repeat 50 {

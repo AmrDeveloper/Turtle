@@ -37,6 +37,7 @@ import com.amrdeveloper.turtle.data.GITHUB_CONTRIBUTORS
 import com.amrdeveloper.turtle.data.GITHUB_ISSUES
 import com.amrdeveloper.turtle.data.GITHUB_SOURCE
 import com.amrdeveloper.turtle.data.GOOGLE_PLAY_URL
+import com.amrdeveloper.turtle.data.REPOSITORY_SPONSORSHIP_URL
 import com.amrdeveloper.turtle.databinding.FragmentSettingsBinding
 import com.amrdeveloper.turtle.util.UserPreferences
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,6 +76,11 @@ class SettingsFragment : Fragment() {
 
         binding.sourceCodeTxt.setOnClickListener {
             val viewIntent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(GITHUB_SOURCE))
+            startActivity(viewIntent)
+        }
+
+        binding.sponsorshipTxt.setOnClickListener {
+            val viewIntent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(REPOSITORY_SPONSORSHIP_URL))
             startActivity(viewIntent)
         }
 

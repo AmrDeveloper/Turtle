@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.token
+package com.amrdeveloper.lilo.front
 
 enum class TokenType {
     TOKEN_LET,
@@ -31,6 +31,7 @@ enum class TokenType {
     TOKEN_ELSE,
     TOKEN_WHILE,
     TOKEN_REPEAT,
+    TOKEN_NEW_TURTLE,
 
     TOKEN_CUBE,
     TOKEN_CIRCLE,
@@ -57,6 +58,7 @@ enum class TokenType {
     TOKEN_OPEN_BRACKET,
     TOKEN_CLOSE_BRACKET,
 
+    TOKEN_DOT,
     TOKEN_COMMA,
 
     TOKEN_EQ,

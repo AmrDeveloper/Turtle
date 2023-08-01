@@ -24,11 +24,6 @@
 package com.amrdeveloper.lilo.front
 
 import com.amrdeveloper.lilo.ast.*
-import com.amrdeveloper.lilo.token.Token
-import com.amrdeveloper.lilo.token.TokenPosition
-import com.amrdeveloper.lilo.token.TokenType
-import com.amrdeveloper.lilo.token.assignOperators
-import com.amrdeveloper.lilo.token.specialAssignToBinary
 import com.amrdeveloper.lilo.utils.LiloDiagnostics
 import timber.log.Timber
 
@@ -425,6 +420,15 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 consume(TokenType.TOKEN_CLOSE_BRACKET, "Expect close bracket [ after index value.")
                 expression = IndexExpression(openBracketToken, expression, index)
             }
+            else if (checkPeek(TokenType.TOKEN_DOT)) {
+                val dotToken = previous()
+                val statement = parseStatement()
+                if (statement is TurtleStatement) {
+                    expression = DotExpression(dotToken, expression, statement)
+                } else {
+                    reportParserError(dotToken.position, "Invalid Dot Expression")
+                }
+            }
             else {
                 break
             }
@@ -465,6 +469,10 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 }
                 consume(TokenType.TOKEN_CLOSE_BRACKET, "Expect close bracket ] at the end of list expression.")
                 ListExpression(values)
+            }
+            TokenType.TOKEN_NEW_TURTLE -> {
+                advance()
+                NewTurtleExpression()
             }
             else -> {
                 Timber.tag(TAG).d("Unexpected primary expression")

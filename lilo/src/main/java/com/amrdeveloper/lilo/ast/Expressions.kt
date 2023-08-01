@@ -23,13 +23,13 @@
 
 package com.amrdeveloper.lilo.ast
 
-import com.amrdeveloper.lilo.token.Token
+import com.amrdeveloper.lilo.front.Token
 
 abstract class Expression {
     abstract fun <R> accept(visitor: ExpressionVisitor<R>): R
 }
 
-data class GroupExpression(
+class GroupExpression(
     val expression: Expression
 ) : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
@@ -37,7 +37,7 @@ data class GroupExpression(
     }
 }
 
-data class AssignExpression(
+class AssignExpression(
     val operator: Token,
     val left: Expression,
     val value: Expression
@@ -47,7 +47,7 @@ data class AssignExpression(
     }
 }
 
-data class BinaryExpression(
+class BinaryExpression(
     val left: Expression,
     val operator: Token,
     val right: Expression,
@@ -57,7 +57,7 @@ data class BinaryExpression(
     }
 }
 
-data class LogicalExpression(
+class LogicalExpression(
     val left: Expression,
     val operator: Token,
     val right: Expression,
@@ -67,7 +67,7 @@ data class LogicalExpression(
     }
 }
 
-data class UnaryExpression(
+class UnaryExpression(
     val operator: Token,
     val right: Expression,
 ) : Expression() {
@@ -76,7 +76,7 @@ data class UnaryExpression(
     }
 }
 
-data class CallExpression(
+class CallExpression(
     val callee: Expression,
     val paren : Token,
     val arguments: List<Expression>
@@ -86,7 +86,17 @@ data class CallExpression(
     }
 }
 
-data class IndexExpression(
+class DotExpression(
+    var dot: Token,
+    val caller: Expression,
+    val callee: Statement,
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+class IndexExpression(
     val bracket : Token,
     val left: Expression,
     val index: Expression
@@ -96,7 +106,7 @@ data class IndexExpression(
     }
 }
 
-data class VariableExpression(
+class VariableExpression(
     val value: Token
 ) : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
@@ -104,7 +114,7 @@ data class VariableExpression(
     }
 }
 
-data class ListExpression(
+class ListExpression(
     val values: List<Expression>
 ) : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
@@ -112,7 +122,7 @@ data class ListExpression(
     }
 }
 
-data class NumberExpression(
+class NumberExpression(
     val value: Float
 ) : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
@@ -120,9 +130,15 @@ data class NumberExpression(
     }
 }
 
-data class BooleanExpression(
+class BooleanExpression(
     val value: Boolean
 ) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+class NewTurtleExpression : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
         return visitor.visit(this)
     }

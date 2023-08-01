@@ -21,10 +21,37 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.evaluator
+package com.amrdeveloper.lilo.backend
 
-interface LiloCallable {
-    fun arity(): Int
+import com.amrdeveloper.lilo.ast.BlockStatement
+import com.amrdeveloper.lilo.ast.ExpressionStatement
+import com.amrdeveloper.lilo.ast.FunctionStatement
+import com.amrdeveloper.lilo.ast.ReturnStatement
 
-    fun call(interpreter: LiloEvaluator, arguments: List<Any>): Any
+class LiloFunction(
+    private val declaration: FunctionStatement,
+    private val closure: LiloScope
+) : LiloCallable {
+
+    override fun arity(): Int {
+        return declaration.parameters.size
+    }
+
+    override fun call(interpreter: LiloEvaluator, arguments: List<Any>): Any {
+        val environment = LiloScope(closure)
+        val paramsSize = declaration.parameters.size
+        repeat(paramsSize) {
+            environment.define(declaration.parameters[it].literal, arguments[it])
+        }
+
+        val functionBody = declaration.body
+        if (functionBody is ReturnStatement || functionBody is ExpressionStatement) {
+            return interpreter.executeBlockInScope(environment, functionBody)
+        }
+
+        if (functionBody is BlockStatement) {
+            return interpreter.executeBlockInScope(environment, *functionBody.statements.toTypedArray())
+        }
+        return 0
+    }
 }

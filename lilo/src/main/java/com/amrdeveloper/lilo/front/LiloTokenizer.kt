@@ -23,10 +23,6 @@
 
 package com.amrdeveloper.lilo.front
 
-import com.amrdeveloper.lilo.token.Token
-import com.amrdeveloper.lilo.token.TokenPosition
-import com.amrdeveloper.lilo.token.TokenType
-
 private const val TERMINATE_CHAR = '\u0000'
 
 class LiloTokenizer(private val script : String) {
@@ -57,6 +53,7 @@ class LiloTokenizer(private val script : String) {
             '}' -> makeToken(TokenType.TOKEN_CLOSE_BRACE)
             '[' -> makeToken(TokenType.TOKEN_OPEN_BRACKET)
             ']' -> makeToken(TokenType.TOKEN_CLOSE_BRACKET)
+            '.' -> makeToken(TokenType.TOKEN_DOT)
             ',' -> makeToken(TokenType.TOKEN_COMMA)
             '+' -> makeToken(if (match('=')) TokenType.TOKEN_PLUS_EQ else TokenType.TOKEN_PLUS)
             '-' -> makeToken(if (match('=')) TokenType.TOKEN_MINUS_EQ else TokenType.TOKEN_MINUS)
@@ -187,6 +184,7 @@ class LiloTokenizer(private val script : String) {
             "backward" to TokenType.TOKEN_BACKWARD,
             "right" to TokenType.TOKEN_RIGHT,
             "left" to TokenType.TOKEN_LEFT,
+            "new_turtle" to TokenType.TOKEN_NEW_TURTLE,
         )
     }
 }

@@ -32,42 +32,48 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import com.amrdeveloper.lilo.instruction.ColorInst
-import com.amrdeveloper.lilo.instruction.DrawInstruction
-import com.amrdeveloper.lilo.instruction.Instruction
-import com.amrdeveloper.lilo.instruction.PointerInst
-import com.amrdeveloper.lilo.instruction.PointerVisibilityInst
-import com.amrdeveloper.lilo.instruction.SleepInst
-import com.amrdeveloper.lilo.instruction.SpeedInst
+import com.amrdeveloper.lilo.backend.CircleInst
+import com.amrdeveloper.lilo.backend.ColorInst
+import com.amrdeveloper.lilo.backend.DegreeInst
+import com.amrdeveloper.lilo.backend.Instruction
+import com.amrdeveloper.lilo.backend.LineInst
+import com.amrdeveloper.lilo.backend.MoveXInst
+import com.amrdeveloper.lilo.backend.MoveYInst
+import com.amrdeveloper.lilo.backend.NewTurtleInst
+import com.amrdeveloper.lilo.backend.Operator
+import com.amrdeveloper.lilo.backend.RectangleInst
+import com.amrdeveloper.lilo.backend.SleepInst
+import com.amrdeveloper.lilo.backend.SpeedInst
+import com.amrdeveloper.lilo.backend.VisibilityInst
 import com.amrdeveloper.turtle.R
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Turtle Canvas View is a custom view that receive a list of instructions (Bytecode like),
  * generated from the evaluator and render them, also can support do operations on them,
  * such as modify, clear, delay ...etc
  */
-class TurtleCanvasView : View {
-
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    )
-
-    private val turtlePaint = Paint()
+class TurtleCanvasView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : View(context, attrs, defStyle) {
 
     private var instructionPointer = 0
     private var instructionSpeed = 0L
     private var instructionBreakPoint = Integer.MAX_VALUE
     private var shouldStopRendering = false
-    private var shouldDrawPointer = true
     private val instructionList = ArrayList<Instruction>()
 
+    private var turtleDefaultX = 0f
+    private var turtleDefaultY = 100f
+    private var turtleDefaultDegree = 90f
+
+    private val turtlePaint = Paint()
     private val turtlePointerMatrix = Matrix()
-    private var turtlePointer =
-        ContextCompat.getDrawable(context, R.drawable.ic_turtle_pointer)!!.toBitmap()
+    private var turtlePointerBitmap = ContextCompat.getDrawable(context, R.drawable.ic_turtle_pointer)!!.toBitmap()
+    private val turtlePointers = ArrayList<TurtlePointer>()
 
     private lateinit var onRenderStarted: () -> Unit
     private lateinit var onRenderStopped: () -> Unit
@@ -76,40 +82,84 @@ class TurtleCanvasView : View {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas ?: return
+        interpretInstructions(canvas)
+    }
+
+    private fun interpretInstructions(canvas: Canvas) {
+        resetTurtlePointers()
 
         if (::onRenderStarted.isInitialized && instructionPointer == 0) {
             onRenderStarted()
         }
 
-        // Set the default color
-        turtlePaint.color = Color.BLACK
-
-        // TODO: optimize this code and cache it, no need to draw it each time
         // evaluate old UI only instructions previous instructions without sleep
         // this approach is working for now but can be optimized and cashed later
-        var index = 0
-        var lastPointerInstruction: PointerInst? = null
-        while (index < instructionPointer && index < instructionBreakPoint) {
-            when (val inst = instructionList[index++]) {
-                is DrawInstruction -> {
-                    inst.draw(canvas, turtlePaint)
+        var sp = 0
+        var isSleepLastInst = false
+        while (sp < instructionPointer && sp < instructionBreakPoint) {
+            when (val inst = instructionList[sp++]) {
+                is RectangleInst -> {
+                    val turtle = turtlePointers[inst.id]
+                    turtlePaint.color = turtle.color
+                    canvas.drawRect(turtle.x, turtle.y, turtle.y + inst.right, turtle.y + inst.bottom, turtlePaint)
+                }
+                is CircleInst -> {
+                    val turtle = turtlePointers[inst.id]
+                    turtlePaint.color = turtle.color
+                    canvas.drawCircle(turtle.x, turtle.y, inst.radius, turtlePaint)
+                }
+                is LineInst -> {
+                    val turtle = turtlePointers[inst.id]
+                    val angel = turtle.degree * Math.PI / 180
+                    val length = inst.length
+                    val endX = (turtle.x + length * sin(angel)).toFloat()
+                    val endY = (turtle.y + length * cos(angel)).toFloat()
+
+                    turtlePaint.color = turtle.color
+                    canvas.drawLine(turtle.x, turtle.y, endX, endY, turtlePaint)
+
+                    turtlePointers[inst.id].x = endX
+                    turtlePointers[inst.id].y = endY
+                }
+                is MoveXInst -> {
+                    turtlePointers[inst.id].x = inst.amount
+                }
+                is MoveYInst -> {
+                    turtlePointers[inst.id].y = inst.amount
+                }
+                is DegreeInst -> {
+                    when (inst.op) {
+                        Operator.EQUAL -> turtlePointers[inst.id].degree = inst.degree
+                        Operator.PLUS -> turtlePointers[inst.id].degree += inst.degree
+                        Operator.MINUS -> turtlePointers[inst.id].degree -= inst.degree
+                    }
+                }
+                is NewTurtleInst -> {
+                    if (inst.id > turtlePointers.lastIndex) {
+                        turtlePointers.add(TurtlePointer(turtleDefaultX, turtleDefaultY, turtleDefaultDegree))
+                    }
                 }
                 is ColorInst -> {
-                    turtlePaint.color = inst.color
+                    turtlePointers[inst.id].color = inst.color
                 }
-                is PointerInst -> {
-                    lastPointerInstruction = inst
+                is VisibilityInst -> {
+                    turtlePointers[inst.id].isVisible = inst.isVisible
+                }
+                is SpeedInst -> {
+                    instructionSpeed = inst.time.toLong()
+                }
+                is SleepInst -> {
+                    // Remove this sleep instruction because it should evaluated once
+                    instructionList.removeAt(sp - 1)
+                    // Redraw after n time
+                    postInvalidateDelayed((instructionSpeed.plus(inst.time)))
+                    isSleepLastInst = true
                 }
             }
         }
 
         // Draw only the last pointer instruction if exists
-        if (shouldDrawPointer && (lastPointerInstruction != null)) {
-            turtlePointerMatrix.reset()
-            turtlePointerMatrix.postRotate(lastPointerInstruction.degree - 180)
-            turtlePointerMatrix.postTranslate(lastPointerInstruction.x, lastPointerInstruction.y)
-            canvas.drawBitmap(turtlePointer, turtlePointerMatrix, turtlePaint)
-        }
+        drawTurtlePointers(canvas)
 
         // Handle the terminate flag
         if (shouldStopRendering) {
@@ -117,71 +167,35 @@ class TurtleCanvasView : View {
             return
         }
 
-        if (instructionPointer > instructionList.lastIndex) return
-
-        // Evaluate current instruction pointer with specific speed
-        when (val instruction = instructionList[instructionPointer]) {
-            is DrawInstruction -> {
-                // If this instruction is a draw instruction, evaluate it with canvas and paint
-                instruction.draw(canvas, turtlePaint)
-                // Update instruction pointer to point to next instruction
-                instructionPointer++
-                // Redraw the next instruction after instruction speed time
-                if (instructionPointer < instructionList.lastIndex) {
-                    postInvalidateDelayed(instructionSpeed)
-                }
-            }
-            is PointerInst -> {
-                // TODO: Can be optimized later
-                // Pointer instruction shouldn't drawn now
-                // but will draw only the last one when evaluate the prev instructions
-                instructionPointer++
-                postInvalidateDelayed(0)
-            }
-            is ColorInst -> {
-                // Update the paint color
-                turtlePaint.color = instruction.color
-                // Update instruction pointer to point to next instruction
-                instructionPointer++
-                // Redraw the next instruction after instruction speed time
-                if (instructionPointer < instructionList.lastIndex) {
-                    postInvalidateDelayed(instructionSpeed)
-                }
-            }
-            is SpeedInst -> {
-                // Update the instruction speed
-                instructionSpeed = instruction.time.toLong()
-                // Update instruction pointer to point to next instruction
-                instructionPointer++
-                // Redraw the next instruction after instruction speed time
-                invalidate()
-            }
-            is SleepInst -> {
-                // Reset the instruction pointer
-                instructionPointer = 0
-                // Remove this sleep instruction because it should evaluated once
-                instructionList.remove(instruction)
-                // Redraw after n time
-                postInvalidateDelayed((instructionSpeed.plus(instruction.time)))
-            }
-            is PointerVisibilityInst -> {
-                // Update draw pointer flag
-                shouldDrawPointer = instruction.visible
-                // Update instruction pointer to point to next instruction
-                instructionPointer++
-                // Redraw the next instruction after instruction speed time
-                invalidate()
-            }
-            else -> {
-                // Update instruction pointer to point to next instruction
-                instructionPointer++
-                // Redraw the next instruction after instruction speed time
-                invalidate()
-            }
+        if (isSleepLastInst.not()) {
+            instructionPointer++
+            invalidate()
         }
 
         if (::onRenderFinished.isInitialized && instructionPointer >= instructionList.lastIndex) {
             onRenderFinished()
+        }
+    }
+
+    private fun resetTurtlePointers() {
+        for (turtlePointer in turtlePointers) {
+            with (turtlePointer) {
+                x = turtleDefaultX
+                y = turtleDefaultY
+                degree = turtleDefaultDegree
+                color = Color.BLACK
+                isVisible = true
+            }
+        }
+    }
+
+    private fun drawTurtlePointers(canvas: Canvas) {
+        for (turtlePointer in turtlePointers) {
+            if (turtlePointer.isVisible.not()) continue
+            turtlePointerMatrix.reset()
+            turtlePointerMatrix.postRotate(turtlePointer.degree - 180)
+            turtlePointerMatrix.postTranslate(turtlePointer.x, turtlePointer.y)
+            canvas.drawBitmap(turtlePointerBitmap, turtlePointerMatrix, turtlePaint)
         }
     }
 

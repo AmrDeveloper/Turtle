@@ -21,6 +21,9 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.instruction
+package com.amrdeveloper.lilo.backend
 
-class SpeedInst ( val time : Int ) : Instruction()
+enum class ExecutionState {
+    SUCCESS,
+    FAILURE
+}

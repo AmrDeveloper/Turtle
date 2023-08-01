@@ -24,7 +24,7 @@
 package com.amrdeveloper.lilo.utils
 
 import android.graphics.Color
-import com.amrdeveloper.lilo.evaluator.LiloScope
+import com.amrdeveloper.lilo.backend.LiloScope
 
 val colorsTable = mapOf (
     "RED" to Color.RED,

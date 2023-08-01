@@ -23,10 +23,10 @@
 
 package com.amrdeveloper.lilo.std
 
-import com.amrdeveloper.lilo.evaluator.LiloCallable
-import com.amrdeveloper.lilo.evaluator.LiloEvaluator
-import com.amrdeveloper.lilo.evaluator.LiloList
-import com.amrdeveloper.lilo.evaluator.LiloScope
+import com.amrdeveloper.lilo.backend.LiloCallable
+import com.amrdeveloper.lilo.backend.LiloEvaluator
+import com.amrdeveloper.lilo.backend.LiloList
+import com.amrdeveloper.lilo.backend.LiloScope
 
 class CollectionsModule : LiloModule {
 

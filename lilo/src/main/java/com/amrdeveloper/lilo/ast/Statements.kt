@@ -23,13 +23,13 @@
 
 package com.amrdeveloper.lilo.ast
 
-import com.amrdeveloper.lilo.token.Token
+import com.amrdeveloper.lilo.front.Token
 
 abstract class Statement {
     abstract fun <R> accept(visitor: StatementVisitor<R>): R
 }
 
-data class ExpressionStatement(
+class ExpressionStatement(
     val expression: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -37,7 +37,7 @@ data class ExpressionStatement(
     }
 }
 
-data class FunctionStatement(
+class FunctionStatement(
     val name: String,
     val parameters: List<Token>,
     val body: Statement
@@ -47,7 +47,7 @@ data class FunctionStatement(
     }
 }
 
-data class ReturnStatement(
+class ReturnStatement(
     val value: Expression
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -55,7 +55,7 @@ data class ReturnStatement(
     }
 }
 
-data class LetStatement(
+class LetStatement(
     val name: String,
     val value: Expression,
 ) : Statement() {
@@ -64,7 +64,7 @@ data class LetStatement(
     }
 }
 
-data class BlockStatement(
+class BlockStatement(
     val statements: List<Statement>
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
@@ -72,28 +72,18 @@ data class BlockStatement(
     }
 }
 
-data class IfStatement(
+class IfStatement(
     val keyword: Token,
     val condition: Expression,
     val body: Statement,
-    val alternatives : List<IfStatement> = listOf()
+    val alternatives: List<IfStatement> = listOf()
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class WhileStatement(
-    val keyword: Token,
-    val condition: Expression,
-    val body: Statement,
-) : Statement() {
-    override fun <R> accept(visitor: StatementVisitor<R>): R {
-        return visitor.visit(this)
-    }
-}
-
-data class RepeatStatement(
+class WhileStatement(
     val keyword: Token,
     val condition: Expression,
     val body: Statement,
@@ -103,53 +93,80 @@ data class RepeatStatement(
     }
 }
 
-data class CubeStatement(
+class RepeatStatement(
     val keyword: Token,
-    val radius: Expression
+    val condition: Expression,
+    val body: Statement,
 ) : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class CircleStatement(
+abstract class TurtleStatement(open var id: Int) : Statement()
+
+class CubeStatement(
     val keyword: Token,
-    val radius: Expression
-) : Statement() {
+    val radius: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class MoveStatement(
+class CircleStatement(
+    val keyword: Token,
+    val radius: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+class MoveStatement(
     val keyword: Token,
     val xValue: Expression,
-    val yValue: Expression
-) : Statement() {
+    val yValue: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class MoveXStatement(
+class MoveXStatement(
     val keyword: Token,
-    val amount: Expression
-) : Statement() {
+    val amount: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class MoveYStatement(
+class MoveYStatement(
     val keyword: Token,
-    val amount: Expression
-) : Statement() {
+    val amount: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class ColorStatement(
+class ColorStatement(
+    val keyword: Token,
+    val color: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+class BackgroundStatement(
     val keyword: Token,
     val color: Expression
 ) : Statement() {
@@ -158,16 +175,7 @@ data class ColorStatement(
     }
 }
 
-data class BackgroundStatement(
-    val keyword: Token,
-    val color: Expression
-) : Statement() {
-    override fun <R> accept(visitor: StatementVisitor<R>): R {
-        return visitor.visit(this)
-    }
-}
-
-data class SpeedStatement(
+class SpeedStatement(
     val keyword: Token,
     val amount: Expression
 ) : Statement() {
@@ -176,7 +184,7 @@ data class SpeedStatement(
     }
 }
 
-data class SleepStatement(
+class SleepStatement(
     val keyword: Token,
     val amount: Expression
 ) : Statement() {
@@ -185,58 +193,67 @@ data class SleepStatement(
     }
 }
 
-data class RotateStatement(
+class RotateStatement(
     val keyword: Token,
-    val value: Expression
-) : Statement() {
+    val value: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class ForwardStatement(
+class ForwardStatement(
     val keyword: Token,
-    val value: Expression
-) : Statement() {
+    val value: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class BackwardStatement(
+class BackwardStatement(
     val keyword: Token,
-    val value: Expression
-) : Statement() {
+    val value: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class RightStatement(
+class RightStatement(
     val keyword: Token,
-    val value: Expression
-) : Statement() {
+    val value: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-data class LeftStatement(
+class LeftStatement(
     val keyword: Token,
-    val value: Expression
-) : Statement() {
+    val value: Expression,
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-class ShowPointerStatement : Statement() {
+class ShowPointerStatement(
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }
 }
 
-class HidePointerStatement : Statement() {
+class HidePointerStatement(
+    override var id: Int = 0,
+) : TurtleStatement(id) {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)
     }

@@ -21,19 +21,10 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.instruction
+package com.amrdeveloper.lilo.backend
 
-import android.graphics.Canvas
-import android.graphics.Paint
+interface LiloCallable {
+    fun arity(): Int
 
-data class RectangleInst(
-    val left: Float,
-    val top: Float,
-    val right: Float,
-    val bottom: Float,
-) : DrawInstruction() {
-
-    override fun draw(canvas: Canvas, paint: Paint) {
-        canvas.drawRect(left, top, right, bottom, paint)
-    }
+    fun call(interpreter: LiloEvaluator, arguments: List<Any>): Any
 }

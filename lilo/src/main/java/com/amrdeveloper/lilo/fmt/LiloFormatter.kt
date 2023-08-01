@@ -23,8 +23,8 @@
 
 package com.amrdeveloper.lilo.fmt
 
-import com.amrdeveloper.lilo.token.Token
-import com.amrdeveloper.lilo.token.TokenType
+import com.amrdeveloper.lilo.front.Token
+import com.amrdeveloper.lilo.front.TokenType
 import com.amrdeveloper.lilo.ast.AssignExpression
 import com.amrdeveloper.lilo.ast.BackgroundStatement
 import com.amrdeveloper.lilo.ast.BackwardStatement
@@ -35,6 +35,7 @@ import com.amrdeveloper.lilo.ast.CallExpression
 import com.amrdeveloper.lilo.ast.CircleStatement
 import com.amrdeveloper.lilo.ast.ColorStatement
 import com.amrdeveloper.lilo.ast.CubeStatement
+import com.amrdeveloper.lilo.ast.DotExpression
 import com.amrdeveloper.lilo.ast.ExpressionStatement
 import com.amrdeveloper.lilo.ast.ForwardStatement
 import com.amrdeveloper.lilo.ast.FunctionStatement
@@ -50,6 +51,7 @@ import com.amrdeveloper.lilo.ast.LogicalExpression
 import com.amrdeveloper.lilo.ast.MoveStatement
 import com.amrdeveloper.lilo.ast.MoveXStatement
 import com.amrdeveloper.lilo.ast.MoveYStatement
+import com.amrdeveloper.lilo.ast.NewTurtleExpression
 import com.amrdeveloper.lilo.ast.NumberExpression
 import com.amrdeveloper.lilo.ast.RepeatStatement
 import com.amrdeveloper.lilo.ast.ReturnStatement
@@ -288,6 +290,10 @@ class LiloFormatter : TreeVisitor<String, String> {
         return builder.toString()
     }
 
+    override fun visit(expression: DotExpression): String {
+        return indentation() + expression.caller.accept(this) + "." + expression.callee.accept(this)
+    }
+
     override fun visit(expression: IndexExpression): String {
         return expression.left.accept(this) + "[" + expression.index.accept(this) + "]"
     }
@@ -317,6 +323,10 @@ class LiloFormatter : TreeVisitor<String, String> {
 
     override fun visit(expression: BooleanExpression): String {
         return expression.value.toString()
+    }
+
+    override fun visit(expression: NewTurtleExpression): String {
+        return indentation() + "new_turtle"
     }
 
     private fun operatorLiteral(operator : Token) : String {

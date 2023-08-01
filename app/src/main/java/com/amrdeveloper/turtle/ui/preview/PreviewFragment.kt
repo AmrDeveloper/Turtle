@@ -35,8 +35,8 @@ import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.amrdeveloper.lilo.utils.LiloException
-import com.amrdeveloper.lilo.evaluator.LiloEvaluator
-import com.amrdeveloper.lilo.instruction.Instruction
+import com.amrdeveloper.lilo.backend.LiloEvaluator
+import com.amrdeveloper.lilo.backend.Instruction
 import com.amrdeveloper.lottiedialog.LottieDialog
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.databinding.FragmentPreviewBinding

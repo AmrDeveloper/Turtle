@@ -21,9 +21,10 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.evaluator
+package com.amrdeveloper.lilo.front
 
-enum class ExecutionState {
-    SUCCESS,
-    FAILURE
-}
+data class Token (
+    val type : TokenType,
+    val position : TokenPosition,
+    val literal : String,
+)

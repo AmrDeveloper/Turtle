@@ -58,11 +58,13 @@ interface ExpressionVisitor<R> {
     fun visit(expression: LogicalExpression): R
     fun visit(expression: UnaryExpression): R
     fun visit(expression: CallExpression): R
+    fun visit(expression: DotExpression): R
     fun visit(expression: IndexExpression): R
     fun visit(expression: ListExpression): R
     fun visit(expression: VariableExpression): R
     fun visit(expression: NumberExpression): R
     fun visit(expression: BooleanExpression): R
+    fun visit(expression: NewTurtleExpression): R
 }
 
 interface TreeVisitor<S, E> : StatementVisitor<S>, ExpressionVisitor<E>

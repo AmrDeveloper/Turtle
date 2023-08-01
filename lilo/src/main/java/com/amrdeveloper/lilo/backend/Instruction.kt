@@ -21,11 +21,33 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.instruction
+package com.amrdeveloper.lilo.backend
 
-import android.graphics.Canvas
-import android.graphics.Paint
+open class Instruction
 
-abstract class DrawInstruction : Instruction() {
-    abstract fun draw(canvas: Canvas, paint: Paint)
+enum class Operator {
+    EQUAL,
+    PLUS,
+    MINUS,
 }
+
+class NewTurtleInst(var id : Int) : Instruction()
+
+class MoveXInst(val id : Int, val amount : Float) : Instruction()
+
+class MoveYInst(val id : Int, val amount : Float) : Instruction()
+
+class DegreeInst(val id : Int, val degree: Float, val op : Operator) : Instruction()
+
+class ColorInst(val id: Int, val color: Int) : Instruction()
+
+class RectangleInst(var id : Int, val right: Float, val bottom: Float) : Instruction()
+
+class CircleInst(val id : Int, val radius : Float) : Instruction()
+
+class LineInst(var id : Int, val length : Float) : Instruction()
+class VisibilityInst(val id : Int, val isVisible : Boolean) : Instruction()
+
+class SleepInst(val time: Int) : Instruction()
+
+class SpeedInst ( val time : Int ) : Instruction()

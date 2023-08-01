@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.token
+package com.amrdeveloper.lilo.front
 
 data class TokenPosition (
     var line: Int,

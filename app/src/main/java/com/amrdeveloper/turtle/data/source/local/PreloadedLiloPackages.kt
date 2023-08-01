@@ -57,7 +57,7 @@ val preloadedLiloPackages = listOf (
         color RED
         repeat 50 {
             forward 500
-            rotate170
+            rotate 170
         }
     """.trimIndent()),
 

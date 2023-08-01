@@ -21,10 +21,10 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.front
+package com.amrdeveloper.lilo.frontend
 
-data class Token (
-    val type : TokenType,
-    val position : TokenPosition,
-    val literal : String,
+data class TokenPosition (
+    var line: Int,
+    val columnStart: Int,
+    val columnEnd: Int
 )

@@ -23,7 +23,7 @@
 
 package com.amrdeveloper.lilo.ast
 
-import com.amrdeveloper.lilo.front.Token
+import com.amrdeveloper.lilo.frontend.Token
 
 abstract class Expression {
     abstract fun <R> accept(visitor: ExpressionVisitor<R>): R
@@ -139,6 +139,12 @@ class BooleanExpression(
 }
 
 class NewTurtleExpression : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+class ThieExpression : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
         return visitor.visit(this)
     }

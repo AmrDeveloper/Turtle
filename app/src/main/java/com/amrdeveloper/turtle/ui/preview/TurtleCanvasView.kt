@@ -96,7 +96,7 @@ class TurtleCanvasView @JvmOverloads constructor(
         // this approach is working for now but can be optimized and cashed later
         var sp = 0
         var isSleepLastInst = false
-        while (sp < instructionPointer && sp < instructionBreakPoint) {
+        while (sp < instructionPointer && sp < instructionBreakPoint && sp < instructionList.lastIndex) {
             when (val inst = instructionList[sp++]) {
                 is RectangleInst -> {
                     val turtle = turtlePointers[inst.id]
@@ -172,8 +172,8 @@ class TurtleCanvasView @JvmOverloads constructor(
             invalidate()
         }
 
-        if (::onRenderFinished.isInitialized && instructionPointer >= instructionList.lastIndex) {
-            onRenderFinished()
+        if (::onRenderFinished.isInitialized && instructionPointer == instructionList.lastIndex) {
+           onRenderFinished()
         }
     }
 

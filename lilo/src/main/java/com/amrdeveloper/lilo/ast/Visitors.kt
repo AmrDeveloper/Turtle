@@ -65,6 +65,7 @@ interface ExpressionVisitor<R> {
     fun visit(expression: NumberExpression): R
     fun visit(expression: BooleanExpression): R
     fun visit(expression: NewTurtleExpression): R
+    fun visit(expression: ThieExpression): R
 }
 
 interface TreeVisitor<S, E> : StatementVisitor<S>, ExpressionVisitor<E>

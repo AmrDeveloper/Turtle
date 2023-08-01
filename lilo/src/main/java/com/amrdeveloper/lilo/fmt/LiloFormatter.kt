@@ -23,8 +23,8 @@
 
 package com.amrdeveloper.lilo.fmt
 
-import com.amrdeveloper.lilo.front.Token
-import com.amrdeveloper.lilo.front.TokenType
+import com.amrdeveloper.lilo.frontend.Token
+import com.amrdeveloper.lilo.frontend.TokenType
 import com.amrdeveloper.lilo.ast.AssignExpression
 import com.amrdeveloper.lilo.ast.BackgroundStatement
 import com.amrdeveloper.lilo.ast.BackwardStatement
@@ -61,6 +61,7 @@ import com.amrdeveloper.lilo.ast.ShowPointerStatement
 import com.amrdeveloper.lilo.ast.SleepStatement
 import com.amrdeveloper.lilo.ast.SpeedStatement
 import com.amrdeveloper.lilo.ast.StopStatement
+import com.amrdeveloper.lilo.ast.ThieExpression
 import com.amrdeveloper.lilo.ast.TreeVisitor
 import com.amrdeveloper.lilo.ast.UnaryExpression
 import com.amrdeveloper.lilo.ast.VariableExpression
@@ -327,6 +328,10 @@ class LiloFormatter : TreeVisitor<String, String> {
 
     override fun visit(expression: NewTurtleExpression): String {
         return indentation() + "new_turtle"
+    }
+
+    override fun visit(expression: ThieExpression): String {
+        return "this"
     }
 
     private fun operatorLiteral(operator : Token) : String {

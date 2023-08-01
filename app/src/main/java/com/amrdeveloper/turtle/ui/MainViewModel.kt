@@ -29,8 +29,8 @@ import com.amrdeveloper.lilo.utils.Diagnostic
 import com.amrdeveloper.lilo.utils.LiloDiagnostics
 import com.amrdeveloper.lilo.ast.LiloScript
 import com.amrdeveloper.lilo.fmt.LiloFormatter
-import com.amrdeveloper.lilo.front.LiloParser
-import com.amrdeveloper.lilo.front.LiloTokenizer
+import com.amrdeveloper.lilo.frontend.LiloParser
+import com.amrdeveloper.lilo.frontend.LiloTokenizer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

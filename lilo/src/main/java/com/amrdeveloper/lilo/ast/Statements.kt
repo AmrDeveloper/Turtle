@@ -23,7 +23,7 @@
 
 package com.amrdeveloper.lilo.ast
 
-import com.amrdeveloper.lilo.front.Token
+import com.amrdeveloper.lilo.frontend.Token
 
 abstract class Statement {
     abstract fun <R> accept(visitor: StatementVisitor<R>): R

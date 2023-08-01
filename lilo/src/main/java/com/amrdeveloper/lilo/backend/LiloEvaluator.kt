@@ -27,7 +27,7 @@ import com.amrdeveloper.lilo.utils.LiloException
 import com.amrdeveloper.lilo.ast.*
 import com.amrdeveloper.lilo.utils.bindBuiltinColors
 import com.amrdeveloper.lilo.std.bindStandardModules
-import com.amrdeveloper.lilo.front.TokenType
+import com.amrdeveloper.lilo.frontend.TokenType
 
 class LiloEvaluator : TreeVisitor<Unit, Any> {
 
@@ -43,6 +43,7 @@ class LiloEvaluator : TreeVisitor<Unit, Any> {
     private lateinit var onExceptionListener: (LiloException) -> Unit
 
     private var turtlePointerId = 0
+    private val mainTurtlePointer = TurtleObject(0)
 
     fun executeLiloScript(script: LiloScript): ExecutionState {
         preExecuteLiloScript()
@@ -489,6 +490,10 @@ class LiloEvaluator : TreeVisitor<Unit, Any> {
     override fun visit(expression: NewTurtleExpression): Any {
         emitInstruction(NewTurtleInst(turtlePointerId))
         return TurtleObject(turtlePointerId++)
+    }
+
+    override fun visit(expression: ThieExpression): Any {
+        return mainTurtlePointer
     }
 
     fun executeBlockInScope(scope : LiloScope, vararg statements: Statement) : Any {

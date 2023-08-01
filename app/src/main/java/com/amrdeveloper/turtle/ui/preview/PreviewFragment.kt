@@ -113,7 +113,6 @@ class PreviewFragment : Fragment() {
 
         binding.executionBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                Timber.tag(TAG).d("onProgressChanged")
                 binding.turtleCanvasView.setInstructionLimit(progress)
             }
 

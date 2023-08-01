@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.front
+package com.amrdeveloper.lilo.frontend
 
 private const val TERMINATE_CHAR = '\u0000'
 
@@ -185,6 +185,7 @@ class LiloTokenizer(private val script : String) {
             "right" to TokenType.TOKEN_RIGHT,
             "left" to TokenType.TOKEN_LEFT,
             "new_turtle" to TokenType.TOKEN_NEW_TURTLE,
+            "this" to TokenType.TOKEN_THIS,
         )
     }
 }

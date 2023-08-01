@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package com.amrdeveloper.lilo.front
+package com.amrdeveloper.lilo.frontend
 
 import com.amrdeveloper.lilo.ast.*
 import com.amrdeveloper.lilo.utils.LiloDiagnostics
@@ -473,6 +473,10 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
             TokenType.TOKEN_NEW_TURTLE -> {
                 advance()
                 NewTurtleExpression()
+            }
+            TokenType.TOKEN_THIS -> {
+                advance()
+                ThieExpression()
             }
             else -> {
                 Timber.tag(TAG).d("Unexpected primary expression")

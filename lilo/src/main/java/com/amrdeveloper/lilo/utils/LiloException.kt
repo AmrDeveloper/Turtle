@@ -23,7 +23,7 @@
 
 package com.amrdeveloper.lilo.utils
 
-import com.amrdeveloper.lilo.front.TokenPosition
+import com.amrdeveloper.lilo.frontend.TokenPosition
 
 data class LiloException(
     val position: TokenPosition,

@@ -1,6 +1,13 @@
-# Turtle Graphics
+<h1 align="center">Turtle Graphics</h1></br>
 
-<img src="media/turtle_banner.png" width="100%" height="300" />
+<p align="center">
+<img src="media/turtle_graphics_logo.svg" width="20%" height="20%"/>
+</p>
+
+<p align="center">
+Turtle is an Android Application inspired from the original Turtle Graphics and Logo, Logo is an educational programming language designed in 1967 by Computer scientists Wally Feurzeig, Seymour Papert, and Cynthia Solomon and it known for its use of turtle graphics,
+this project has a simple tree walking interpreted language called Lilo (Inspired from Logo too :D), with declarations statements, control flow, collections, and instructions for control the turtle in 2D Space which is our case a custom Android Canvas View and also control colors
+</p>
 
 # Download
 
@@ -9,8 +16,6 @@
 <a href="https://galaxystore.samsung.com/detail/com.amrdeveloper.turtle"><img src="https://img.samsungapps.com/seller/images/badges/galaxyStore/png_big/GalaxyStore_English.png" alt="Samsung Galaxy Store" width="20%" height="60"></a>
 <a href="https://appgallery.huawei.com/#/app/C106630055"><img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Huawei_AppGallery_white_badge_EN.png" alt="Huawei AppGallery" width="20%" height="60"></a>
 
-Turtle is an Android Application inspired from the original Turtle Graphics and Logo, Logo is an educational programming language designed in 1967 by Computer scientists Wally Feurzeig, Seymour Papert, and Cynthia Solomon and it known for its use of turtle graphics,
-this project has a simple tree walking interpreted language called Lilo (Inspired from Logo too :D), with declarations statements, control flow, collections, and instructions for control the turtle in 2D Space which is our case a custom Android Canvas View and also control colors
 
 ## Screenshots
 

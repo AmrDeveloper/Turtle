@@ -245,7 +245,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
 
     private fun parseStopStatement(): Statement {
         Timber.tag(TAG).d("Parse Stop statement")
-        val keyword = consume(TokenType.TOKEN_STOP, "Expect Stop keyword.")
+        consume(TokenType.TOKEN_STOP, "Expect Stop keyword.")
         return StopStatement()
     }
 

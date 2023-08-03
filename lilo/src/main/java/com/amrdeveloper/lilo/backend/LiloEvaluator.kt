@@ -353,24 +353,25 @@ class LiloEvaluator : TreeVisitor<Unit, Any> {
     override fun visit(expression: BinaryExpression): Any {
         val left = expression.left.accept(this)
         val right = expression.right.accept(this)
-        val operatorType = expression.operator.type
+        val op = expression.operator.type
 
-        if (operatorType == TokenType.TOKEN_EQ_EQ) return left == right
-        if (operatorType == TokenType.TOKEN_BANG_EQ) return left != right
+        if (op == TokenType.TOKEN_EQ_EQ) return left == right
+        if (op == TokenType.TOKEN_BANG_EQ) return left != right
 
         if (left is Float && right is Float) {
-            when (operatorType) {
-                TokenType.TOKEN_PLUS -> return left + right
-                TokenType.TOKEN_MINUS -> return left - right
-                TokenType.TOKEN_MUL -> return left * right
-                TokenType.TOKEN_DIV -> return left / right
-                TokenType.TOKEN_REMINDER -> return left % right
+            return when (op) {
+                TokenType.TOKEN_PLUS -> left + right
+                TokenType.TOKEN_MINUS -> left - right
+                TokenType.TOKEN_MUL -> left * right
+                TokenType.TOKEN_DIV -> left / right
+                TokenType.TOKEN_REMINDER -> left % right
 
-                TokenType.TOKEN_GT -> return left > right
-                TokenType.TOKEN_GT_EQ -> return left >= right
+                TokenType.TOKEN_GT -> left > right
+                TokenType.TOKEN_GT_EQ -> left >= right
 
-                TokenType.TOKEN_LS -> return left < right
-                TokenType.TOKEN_LS_EQ -> return left <= right
+                TokenType.TOKEN_LS -> left < right
+                TokenType.TOKEN_LS_EQ -> left <= right
+                else ->  throw LiloException(expression.operator.position, "Invalid binary operator.")
             }
         }
 

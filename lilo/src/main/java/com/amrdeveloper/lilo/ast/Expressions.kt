@@ -57,6 +57,16 @@ class BinaryExpression(
     }
 }
 
+class ComparisonExpression(
+    val left: Expression,
+    val operator: Token,
+    val right: Expression,
+) : Expression() {
+    override fun <R> accept(visitor: ExpressionVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
 class LogicalExpression(
     val left: Expression,
     val operator: Token,

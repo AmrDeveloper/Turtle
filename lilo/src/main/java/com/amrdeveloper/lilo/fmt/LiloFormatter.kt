@@ -34,6 +34,7 @@ import com.amrdeveloper.lilo.ast.BooleanExpression
 import com.amrdeveloper.lilo.ast.CallExpression
 import com.amrdeveloper.lilo.ast.CircleStatement
 import com.amrdeveloper.lilo.ast.ColorStatement
+import com.amrdeveloper.lilo.ast.ComparisonExpression
 import com.amrdeveloper.lilo.ast.CubeStatement
 import com.amrdeveloper.lilo.ast.DotExpression
 import com.amrdeveloper.lilo.ast.ExpressionStatement
@@ -262,6 +263,10 @@ class LiloFormatter : TreeVisitor<String, String> {
     }
 
     override fun visit(expression: BinaryExpression): String {
+        return expression.left.accept(this) + operatorLiteral(expression.operator) + expression.right.accept(this)
+    }
+
+    override fun visit(expression: ComparisonExpression): String {
         return expression.left.accept(this) + operatorLiteral(expression.operator) + expression.right.accept(this)
     }
 

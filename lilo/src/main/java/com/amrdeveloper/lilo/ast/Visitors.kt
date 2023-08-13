@@ -55,6 +55,7 @@ interface ExpressionVisitor<R> {
     fun visit(expression: AssignExpression): R
     fun visit(expression: GroupExpression): R
     fun visit(expression: BinaryExpression): R
+    fun visit(expression: ComparisonExpression): R
     fun visit(expression: LogicalExpression): R
     fun visit(expression: UnaryExpression): R
     fun visit(expression: CallExpression): R

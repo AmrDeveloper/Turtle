@@ -355,9 +355,6 @@ class LiloEvaluator : TreeVisitor<Unit, Any> {
         val right = expression.right.accept(this)
         val op = expression.operator.type
 
-        if (op == TokenType.TOKEN_EQ_EQ) return left == right
-        if (op == TokenType.TOKEN_BANG_EQ) return left != right
-
         if (left is Float && right is Float) {
             return when (op) {
                 TokenType.TOKEN_PLUS -> left + right
@@ -365,17 +362,33 @@ class LiloEvaluator : TreeVisitor<Unit, Any> {
                 TokenType.TOKEN_MUL -> left * right
                 TokenType.TOKEN_DIV -> left / right
                 TokenType.TOKEN_REMINDER -> left % right
-
-                TokenType.TOKEN_GT -> left > right
-                TokenType.TOKEN_GT_EQ -> left >= right
-
-                TokenType.TOKEN_LS -> left < right
-                TokenType.TOKEN_LS_EQ -> left <= right
                 else ->  throw LiloException(expression.operator.position, "Invalid binary operator.")
             }
         }
 
         throw LiloException(expression.operator.position, "Invalid binary expression.")
+    }
+
+    override fun visit(expression: ComparisonExpression): Any {
+        val left = expression.left.accept(this)
+        val right = expression.right.accept(this)
+        val op = expression.operator.type
+
+        if (op == TokenType.TOKEN_EQ_EQ) return left == right
+        if (op == TokenType.TOKEN_BANG_EQ) return left != right
+
+        if (left is Float && right is Float) {
+            return when (op) {
+                TokenType.TOKEN_GT -> left > right
+                TokenType.TOKEN_GT_EQ -> left >= right
+
+                TokenType.TOKEN_LS -> left < right
+                TokenType.TOKEN_LS_EQ -> left <= right
+                else ->  throw LiloException(expression.operator.position, "Invalid comparison operator.")
+            }
+        }
+
+        throw LiloException(expression.operator.position, "Invalid comparison expression.")
     }
 
     override fun visit(expression: LogicalExpression): Any {

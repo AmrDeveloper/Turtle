@@ -26,6 +26,7 @@ package com.amrdeveloper.lilo.frontend
 import com.amrdeveloper.lilo.ast.*
 import com.amrdeveloper.lilo.utils.LiloDiagnostics
 import timber.log.Timber
+import kotlin.math.exp
 
 private const val TAG = "LiloParser"
 
@@ -355,7 +356,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         while (checkPeek(TokenType.TOKEN_EQ_EQ) || checkPeek(TokenType.TOKEN_BANG_EQ)) {
             val operator = previous()
             val right = parseComparisonExpression()
-            expression = BinaryExpression(expression, operator, right)
+            expression = ComparisonExpression(expression, operator, right)
         }
         return expression
     }
@@ -366,7 +367,15 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
             checkPeek(TokenType.TOKEN_LS) || checkPeek(TokenType.TOKEN_LS_EQ)) {
             val operator = previous()
             val right = parseTermExpression()
-            expression = BinaryExpression(expression, operator, right)
+
+            expression = if (expression is ComparisonExpression) {
+                val comparison = ComparisonExpression(expression.right, operator, right)
+                val logicalAndOperator = Token(TokenType.TOKEN_LOGICAL_AND, operator.position)
+                LogicalExpression(expression, logicalAndOperator, comparison)
+            } else {
+                ComparisonExpression(expression, operator, right)
+            }
+
         }
         return expression
     }

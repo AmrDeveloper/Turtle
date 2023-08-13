@@ -26,5 +26,5 @@ package com.amrdeveloper.lilo.frontend
 data class Token (
     val type : TokenType,
     val position : TokenPosition,
-    val literal : String,
+    val literal : String = "",
 )

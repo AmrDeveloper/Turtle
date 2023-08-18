@@ -36,7 +36,7 @@ class LiloTokenizer(private val script : String) {
     fun scanTokens() : List<Token> {
         val tokens = mutableListOf<Token>()
         while (isAtEnd().not()) {
-            skipWhiteSpaces()
+            skipWhiteSpacesAndComments()
             startPosition = currentPosition
             startColumn = currentColumn
             tokens.add(scanToken())
@@ -91,7 +91,7 @@ class LiloTokenizer(private val script : String) {
         return makeToken(TokenType.TOKEN_NUMBER, numberLiteral)
     }
 
-    private fun skipWhiteSpaces() {
+    private fun skipWhiteSpacesAndComments() {
         while (true) {
             when (peek()) {
                 ' ', '\r', '\t' -> {
@@ -101,6 +101,11 @@ class LiloTokenizer(private val script : String) {
                     line++
                     currentColumn = 0
                     advance()
+                }
+                '#' -> {
+                    while (isAtEnd().not() && peek() != '\n') {
+                        advance()
+                    }
                 }
                 else -> return
             }

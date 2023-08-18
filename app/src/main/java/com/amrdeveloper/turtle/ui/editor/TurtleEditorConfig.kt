@@ -33,6 +33,7 @@ import java.util.regex.Pattern
 private val turtleKeywords = LiloTokenizer.keywords.keys
 private val PATTERN_KEYWORDS = Pattern.compile("\\b(${turtleKeywords.joinToString(separator = "|")})\\b")
 private val PATTERN_NUMBERS = Pattern.compile("\\b(\\d*[.]?\\d+)\\b")
+private val PATTERN_HASH_COMMENT = Pattern.compile("#(?!TODO )[^\\n]*");
 
 fun configCodeViewForLiloScript(codeView: CodeView) {
     val context = codeView.context ?: return
@@ -40,6 +41,7 @@ fun configCodeViewForLiloScript(codeView: CodeView) {
     // Config Syntax highlighter
     codeView.addSyntaxPattern(PATTERN_KEYWORDS, ContextCompat.getColor(context, R.color.monokia_pro_pink))
     codeView.addSyntaxPattern(PATTERN_NUMBERS, ContextCompat.getColor(context, R.color.monokia_pro_purple))
+    codeView.addSyntaxPattern(PATTERN_HASH_COMMENT, ContextCompat.getColor(context, R.color.monokia_pro_grey))
 
     // Config Pairs complete
     val pairCompleteMap = mapOf('{' to '}', '(' to ')')

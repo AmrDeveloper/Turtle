@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.5.3 *(2023-08-18)*
+-----------------------------
+
+* Add support for comments #2
+* Add the new logo
+
 Version 1.5.1 *(2023-02-27)*
 -----------------------------
 

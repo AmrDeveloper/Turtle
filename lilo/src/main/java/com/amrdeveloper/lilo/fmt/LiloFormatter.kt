@@ -54,6 +54,8 @@ import com.amrdeveloper.lilo.ast.MoveXStatement
 import com.amrdeveloper.lilo.ast.MoveYStatement
 import com.amrdeveloper.lilo.ast.NewTurtleExpression
 import com.amrdeveloper.lilo.ast.NumberExpression
+import com.amrdeveloper.lilo.ast.PenDownStatement
+import com.amrdeveloper.lilo.ast.PenUpStatement
 import com.amrdeveloper.lilo.ast.RepeatStatement
 import com.amrdeveloper.lilo.ast.ReturnStatement
 import com.amrdeveloper.lilo.ast.RightStatement
@@ -228,6 +230,14 @@ class LiloFormatter : TreeVisitor<String, String> {
 
     override fun visit(statement: HidePointerStatement): String {
         return indentation() + "hide\n"
+    }
+
+    override fun visit(statement: PenUpStatement): String {
+        return indentation() + "penUp\n"
+    }
+
+    override fun visit(statement: PenDownStatement): String {
+        return indentation() + "penDown\n"
     }
 
     override fun visit(statement: StopStatement): String {

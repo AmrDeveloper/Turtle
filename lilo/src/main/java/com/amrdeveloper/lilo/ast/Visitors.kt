@@ -43,6 +43,8 @@ interface StatementVisitor<R> {
     fun visit(statement: SleepStatement): R
     fun visit(statement: ShowPointerStatement): R
     fun visit(statement: HidePointerStatement): R
+    fun visit(statement: PenUpStatement): R
+    fun visit(statement: PenDownStatement): R
     fun visit(statement: StopStatement): R
     fun visit(statement: RotateStatement): R
     fun visit(statement: ForwardStatement): R

@@ -252,6 +252,14 @@ class LiloEvaluator : TreeVisitor<Unit, Any> {
         emitInstruction(VisibilityInst(statement.id, false))
     }
 
+    override fun visit(statement: PenUpStatement) {
+        emitInstruction(PenInst(statement.id, false))
+    }
+
+    override fun visit(statement: PenDownStatement) {
+        emitInstruction(PenInst(statement.id, true))
+    }
+
     override fun visit(statement: StopStatement) {
         shouldTerminate = true
     }

@@ -183,6 +183,8 @@ class LiloTokenizer(private val script : String) {
             "sleep" to TokenType.TOKEN_SLEEP,
             "show" to TokenType.TOKEN_POINTER_SHOW,
             "hide" to TokenType.TOKEN_POINTER_HIDE,
+            "penUp" to TokenType.TOKEN_PEN_UP,
+            "penDown" to TokenType.TOKEN_PEN_DOWN,
             "stop" to TokenType.TOKEN_STOP,
             "rotate" to TokenType.TOKEN_ROTATE,
             "forward" to TokenType.TOKEN_FORWARD,

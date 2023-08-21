@@ -41,6 +41,7 @@ import com.amrdeveloper.lilo.backend.MoveXInst
 import com.amrdeveloper.lilo.backend.MoveYInst
 import com.amrdeveloper.lilo.backend.NewTurtleInst
 import com.amrdeveloper.lilo.backend.Operator
+import com.amrdeveloper.lilo.backend.PenInst
 import com.amrdeveloper.lilo.backend.RectangleInst
 import com.amrdeveloper.lilo.backend.SleepInst
 import com.amrdeveloper.lilo.backend.SpeedInst
@@ -100,26 +101,32 @@ class TurtleCanvasView @JvmOverloads constructor(
             when (val inst = instructionList[sp++]) {
                 is RectangleInst -> {
                     val turtle = turtlePointers[inst.id]
-                    turtlePaint.color = turtle.color
-                    canvas.drawRect(turtle.x, turtle.y, turtle.y + inst.right, turtle.y + inst.bottom, turtlePaint)
+                    if (turtle.isPenDown) {
+                        turtlePaint.color = turtle.color
+                        canvas.drawRect(turtle.x, turtle.y, turtle.y + inst.right, turtle.y + inst.bottom, turtlePaint)
+                    }
                 }
                 is CircleInst -> {
                     val turtle = turtlePointers[inst.id]
-                    turtlePaint.color = turtle.color
-                    canvas.drawCircle(turtle.x, turtle.y, inst.radius, turtlePaint)
+                    if (turtle.isPenDown) {
+                        turtlePaint.color = turtle.color
+                        canvas.drawCircle(turtle.x, turtle.y, inst.radius, turtlePaint)
+                    }
                 }
                 is LineInst -> {
                     val turtle = turtlePointers[inst.id]
-                    val angel = turtle.degree * Math.PI / 180
-                    val length = inst.length
-                    val endX = (turtle.x + length * sin(angel)).toFloat()
-                    val endY = (turtle.y + length * cos(angel)).toFloat()
+                    if (turtle.isPenDown) {
+                        val angel = turtle.degree * Math.PI / 180
+                        val length = inst.length
+                        val endX = (turtle.x + length * sin(angel)).toFloat()
+                        val endY = (turtle.y + length * cos(angel)).toFloat()
 
-                    turtlePaint.color = turtle.color
-                    canvas.drawLine(turtle.x, turtle.y, endX, endY, turtlePaint)
+                        turtlePaint.color = turtle.color
+                        canvas.drawLine(turtle.x, turtle.y, endX, endY, turtlePaint)
 
-                    turtlePointers[inst.id].x = endX
-                    turtlePointers[inst.id].y = endY
+                        turtlePointers[inst.id].x = endX
+                        turtlePointers[inst.id].y = endY
+                    }
                 }
                 is MoveXInst -> {
                     turtlePointers[inst.id].x = inst.amount
@@ -144,6 +151,9 @@ class TurtleCanvasView @JvmOverloads constructor(
                 }
                 is VisibilityInst -> {
                     turtlePointers[inst.id].isVisible = inst.isVisible
+                }
+                is PenInst -> {
+                    turtlePointers[inst.id].isPenDown = inst.isDown
                 }
                 is SpeedInst -> {
                     instructionSpeed = inst.time.toLong()

@@ -113,6 +113,8 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
             TokenType.TOKEN_SPEED -> parseSpeedStatement()
             TokenType.TOKEN_POINTER_SHOW -> parsePointerShowStatement()
             TokenType.TOKEN_POINTER_HIDE -> parsePointerHideStatement()
+            TokenType.TOKEN_PEN_UP -> parsePenUpStatement()
+            TokenType.TOKEN_PEN_DOWN -> parsePenDownStatement()
             TokenType.TOKEN_STOP -> parseStopStatement()
             TokenType.TOKEN_ROTATE -> parseRotateStatement()
             TokenType.TOKEN_FORWARD -> parseForwardStatement()
@@ -242,6 +244,18 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         Timber.tag(TAG).d("Parse Pointer hide statement")
         consume(TokenType.TOKEN_POINTER_HIDE, "Expect hide keyword.")
         return HidePointerStatement()
+    }
+
+    private fun parsePenUpStatement(): Statement {
+        Timber.tag(TAG).d("Parse Pointer penUp statement")
+        consume(TokenType.TOKEN_PEN_UP, "Expect penUp keyword.")
+        return PenUpStatement()
+    }
+
+    private fun parsePenDownStatement(): Statement {
+        Timber.tag(TAG).d("Parse Pointer penDown statement")
+        consume(TokenType.TOKEN_PEN_DOWN, "Expect penDown keyword.")
+        return PenDownStatement()
     }
 
     private fun parseStopStatement(): Statement {

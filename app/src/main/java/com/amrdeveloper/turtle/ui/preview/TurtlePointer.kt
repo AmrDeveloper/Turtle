@@ -8,4 +8,5 @@ data class TurtlePointer(
     var degree: Float,
     var color : Int = Color.BLACK,
     var isVisible: Boolean = true,
+    var isPenDown : Boolean = true,
 )

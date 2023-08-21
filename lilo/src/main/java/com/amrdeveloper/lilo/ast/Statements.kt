@@ -259,6 +259,22 @@ class HidePointerStatement(
     }
 }
 
+class PenUpStatement(
+    override var id: Int = 0,
+) : TurtleStatement(id) {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
+class PenDownStatement(
+    override var id: Int = 0,
+) : TurtleStatement(id) {
+    override fun <R> accept(visitor: StatementVisitor<R>): R {
+        return visitor.visit(this)
+    }
+}
+
 class StopStatement : Statement() {
     override fun <R> accept(visitor: StatementVisitor<R>): R {
         return visitor.visit(this)

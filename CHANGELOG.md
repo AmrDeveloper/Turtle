@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.6.0 *(2023-08-21)*
+-----------------------------
+
+* Add support for `penUp` and `penDown` functions #3
+
 Version 1.5.3 *(2023-08-18)*
 -----------------------------
 

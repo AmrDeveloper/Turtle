@@ -8,14 +8,14 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.amrdeveloper.turtle"
         minSdk 21
-        targetSdk 33
-        versionCode 17
-        versionName "1.6.1"
+        targetSdk 34
+        versionCode 18
+        versionName "1.6.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "turtle" + "_v" + versionCode + "(" + versionName + ")")
     }
@@ -47,8 +47,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
 
     // UI Components
-    implementation 'io.github.amrdeveloper:codeview:1.3.8'
-    implementation 'io.github.amrdeveloper:treeview:1.1.4'
+    implementation 'io.github.amrdeveloper:codeview:1.3.9'
+    implementation 'io.github.amrdeveloper:treeview:1.2.0'
     implementation 'io.github.amrdeveloper:lottiedialog:1.0.0'
 
     // Adapters Generator
@@ -64,16 +64,16 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.4.1"
 
     // Room Database
-    implementation "androidx.room:room-runtime:2.4.2"
-    implementation "androidx.room:room-ktx:2.4.2"
-    kapt "androidx.room:room-compiler:2.4.2"
+    implementation "androidx.room:room-runtime:2.6.1"
+    implementation "androidx.room:room-ktx:2.6.1"
+    kapt "androidx.room:room-compiler:2.6.1"
 
     // DI Framework
-    implementation "com.google.dagger:hilt-android:2.41"
-    kapt "com.google.dagger:hilt-android-compiler:2.41"
+    implementation "com.google.dagger:hilt-android:2.48"
+    kapt "com.google.dagger:hilt-android-compiler:2.48"
 
     // Kotlin Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
     
     // Lilo Programming Language module
     implementation project(path: ':lilo')

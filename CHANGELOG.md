@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 1.6.2 *(2024-07-17)*
+-----------------------------
+
+* Update SDK to 34.
+* Update TreeView to 1.2.0
+* Update CodeView to 1.3.9.
+
 Version 1.6.1 *(2023-09-27)*
 -----------------------------
 

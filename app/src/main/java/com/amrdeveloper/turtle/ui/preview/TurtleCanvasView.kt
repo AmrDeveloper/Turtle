@@ -80,9 +80,8 @@ class TurtleCanvasView @JvmOverloads constructor(
     private lateinit var onRenderStopped: () -> Unit
     private lateinit var onRenderFinished: () -> Unit
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas ?: return
         interpretInstructions(canvas)
     }
 

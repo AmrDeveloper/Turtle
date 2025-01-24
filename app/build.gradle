@@ -9,6 +9,7 @@ plugins {
 
 android {
     compileSdk 34
+    namespace "com.amrdeveloper.turtle"
 
     defaultConfig {
         applicationId "com.amrdeveloper.turtle"

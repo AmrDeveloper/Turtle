@@ -23,9 +23,7 @@
 
 package com.amrdeveloper.turtle.data
 
-import com.amrdeveloper.turtle.BuildConfig
-
-const val PACKAGE_NAME = BuildConfig.APPLICATION_ID
+const val PACKAGE_NAME = "com.amrdeveloper.turtle"
 const val GITHUB_SOURCE = "https://github.com/AmrDeveloper/turtle"
 const val GITHUB_CONTRIBUTORS = "$GITHUB_SOURCE/graphs/contributors"
 const val GITHUB_ISSUES = "$GITHUB_SOURCE/issues"

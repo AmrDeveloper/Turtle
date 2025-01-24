@@ -31,7 +31,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
-import com.amrdeveloper.turtle.BuildConfig
 import com.amrdeveloper.turtle.data.AppTheme
 import com.amrdeveloper.turtle.data.GITHUB_CONTRIBUTORS
 import com.amrdeveloper.turtle.data.GITHUB_ISSUES
@@ -58,7 +57,8 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setupSettingsInformation() {
-        binding.versionTxt.text = "Version ${BuildConfig.VERSION_NAME}"
+        // TODO: Check this later
+        binding.versionTxt.visibility = View.GONE
 
         val isDarkTheme = userPreferences.getAppTheme() == AppTheme.DARK
         binding.themeSwitch.isChecked = isDarkTheme

@@ -5,6 +5,7 @@ plugins {
 
 android {
     compileSdk 34
+    namespace "com.amrdeveloper.lilo"
 
     defaultConfig {
         minSdk 21

@@ -25,9 +25,8 @@ package com.amrdeveloper.turtle.data
 
 import com.amrdeveloper.easyadapter.adapter.ExpandableAdapter
 import com.amrdeveloper.easyadapter.bind.BindExpandableMap
-import com.amrdeveloper.turtle.BuildConfig
 
-@ExpandableAdapter(BuildConfig.APPLICATION_ID)
+@ExpandableAdapter("com.amrdeveloper.turtle")
 data class LiloDocuments(
     @BindExpandableMap
     val documents: Map<DocumentCategory, List<Document>> = liloFullDocuments

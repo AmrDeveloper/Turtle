@@ -34,15 +34,13 @@ import com.amrdeveloper.codeview.CodeViewAdapter
 import com.amrdeveloper.codeview.Snippet
 import com.amrdeveloper.turtle.R
 
-private const val LAYOUT_ID = R.layout.list_item_autocomplete
-
 class AutoCompleteAdapter(
     private val context: Context,
     private val codes: List<Code>
-) : CodeViewAdapter(context, LAYOUT_ID, 0, codes) {
+) : CodeViewAdapter(context, R.layout.list_item_autocomplete, 0, codes) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view = convertView ?: LayoutInflater.from(context).inflate(LAYOUT_ID, parent, false)
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.list_item_autocomplete, parent, false)
         val currentCode = getItem(position) as Code
 
         val codeTitle = view.findViewById<TextView>(R.id.code_title)

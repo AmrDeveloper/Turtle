@@ -32,14 +32,13 @@ import com.amrdeveloper.easyadapter.adapter.ListAdapter
 import com.amrdeveloper.easyadapter.bind.BindListener
 import com.amrdeveloper.easyadapter.bind.BindText
 import com.amrdeveloper.easyadapter.option.ListenerType
-import com.amrdeveloper.turtle.BuildConfig
 import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize
 @BindListener(ListenerType.OnClick)
 @BindListener(ListenerType.OnLongClick)
-@ListAdapter(BuildConfig.APPLICATION_ID, "list_item_package", "name")
+@ListAdapter("com.amrdeveloper.turtle", "list_item_package", "name")
 @Entity(tableName = "lilo_package", indices = [Index(value = ["name"], unique = true)])
 data class LiloPackage (
     @BindText("document_title_txt") var name: String,

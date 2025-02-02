@@ -154,7 +154,7 @@ class NewTurtleExpression : Expression() {
     }
 }
 
-class ThieExpression : Expression() {
+class ThisExpression : Expression() {
     override fun <R> accept(visitor: ExpressionVisitor<R>): R {
         return visitor.visit(this)
     }

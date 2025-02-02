@@ -514,7 +514,7 @@ class LiloEvaluator : TreeVisitor<Unit, Any> {
         return TurtleObject(turtlePointerId++)
     }
 
-    override fun visit(expression: ThieExpression): Any {
+    override fun visit(expression: ThisExpression): Any {
         return mainTurtlePointer
     }
 

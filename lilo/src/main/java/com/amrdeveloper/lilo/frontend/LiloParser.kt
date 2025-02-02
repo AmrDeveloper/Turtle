@@ -26,7 +26,6 @@ package com.amrdeveloper.lilo.frontend
 import com.amrdeveloper.lilo.ast.*
 import com.amrdeveloper.lilo.utils.LiloDiagnostics
 import timber.log.Timber
-import kotlin.math.exp
 
 private const val TAG = "LiloParser"
 
@@ -172,7 +171,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
     private fun parseCubeStatement(): Statement {
         Timber.tag(TAG).d("Parse Cube statement")
         val keyword = consume(TokenType.TOKEN_CUBE, "Expect Cube keyword.")
-        val value =  parseExpression()
+        val value = parseExpression()
         return CubeStatement(keyword, value)
     }
 
@@ -323,7 +322,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return parseAssignExpression()
     }
 
-    private fun parseAssignExpression() : Expression {
+    private fun parseAssignExpression(): Expression {
         val expression = parseLogicalOrExpression()
         if (peek().type in assignOperators) {
             advance()
@@ -345,7 +344,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return expression
     }
 
-    private fun parseLogicalOrExpression() : Expression {
+    private fun parseLogicalOrExpression(): Expression {
         var expression = parseLogicalAndExpression()
         while (checkPeek(TokenType.TOKEN_LOGICAL_OR)) {
             val operator = previous()
@@ -355,7 +354,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return expression
     }
 
-    private fun parseLogicalAndExpression() : Expression {
+    private fun parseLogicalAndExpression(): Expression {
         var expression = parseEqualityExpression()
         while (checkPeek(TokenType.TOKEN_LOGICAL_OR)) {
             val operator = previous()
@@ -365,7 +364,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return expression
     }
 
-    private fun parseEqualityExpression() : Expression {
+    private fun parseEqualityExpression(): Expression {
         var expression = parseComparisonExpression()
         while (checkPeek(TokenType.TOKEN_EQ_EQ) || checkPeek(TokenType.TOKEN_BANG_EQ)) {
             val operator = previous()
@@ -375,10 +374,11 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return expression
     }
 
-    private fun parseComparisonExpression() : Expression {
+    private fun parseComparisonExpression(): Expression {
         var expression = parseTermExpression()
         while (checkPeek(TokenType.TOKEN_GT) || checkPeek(TokenType.TOKEN_GT_EQ) ||
-            checkPeek(TokenType.TOKEN_LS) || checkPeek(TokenType.TOKEN_LS_EQ)) {
+            checkPeek(TokenType.TOKEN_LS) || checkPeek(TokenType.TOKEN_LS_EQ)
+        ) {
             val operator = previous()
             val right = parseTermExpression()
 
@@ -394,7 +394,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return expression
     }
 
-    private fun parseTermExpression() : Expression {
+    private fun parseTermExpression(): Expression {
         var expression = parseFactorExpression()
         while (checkPeek(TokenType.TOKEN_PLUS) || checkPeek(TokenType.TOKEN_MINUS)) {
             val operator = previous()
@@ -404,18 +404,20 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return expression
     }
 
-    private fun parseFactorExpression() : Expression {
+    private fun parseFactorExpression(): Expression {
         var expression = parseUnaryExpression()
         while (checkPeek(TokenType.TOKEN_MUL) || checkPeek(TokenType.TOKEN_DIV) || checkPeek(
-                TokenType.TOKEN_REMINDER)) {
+                TokenType.TOKEN_REMINDER
+            )
+        ) {
             val operator = previous()
             val right = parseUnaryExpression()
-            expression =  BinaryExpression(expression, operator, right)
+            expression = BinaryExpression(expression, operator, right)
         }
         return expression
     }
 
-    private fun parseUnaryExpression() : Expression {
+    private fun parseUnaryExpression(): Expression {
         if (checkPeek(TokenType.TOKEN_BANG) || checkPeek(TokenType.TOKEN_MINUS)) {
             val operator = previous()
             val right = parseUnaryExpression()
@@ -424,26 +426,28 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return parseCallExpression()
     }
 
-    private fun parseCallExpression() : Expression {
+    private fun parseCallExpression(): Expression {
         var expression = parsePrimaryExpression()
         while (true) {
             if (checkPeek(TokenType.TOKEN_OPEN_PAREN)) {
                 val openParenToken = previous()
                 val arguments = mutableListOf<Expression>()
                 if (checkPeek(TokenType.TOKEN_CLOSE_PAREN).not()) {
-                    do { arguments.add(parseExpression()) }
-                    while (checkPeek(TokenType.TOKEN_COMMA))
-                    consume(TokenType.TOKEN_CLOSE_PAREN, "Expect close paren ) after call arguments.")
+                    do {
+                        arguments.add(parseExpression())
+                    } while (checkPeek(TokenType.TOKEN_COMMA))
+                    consume(
+                        TokenType.TOKEN_CLOSE_PAREN,
+                        "Expect close paren ) after call arguments."
+                    )
                 }
                 expression = CallExpression(expression, openParenToken, arguments)
-            }
-            else if (checkPeek(TokenType.TOKEN_OPEN_BRACKET)) {
+            } else if (checkPeek(TokenType.TOKEN_OPEN_BRACKET)) {
                 val openBracketToken = previous()
                 val index = parseExpression()
                 consume(TokenType.TOKEN_CLOSE_BRACKET, "Expect close bracket [ after index value.")
                 expression = IndexExpression(openBracketToken, expression, index)
-            }
-            else if (checkPeek(TokenType.TOKEN_DOT)) {
+            } else if (checkPeek(TokenType.TOKEN_DOT)) {
                 val dotToken = previous()
                 val statement = parseStatement()
                 if (statement is TurtleStatement) {
@@ -451,8 +455,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 } else {
                     reportParserError(dotToken.position, "Invalid Dot Expression")
                 }
-            }
-            else {
+            } else {
                 break
             }
         }
@@ -466,22 +469,29 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                 advance()
                 BooleanExpression(value)
             }
+
             TokenType.TOKEN_NUMBER -> {
                 val value = peek().literal.toFloat()
                 advance()
                 NumberExpression(value)
             }
+
             TokenType.TOKEN_IDENTIFIER -> {
                 val name = peek()
                 advance()
                 VariableExpression(name)
             }
+
             TokenType.TOKEN_OPEN_PAREN -> {
                 advance()
                 val expression = parseExpression()
-                consume(TokenType.TOKEN_CLOSE_PAREN, "Expect close paren ) at the end of group expression.")
+                consume(
+                    TokenType.TOKEN_CLOSE_PAREN,
+                    "Expect close paren ) at the end of group expression."
+                )
                 GroupExpression(expression)
             }
+
             TokenType.TOKEN_OPEN_BRACKET -> {
                 advance()
                 val values = mutableListOf<Expression>()
@@ -490,17 +500,23 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
                     values.add(expression)
                     if (checkPeek(TokenType.TOKEN_COMMA).not()) break;
                 }
-                consume(TokenType.TOKEN_CLOSE_BRACKET, "Expect close bracket ] at the end of list expression.")
+                consume(
+                    TokenType.TOKEN_CLOSE_BRACKET,
+                    "Expect close bracket ] at the end of list expression."
+                )
                 ListExpression(values)
             }
+
             TokenType.TOKEN_NEW_TURTLE -> {
                 advance()
                 NewTurtleExpression()
             }
+
             TokenType.TOKEN_THIS -> {
                 advance()
-                ThieExpression()
+                ThisExpression()
             }
+
             else -> {
                 Timber.tag(TAG).d("Unexpected primary expression")
                 reportParserError(peek().position, "Unexpected primary expression")
@@ -528,7 +544,7 @@ class LiloParser(private val tokens: List<Token>, private val diagnostics: LiloD
         return previous()
     }
 
-    private fun checkPeek(type : TokenType) : Boolean {
+    private fun checkPeek(type: TokenType): Boolean {
         if (peek().type == type) {
             advance()
             return true

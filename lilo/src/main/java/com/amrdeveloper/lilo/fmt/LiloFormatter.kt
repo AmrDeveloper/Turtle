@@ -64,7 +64,7 @@ import com.amrdeveloper.lilo.ast.ShowPointerStatement
 import com.amrdeveloper.lilo.ast.SleepStatement
 import com.amrdeveloper.lilo.ast.SpeedStatement
 import com.amrdeveloper.lilo.ast.StopStatement
-import com.amrdeveloper.lilo.ast.ThieExpression
+import com.amrdeveloper.lilo.ast.ThisExpression
 import com.amrdeveloper.lilo.ast.TreeVisitor
 import com.amrdeveloper.lilo.ast.UnaryExpression
 import com.amrdeveloper.lilo.ast.VariableExpression
@@ -345,7 +345,7 @@ class LiloFormatter : TreeVisitor<String, String> {
         return indentation() + "new_turtle"
     }
 
-    override fun visit(expression: ThieExpression): String {
+    override fun visit(expression: ThisExpression): String {
         return "this"
     }
 

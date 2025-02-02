@@ -46,6 +46,7 @@ class RectangleInst(var id : Int, val right: Float, val bottom: Float) : Instruc
 class CircleInst(val id : Int, val radius : Float) : Instruction()
 
 class LineInst(var id : Int, val length : Float) : Instruction()
+
 class VisibilityInst(val id : Int, val isVisible : Boolean) : Instruction()
 
 class PenInst(val id : Int, val isDown : Boolean) : Instruction()

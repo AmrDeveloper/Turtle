@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId "com.amrdeveloper.turtle"
-        minSdk 21
+        minSdk 24
         targetSdk 36
         versionCode 20
         versionName "1.6.4"
@@ -82,9 +82,10 @@ dependencies {
 
     // Kotlin Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"
-    implementation project(path: ':lilolegacy')
 
     // Lilo Programming Language module
+    implementation project(path: ':lilolegacy')
+    implementation project(path: ':lilo')
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 

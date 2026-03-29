@@ -1,6 +1,8 @@
 package com.amrdeveloper.lilo.parser
 
 enum class LiloTokenKind {
+    DEF_KEYWORD,
+    RETURN_KEYWORD,
     TRUE_KEYWORD,
     FALSE_KEYWORD,
 
@@ -14,6 +16,8 @@ enum class LiloTokenKind {
     RPAR,               // )
     L_BRACKET,          // [
     R_BRACKET,          // ]
+    L_BRACE,            // {
+    R_BRACE,            // }
 
     COMMA,
 
@@ -31,6 +35,9 @@ data class LiloLoc(val line: Int, val start: Int, val end: Int)
 data class LiloToken(val kind: LiloTokenKind, val loc: LiloLoc, val lexeme: String?)
 
 fun getLiloKeywordsMap() = mapOf(
+    "def" to LiloTokenKind.DEF_KEYWORD,
+    "return" to LiloTokenKind.RETURN_KEYWORD,
+
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,
 )
@@ -46,6 +53,8 @@ fun getLiloOneCharTokenMap() = mapOf(
     ')' to LiloTokenKind.RPAR,
     '[' to LiloTokenKind.L_BRACKET,
     ']' to LiloTokenKind.R_BRACKET,
+    '{' to LiloTokenKind.L_BRACE,
+    '}' to LiloTokenKind.R_BRACE,
 
     '=' to LiloTokenKind.EQ,
 

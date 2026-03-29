@@ -7,10 +7,13 @@ import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
+import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.ExprStmt
+import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
+import com.amrdeveloper.lilo.ast.PrintCallExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -24,17 +27,17 @@ import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.value.LiloBool
 import com.amrdeveloper.lilo.value.LiloFloat
+import com.amrdeveloper.lilo.value.LiloFunction
 import com.amrdeveloper.lilo.value.LiloInt
 import com.amrdeveloper.lilo.value.LiloList
 import com.amrdeveloper.lilo.value.LiloValue
-import kotlin.collections.iterator
 
 class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>> {
 
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
 
-    private val scope = mutableMapOf<String, LiloValue>()
+    private val environment = LiloEnvironment(enclosing = null)
 
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
         return visitProgram(program)
@@ -49,6 +52,20 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
         return LiloResult.Success(data = Unit)
     }
 
+    override fun visitFunctionStmt(stmt: FunctionStmt): LiloResult<Unit> {
+        val function = LiloFunction(params = stmt.params, body = stmt.body)
+        environment.define(name = stmt.name, value = function)
+        return LiloResult.Success(data = Unit)
+    }
+
+    override fun visitBlockStmt(stmt: BlockStmt): LiloResult<Unit> {
+        for (node in stmt.nodes) {
+            val result = visit(stmt = node)
+            if (result.isFailure()) return result.toFailure()
+        }
+        return LiloResult.Success(data = Unit)
+    }
+
     override fun visitExprStmt(stmt: ExprStmt): LiloResult<Unit> {
         val result = visit(stmt.expr)
         if (result.isFailure()) return result.toFailure()
@@ -56,14 +73,45 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
     }
 
     override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {
-        val valueResult = visit(stmt.value)
+        val valueResult = visit(expr = stmt.value)
         if (valueResult.isFailure()) return valueResult.toFailure()
         val value = valueResult.toSuccessData()
-        scope[stmt.name] = value
+        environment.define(name = stmt.name, value = value)
         return LiloResult.Success(data = Unit)
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<LiloValue> {
+        val calleeName = expr.callee
+        val function = environment.get(name = calleeName)
+        if (function === null || function !is LiloFunction) {
+            return runtimeException("`$calleeName` is not callable")
+        }
+
+        for ((index, arg) in expr.args.withIndex()) {
+            val valueResult = visit(arg)
+            if (valueResult.isFailure()) return valueResult.toFailure()
+            val value = valueResult.toSuccessData()
+            environment.define(name = function.params[index], value = value)
+        }
+
+        for (stmt in function.body) {
+            val result = visit(stmt)
+            if (result.isFailure()) return result.toFailure()
+        }
+
+        return runtimeObject(obj = LiloInt(value = 0))
+    }
+
+    override fun visitPrintCallExpr(expr: PrintCallExpr): LiloResult<LiloValue> {
+        val values = mutableListOf<LiloValue>()
+        for (arg in expr.args) {
+            val value = visit(arg)
+            if (value.isFailure()) return value.toFailure()
+            values.add(value.toSuccessData())
+        }
+
+        val output = values.joinToString(separator = " ")
+        println(output)
         return runtimeObject(obj = LiloInt(value = 0))
     }
 
@@ -105,7 +153,10 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
     }
 
     override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloValue> {
-        val value = scope[expr.value.lexeme!!]!!
+        val value = environment.get(expr.value.lexeme!!)
+        if (value == null) {
+            return runtimeException("Undefined variable `${expr.value.lexeme}`")
+        }
         return runtimeObject(obj = value)
     }
 

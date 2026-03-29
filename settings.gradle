@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "Turtle"
 include ':app'
 include ':lilolegacy'
+include ':lilo'

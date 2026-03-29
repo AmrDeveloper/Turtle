@@ -1,7 +1,8 @@
 package com.amrdeveloper.lilo.opertion
 
-import runtime.LiloException
-import common.LiloResult
+
+import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.runtime.LiloException
 import com.amrdeveloper.lilo.value.LiloFloat
 import com.amrdeveloper.lilo.value.LiloInt
 import com.amrdeveloper.lilo.value.LiloNumber

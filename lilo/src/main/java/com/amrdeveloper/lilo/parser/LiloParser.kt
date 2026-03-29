@@ -114,7 +114,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             return createDiagnostic(previous().loc, "Expect literal as callee name")
         }
 
-        val functionName = call.value.lexeme!!
+        val functionName = (call as SymbolExpr).value.lexeme!!
 
         // (
         advance()

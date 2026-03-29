@@ -36,16 +36,22 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
 
     private val scope = mutableMapOf<String, LiloValue>()
 
-    fun evaluate(program: LiloProgram) {
-        visitProgram(program)
+    fun evaluate(program: LiloProgram): LiloResult<Unit> {
+        return visitProgram(program)
+    }
 
-        for ((key, value) in scope) {
-            println("$key = $value")
+    override fun visitProgram(program: LiloProgram): LiloResult<Unit> {
+        val nodes = program.nodes
+        for (node in nodes) {
+            val result = visit(stmt = node)
+            if (result.isFailure()) return result.toFailure()
         }
+        return LiloResult.Success(data = Unit)
     }
 
     override fun visitExprStmt(stmt: ExprStmt): LiloResult<Unit> {
-        visit(stmt.expr)
+        val result = visit(stmt.expr)
+        if (result.isFailure()) return result.toFailure()
         return LiloResult.Success(data = Unit)
     }
 

@@ -43,10 +43,5 @@ interface LiloExprVisitor<T> {
 }
 
 interface LiloTreeVisitor<S, E> : LiloStmtVisitor<S>, LiloExprVisitor<E> {
-    fun visitProgram(program: LiloProgram) {
-        val nodes = program.nodes
-        for (node in nodes) {
-            visit(node)
-        }
-    }
+    fun visitProgram(program: LiloProgram) : S
 }

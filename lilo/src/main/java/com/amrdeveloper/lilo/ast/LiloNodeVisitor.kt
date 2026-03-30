@@ -2,12 +2,14 @@ package com.amrdeveloper.lilo.ast
 
 interface LiloStmtVisitor<T> {
     fun visit(stmt: LiloStmt): T = when (stmt) {
+        is ImportStmt -> visitImportStmt(stmt)
         is FunctionStmt -> visitFunctionStmt(stmt)
         is BlockStmt -> visitBlockStmt(stmt)
         is ExprStmt -> visitExprStmt(stmt)
         is AssignStmt -> visitAssignStmt(stmt)
     }
 
+    fun visitImportStmt(stmt : ImportStmt) : T
     fun visitFunctionStmt(stmt: FunctionStmt): T
     fun visitBlockStmt(stmt: BlockStmt): T
     fun visitExprStmt(stmt: ExprStmt): T
@@ -16,6 +18,7 @@ interface LiloStmtVisitor<T> {
 
 interface LiloExprVisitor<T> {
     fun visit(expr: LiloExpr): T = when (expr) {
+        is DotExpr -> visitDotExpr(expr)
         is CallExpr -> visitCallExpr(expr)
         is PrintCallExpr -> visitPrintCallExpr(expr)
         is ArithExpr -> visitArithExpr(expr)
@@ -27,6 +30,7 @@ interface LiloExprVisitor<T> {
         is BoolExpr -> visitBoolExpr(expr)
     }
 
+    fun visitDotExpr(expr: DotExpr): T
     fun visitCallExpr(expr: CallExpr): T
     fun visitPrintCallExpr(expr: PrintCallExpr): T
     fun visitArithExpr(expr: ArithExpr): T

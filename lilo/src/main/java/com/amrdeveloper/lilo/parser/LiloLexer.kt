@@ -49,7 +49,7 @@ class LiloLexer(val source: String) {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 
-                ',' -> {
+                '.', ',' -> {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 
@@ -66,7 +66,8 @@ class LiloLexer(val source: String) {
     private fun consumeSymbolOrKeyword(): LiloResult<LiloToken> {
         while (!isAtEnd() && peek().isLetterOrDigitOrUnderscore()) advance()
         val lexeme = source.substring(startPos, currentPos)
-        val tokenKind = getLiloKeywordsMap().getOrDefault(key = lexeme, defaultValue = LiloTokenKind.SYMBOL)
+        val tokenKind =
+            getLiloKeywordsMap().getOrDefault(key = lexeme, defaultValue = LiloTokenKind.SYMBOL)
         return LiloResult.Success(data = createToken(kind = tokenKind, lexeme))
     }
 
@@ -87,7 +88,8 @@ class LiloLexer(val source: String) {
         }
 
         val lexeme = source.substring(startPos, currentPos)
-        val numberKind = if (isFloatingPoint) LiloTokenKind.FLOAT_LITERAL else LiloTokenKind.INT_LITERAL
+        val numberKind =
+            if (isFloatingPoint) LiloTokenKind.FLOAT_LITERAL else LiloTokenKind.INT_LITERAL
         return LiloResult.Success(data = createToken(kind = numberKind, lexeme))
     }
 

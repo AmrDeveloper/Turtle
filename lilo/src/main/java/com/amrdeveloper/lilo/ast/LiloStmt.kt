@@ -2,6 +2,8 @@ package com.amrdeveloper.lilo.ast
 
 sealed interface LiloStmt : LiloNode
 
+data class ImportStmt(val moduleName : String) : LiloStmt
+
 data class FunctionStmt(val name: String, val params: List<String>, val body: List<LiloStmt>) : LiloStmt
 
 data class BlockStmt(val nodes: List<LiloStmt>) : LiloStmt

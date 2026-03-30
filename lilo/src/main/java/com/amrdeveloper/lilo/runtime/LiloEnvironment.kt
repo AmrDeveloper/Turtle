@@ -4,7 +4,7 @@ import com.amrdeveloper.lilo.value.LiloValue
 
 class LiloEnvironment(val enclosing: LiloEnvironment?) {
 
-    private val values = mutableMapOf<String, LiloValue>()
+    val values = mutableMapOf<String, LiloValue>()
 
     fun define(name: String, value: LiloValue) {
         values[name] = value

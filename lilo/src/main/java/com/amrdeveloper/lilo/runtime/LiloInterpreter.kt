@@ -8,8 +8,10 @@ import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BlockStmt
+import com.amrdeveloper.lilo.ast.DotExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
+import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
@@ -25,11 +27,15 @@ import com.amrdeveloper.lilo.opertion.LiloModOp
 import com.amrdeveloper.lilo.opertion.LiloMulOp
 import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
+import com.amrdeveloper.lilo.std.LiloStdFunction
+import com.amrdeveloper.lilo.std.supportedLiloStdModules
 import com.amrdeveloper.lilo.value.LiloBool
+import com.amrdeveloper.lilo.value.LiloBuiltinFunction
 import com.amrdeveloper.lilo.value.LiloFloat
 import com.amrdeveloper.lilo.value.LiloFunction
 import com.amrdeveloper.lilo.value.LiloInt
 import com.amrdeveloper.lilo.value.LiloList
+import com.amrdeveloper.lilo.value.LiloModule
 import com.amrdeveloper.lilo.value.LiloValue
 
 class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>> {
@@ -38,6 +44,8 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
     private val FALSE = LiloBool(value = false)
 
     private val environment = LiloEnvironment(enclosing = null)
+
+    private val supportedModules = supportedLiloStdModules()
 
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
         return visitProgram(program)
@@ -49,6 +57,17 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
             val result = visit(stmt = node)
             if (result.isFailure()) return result.toFailure()
         }
+        return LiloResult.Success(data = Unit)
+    }
+
+    override fun visitImportStmt(stmt: ImportStmt): LiloResult<Unit> {
+        val moduleName = stmt.moduleName
+        if (supportedModules.containsKey(moduleName).not()) {
+            return runtimeException("No module named `$moduleName`")
+        }
+
+        val module = LiloModule(name = stmt.moduleName)
+        environment.define(name = moduleName, value = module)
         return LiloResult.Success(data = Unit)
     }
 
@@ -80,26 +99,67 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
         return LiloResult.Success(data = Unit)
     }
 
+    override fun visitDotExpr(expr: DotExpr): LiloResult<LiloValue> {
+        val objResult = visit(expr.obj)
+        if (objResult.isFailure()) return objResult.toFailure()
+        val obj = objResult.toSuccessData()
+
+        if (obj is LiloModule) {
+            val moduleName = obj.name
+            if (supportedModules.containsKey(moduleName).not()) {
+                return runtimeException("No module named `$moduleName`")
+            }
+
+            val liloModule = supportedModules[moduleName]!!
+            val liloFunction = liloModule.getStdFunction(obj.name)
+            if (liloFunction != null) {
+                return runtimeObject(obj = LiloBuiltinFunction(obj.name, liloFunction))
+            }
+
+            return runtimeException("No function named `${obj.name}`")
+        }
+
+        return runtimeException("Invalid Dot expression rhs")
+    }
+
     override fun visitCallExpr(expr: CallExpr): LiloResult<LiloValue> {
-        val calleeName = expr.callee
-        val function = environment.get(name = calleeName)
-        if (function === null || function !is LiloFunction) {
-            return runtimeException("`$calleeName` is not callable")
+        val calleeResult = visit(expr.callee)
+        if (calleeResult.isFailure()) return calleeResult
+
+        val callee = calleeResult.toSuccessData()
+        if (callee is LiloFunction) {
+            val function = callee
+            for ((index, arg) in expr.args.withIndex()) {
+                val valueResult = visit(arg)
+                if (valueResult.isFailure()) return valueResult.toFailure()
+                val value = valueResult.toSuccessData()
+                environment.define(name = function.params[index], value = value)
+            }
+
+            for (stmt in function.body) {
+                val result = visit(stmt)
+                if (result.isFailure()) return result.toFailure()
+            }
+
+            return runtimeObject(obj = LiloInt(value = 0))
         }
 
-        for ((index, arg) in expr.args.withIndex()) {
-            val valueResult = visit(arg)
-            if (valueResult.isFailure()) return valueResult.toFailure()
-            val value = valueResult.toSuccessData()
-            environment.define(name = function.params[index], value = value)
+        if (callee is LiloBuiltinFunction) {
+            val args = mutableListOf<LiloValue>()
+
+            for (arg in expr.args) {
+                val valueResult = visit(arg)
+                if (valueResult.isFailure()) return valueResult.toFailure()
+                val value = valueResult.toSuccessData()
+                args.add(value)
+            }
+
+            val callResult = callee.function.call(args = args)
+            if (callResult.isFailure()) return callResult.toFailure()
+            return runtimeObject(obj = callResult.toSuccessData())
         }
 
-        for (stmt in function.body) {
-            val result = visit(stmt)
-            if (result.isFailure()) return result.toFailure()
-        }
-
-        return runtimeObject(obj = LiloInt(value = 0))
+        return runtimeException("`$callee` is not callable")
     }
 
     override fun visitPrintCallExpr(expr: PrintCallExpr): LiloResult<LiloValue> {
@@ -154,9 +214,7 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
 
     override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloValue> {
         val value = environment.get(expr.value.lexeme!!)
-        if (value == null) {
-            return runtimeException("Undefined variable `${expr.value.lexeme}`")
-        }
+            ?: return runtimeException("Undefined variable `${expr.value.lexeme}`")
         return runtimeObject(obj = value)
     }
 

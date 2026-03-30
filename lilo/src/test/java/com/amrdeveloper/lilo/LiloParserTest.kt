@@ -12,6 +12,38 @@ import org.junit.Assert.*
 class LiloParserTest {
 
     @Test
+    fun `test parse import statement`() {
+        val sourceCodes = listOf(
+            "import a",
+            "import complex"
+        )
+
+        for (sourceCode in sourceCodes) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            assertTrue("Parser error", parseResult.isSuccess())
+        }
+    }
+
+    @Test
+    fun `test parse dot expression`() {
+        val sourceCodes = listOf(
+            "a.b",
+            "random.random"
+        )
+
+        for (sourceCode in sourceCodes) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            assertTrue("Parser error", parseResult.isSuccess())
+        }
+    }
+
+    @Test
     fun `test parse list`() {
         val sourceCodes = listOf(
             "a = [1, 3, 4, 5]",

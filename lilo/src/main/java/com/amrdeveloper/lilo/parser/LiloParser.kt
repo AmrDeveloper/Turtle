@@ -17,7 +17,6 @@ import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.ast.ListExpr
-import com.amrdeveloper.lilo.ast.PrintCallExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -199,12 +198,6 @@ class LiloParser(val tokens: List<LiloToken>) {
                 run {
                     val consumeRes = expectAndConsume(kind = LiloTokenKind.RPAR, message = "expected ')' at end of call")
                     if (consumeRes.isFailure()) return consumeRes.toFailure()
-                }
-
-                // TODO: Merge it with the design of new Stdlib
-                if (expr is SymbolExpr && expr.value.lexeme.equals("print")) {
-                    expr = PrintCallExpr(args = args)
-                    continue
                 }
 
                 expr  = CallExpr(callee = expr, args = args)

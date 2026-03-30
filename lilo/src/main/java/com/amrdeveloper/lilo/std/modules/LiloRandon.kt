@@ -1,6 +1,7 @@
 package com.amrdeveloper.lilo.std.modules
 
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.runtime.LiloHost
 import com.amrdeveloper.lilo.std.core.LiloStdFunction
 import com.amrdeveloper.lilo.std.core.LiloStdModule
 import com.amrdeveloper.lilo.value.LiloFloat
@@ -20,7 +21,7 @@ class LiloRandomModule : LiloStdModule {
 }
 
 class LiloRandomFunction : LiloStdFunction {
-    override fun call(args: List<LiloValue>): LiloResult<LiloValue> {
+    override fun call(host: LiloHost, args: List<LiloValue>): LiloResult<LiloValue> {
         val random = Random.nextFloat()
         return LiloResult.Success(data = LiloFloat(value = random))
     }

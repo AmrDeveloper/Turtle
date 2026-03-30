@@ -20,7 +20,6 @@ interface LiloExprVisitor<T> {
     fun visit(expr: LiloExpr): T = when (expr) {
         is DotExpr -> visitDotExpr(expr)
         is CallExpr -> visitCallExpr(expr)
-        is PrintCallExpr -> visitPrintCallExpr(expr)
         is ArithExpr -> visitArithExpr(expr)
         is GroupExpr -> visitGroupExpr(expr)
         is ListExpr -> visitListExpr(expr)
@@ -32,7 +31,6 @@ interface LiloExprVisitor<T> {
 
     fun visitDotExpr(expr: DotExpr): T
     fun visitCallExpr(expr: CallExpr): T
-    fun visitPrintCallExpr(expr: PrintCallExpr): T
     fun visitArithExpr(expr: ArithExpr): T
     fun visitGroupExpr(expr: GroupExpr): T
     fun visitListExpr(expr: ListExpr): T

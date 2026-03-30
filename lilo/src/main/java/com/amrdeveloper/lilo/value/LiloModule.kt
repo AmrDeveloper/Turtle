@@ -1,5 +1,7 @@
 package com.amrdeveloper.lilo.value
 
-class LiloModule(val name: String) : LiloValue {
+import com.amrdeveloper.lilo.std.core.LiloStdModule
+
+class LiloModule(val name: String, val module: LiloStdModule) : LiloValue {
     override fun toString() = "<module $name>"
 }

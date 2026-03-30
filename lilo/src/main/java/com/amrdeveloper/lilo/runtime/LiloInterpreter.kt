@@ -38,7 +38,8 @@ import com.amrdeveloper.lilo.value.LiloList
 import com.amrdeveloper.lilo.value.LiloModule
 import com.amrdeveloper.lilo.value.LiloValue
 
-class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>> {
+class LiloInterpreter(private val liloHost: LiloHost) :
+    LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>> {
 
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
@@ -173,7 +174,7 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
         }
 
         val output = values.joinToString(separator = " ")
-        println(output)
+        liloHost.write(output)
         return runtimeObject(obj = LiloInt(value = 0))
     }
 

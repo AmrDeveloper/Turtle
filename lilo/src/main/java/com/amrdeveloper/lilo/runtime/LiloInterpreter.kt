@@ -60,15 +60,13 @@ class LiloInterpreter(private val liloHost: LiloHost) :
     }
 
     override fun visitImportStmt(stmt: ImportStmt): LiloResult<Unit> {
-        val moduleName = stmt.moduleName
-        val liloStdModule =
-            liloStdlib.get(moduleName) ?: return runtimeException("No module named `$moduleName`")
-        if (liloStdModule !is LiloModule) {
-            return runtimeException("`$moduleName` is not module")
+        for ((moduleName, alias) in stmt.modules) {
+            val liloStdModule =
+                liloStdlib.get(moduleName)
+                    ?: return runtimeException("No module named `$moduleName`")
+            if (liloStdModule !is LiloModule) return runtimeException("`$moduleName` is not module")
+            environment.define(name = alias ?: moduleName, value = liloStdModule)
         }
-
-        val objName = stmt.alias ?: moduleName
-        environment.define(name = objName, value = liloStdModule)
         return LiloResult.Success(data = Unit)
     }
 

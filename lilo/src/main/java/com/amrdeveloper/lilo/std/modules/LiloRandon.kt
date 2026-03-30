@@ -1,6 +1,8 @@
-package com.amrdeveloper.lilo.std
+package com.amrdeveloper.lilo.std.modules
 
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.std.core.LiloStdFunction
+import com.amrdeveloper.lilo.std.core.LiloStdModule
 import com.amrdeveloper.lilo.value.LiloFloat
 import com.amrdeveloper.lilo.value.LiloValue
 

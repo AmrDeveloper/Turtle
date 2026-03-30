@@ -1,7 +1,7 @@
 package com.amrdeveloper.lilo.value
 
 import com.amrdeveloper.lilo.ast.LiloStmt
-import com.amrdeveloper.lilo.std.LiloStdFunction
+import com.amrdeveloper.lilo.std.core.LiloStdFunction
 
 class LiloFunction(val params: List<String>, val body: List<LiloStmt>) : LiloValue {
     override fun toString(): String {

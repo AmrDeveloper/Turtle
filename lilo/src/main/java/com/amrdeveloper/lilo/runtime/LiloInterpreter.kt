@@ -27,7 +27,7 @@ import com.amrdeveloper.lilo.opertion.LiloModOp
 import com.amrdeveloper.lilo.opertion.LiloMulOp
 import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
-import com.amrdeveloper.lilo.std.LiloStdModule
+import com.amrdeveloper.lilo.std.core.LiloStdModule
 import com.amrdeveloper.lilo.std.supportedLiloStdlib
 import com.amrdeveloper.lilo.value.LiloBool
 import com.amrdeveloper.lilo.value.LiloBuiltinFunction

@@ -1,11 +1,7 @@
 package com.amrdeveloper.lilo.std
 
-sealed interface LiloStdModule {
-    fun getStdFunction(name: String): LiloStdFunction?
-}
+sealed interface LiloStdObject
 
-fun supportedLiloStdModules(): Map<String, LiloStdModule> {
-    return mapOf(
-        "random" to LiloRandomModule()
-    )
+sealed interface LiloStdModule : LiloStdObject {
+    fun getStdFunction(name: String): LiloStdFunction?
 }

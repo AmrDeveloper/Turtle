@@ -27,8 +27,8 @@ import com.amrdeveloper.lilo.opertion.LiloModOp
 import com.amrdeveloper.lilo.opertion.LiloMulOp
 import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
-import com.amrdeveloper.lilo.std.LiloStdFunction
-import com.amrdeveloper.lilo.std.supportedLiloStdModules
+import com.amrdeveloper.lilo.std.LiloStdModule
+import com.amrdeveloper.lilo.std.supportedLiloStdlib
 import com.amrdeveloper.lilo.value.LiloBool
 import com.amrdeveloper.lilo.value.LiloBuiltinFunction
 import com.amrdeveloper.lilo.value.LiloFloat
@@ -45,7 +45,7 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
 
     private val environment = LiloEnvironment(enclosing = null)
 
-    private val supportedModules = supportedLiloStdModules()
+    private val liloStdlib = supportedLiloStdlib()
 
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
         return visitProgram(program)
@@ -62,8 +62,10 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
 
     override fun visitImportStmt(stmt: ImportStmt): LiloResult<Unit> {
         val moduleName = stmt.moduleName
-        if (supportedModules.containsKey(moduleName).not()) {
-            return runtimeException("No module named `$moduleName`")
+        val liloStdModule =
+            liloStdlib.get(moduleName) ?: return runtimeException("No module named `$moduleName`")
+        if (liloStdModule !is LiloStdModule) {
+            return runtimeException("`$moduleName` is not module")
         }
 
         val module = LiloModule(name = stmt.moduleName)
@@ -106,11 +108,11 @@ class LiloInterpreter : LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>>
 
         if (obj is LiloModule) {
             val moduleName = obj.name
-            if (supportedModules.containsKey(moduleName).not()) {
+            if (liloStdlib.containsKey(moduleName).not()) {
                 return runtimeException("No module named `$moduleName`")
             }
 
-            val liloModule = supportedModules[moduleName]!!
+            val liloModule = liloStdlib[moduleName]!! as LiloStdModule
             val liloFunction = liloModule.getStdFunction(obj.name)
             if (liloFunction != null) {
                 return runtimeObject(obj = LiloBuiltinFunction(obj.name, liloFunction))

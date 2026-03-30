@@ -15,7 +15,8 @@ class LiloParserTest {
     fun `test parse import statement`() {
         val sourceCodes = listOf(
             "import a",
-            "import complex"
+            "import complex",
+            "import random as r"
         )
 
         for (sourceCode in sourceCodes) {

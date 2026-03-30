@@ -2,8 +2,10 @@ package com.amrdeveloper.lilo.parser
 
 enum class LiloTokenKind {
     IMPORT_KEYWORD,
+    AS_KEYWORD,
     DEF_KEYWORD,
     RETURN_KEYWORD,
+
     TRUE_KEYWORD,
     FALSE_KEYWORD,
 
@@ -38,6 +40,7 @@ data class LiloToken(val kind: LiloTokenKind, val loc: LiloLoc, val lexeme: Stri
 
 fun getLiloKeywordsMap() = mapOf(
     "import" to LiloTokenKind.IMPORT_KEYWORD,
+    "as" to LiloTokenKind.AS_KEYWORD,
     "def" to LiloTokenKind.DEF_KEYWORD,
     "return" to LiloTokenKind.RETURN_KEYWORD,
 

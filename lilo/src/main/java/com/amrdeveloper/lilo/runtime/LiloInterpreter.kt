@@ -67,7 +67,8 @@ class LiloInterpreter(private val liloHost: LiloHost) :
             return runtimeException("`$moduleName` is not module")
         }
 
-        environment.define(name = moduleName, value = liloStdModule)
+        val objName = stmt.alias ?: moduleName
+        environment.define(name = objName, value = liloStdModule)
         return LiloResult.Success(data = Unit)
     }
 

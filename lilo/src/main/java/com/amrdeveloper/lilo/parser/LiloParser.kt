@@ -54,8 +54,19 @@ class LiloParser(val tokens: List<LiloToken>) {
         val nameResult = expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect function name")
         if (nameResult.isFailure()) return nameResult.toFailure()
         val name = nameResult.toSuccessData()
+        var alias : String? = null
+        if (peek().kind == LiloTokenKind.AS_KEYWORD) {
+            // Advance 'as' keyword
+            advance()
 
-        return LiloResult.Success(data = ImportStmt(moduleName = name.lexeme!!))
+            // Consume alias name
+            val aliasResult = expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect symbol after `as`")
+            if (aliasResult.isFailure()) return aliasResult.toFailure()
+            alias = aliasResult.toSuccessData().lexeme
+        }
+
+        val importStmt = ImportStmt(moduleName = name.lexeme!!, alias = alias)
+        return LiloResult.Success(data = importStmt)
     }
 
     private fun parseFunctionStmt(): LiloResult<LiloStmt> {

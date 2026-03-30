@@ -25,6 +25,45 @@ class LiloInterpreterTest {
     }
 
     @Test
+    fun `test evaluate imported function`() {
+        val sourceCodes = mutableListOf(
+            """
+            import random
+            a = random.random()
+            """,
+
+            """
+            import random as r
+            a = r.random()
+            """,
+        )
+
+        for (sourceCode in sourceCodes) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloHostTest = LiloHostTest()
+            val interpreter = LiloInterpreter(liloHostTest)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assertTrue(liloHostTest.buffer.isEmpty())
+        }
+    }
+
+    @Test
     fun `test evaluate call`() {
         val sourceCodes = mutableListOf(
             """

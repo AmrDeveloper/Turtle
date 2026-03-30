@@ -1,6 +1,5 @@
 package com.amrdeveloper.lilo.opertion
 
-
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloException
 import com.amrdeveloper.lilo.value.LiloFloat
@@ -43,7 +42,7 @@ class LiloMulOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValu
             else LiloInt(value = lhs.asInt() * rhs.asInt())
             return LiloResult.Success(data = value)
         }
-        return LiloResult.Failure(error = LiloException("Op `-` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloException("Op `*` is unsupported between lhs & rhs"))
     }
 }
 
@@ -55,7 +54,7 @@ class LiloDivOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValu
             else LiloInt(value = lhs.asInt() / rhs.asInt())
             return LiloResult.Success(data = value)
         }
-        return LiloResult.Failure(error = LiloException("Op `-` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloException("Op `/` is unsupported between lhs & rhs"))
     }
 }
 
@@ -67,6 +66,6 @@ class LiloModOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValu
             else LiloInt(value = lhs.asInt() % rhs.asInt())
             return LiloResult.Success(data = value)
         }
-        return LiloResult.Failure(error = LiloException("Op `-` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloException("Op `%` is unsupported between lhs & rhs"))
     }
 }

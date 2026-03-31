@@ -15,7 +15,7 @@ class LiloRandomModule : LiloStdModule {
         "random" to LiloRandomFunction()
     )
 
-    override fun getStdFunction(name: String): LiloStdFunction? {
+    override fun lookup(name: String): LiloStdFunction? {
         return functions.get(name)
     }
 }

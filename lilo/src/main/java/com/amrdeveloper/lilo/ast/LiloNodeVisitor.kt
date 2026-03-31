@@ -2,6 +2,7 @@ package com.amrdeveloper.lilo.ast
 
 interface LiloStmtVisitor<T> {
     fun visit(stmt: LiloStmt): T = when (stmt) {
+        is FromImportStmt -> visitFromImportStmt(stmt)
         is ImportStmt -> visitImportStmt(stmt)
         is FunctionStmt -> visitFunctionStmt(stmt)
         is BlockStmt -> visitBlockStmt(stmt)
@@ -9,6 +10,7 @@ interface LiloStmtVisitor<T> {
         is AssignStmt -> visitAssignStmt(stmt)
     }
 
+    fun visitFromImportStmt(stmt : FromImportStmt) : T
     fun visitImportStmt(stmt : ImportStmt) : T
     fun visitFunctionStmt(stmt: FunctionStmt): T
     fun visitBlockStmt(stmt: BlockStmt): T

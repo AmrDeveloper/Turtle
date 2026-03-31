@@ -36,6 +36,10 @@ class LiloInterpreterTest {
             import random as r
             a = r.random()
             """,
+            """
+            from random import random
+            a = random()
+            """
         )
 
         for (sourceCode in sourceCodes) {

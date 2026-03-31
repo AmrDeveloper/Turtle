@@ -21,7 +21,8 @@ class LiloParserTest {
             "import complex",
             "import random as r",
             "import a, b",
-            "import one as o, two as t"
+            "import one as o, two as t",
+            "from random import random"
         )
 
         for (sourceCode in sourceCodes) {

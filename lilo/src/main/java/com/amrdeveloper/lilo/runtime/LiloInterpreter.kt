@@ -10,6 +10,7 @@ import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.DotExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
+import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.LiloProgram
@@ -26,6 +27,7 @@ import com.amrdeveloper.lilo.opertion.LiloModOp
 import com.amrdeveloper.lilo.opertion.LiloMulOp
 import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
+import com.amrdeveloper.lilo.std.core.LiloStdFunction
 import com.amrdeveloper.lilo.std.supportedLiloStdlib
 import com.amrdeveloper.lilo.value.LiloBool
 import com.amrdeveloper.lilo.value.LiloBuiltinFunction
@@ -55,6 +57,19 @@ class LiloInterpreter(private val liloHost: LiloHost) :
         for (node in nodes) {
             val result = visit(stmt = node)
             if (result.isFailure()) return result.toFailure()
+        }
+        return LiloResult.Success(data = Unit)
+    }
+
+    override fun visitFromImportStmt(stmt: FromImportStmt): LiloResult<Unit> {
+        val liloStdModule =
+            liloStdlib[stmt.module]
+                ?: return runtimeException("No module named `$stmt.module`")
+        if (liloStdModule !is LiloModule) return runtimeException("`${stmt.module}` is not module")
+        for ((symbolName, alias) in stmt.symbols) {
+            val symbol = liloStdModule.module.lookup(symbolName)
+                ?: return runtimeException("No function named `$symbolName` in module `${stmt.module}`")
+           environment.define(name = alias ?: symbolName, value = LiloBuiltinFunction(symbolName, symbol))
         }
         return LiloResult.Success(data = Unit)
     }
@@ -110,8 +125,8 @@ class LiloInterpreter(private val liloHost: LiloHost) :
             }
 
             val liloModule = liloStdlib[moduleName]!! as LiloModule
-            val liloFunction = liloModule.module.getStdFunction(obj.name)
-            if (liloFunction != null) {
+            val liloFunction = liloModule.module.lookup(obj.name)
+            if (liloFunction != null && liloFunction is LiloStdFunction) {
                 return runtimeObject(obj = LiloBuiltinFunction(obj.name, liloFunction))
             }
 
@@ -189,9 +204,9 @@ class LiloInterpreter(private val liloHost: LiloHost) :
         val list = mutableListOf<LiloValue>()
 
         for (value in expr.values) {
-            val elemnetResult = visit(expr = value)
-            if (elemnetResult.isFailure()) return elemnetResult
-            val element = elemnetResult.toSuccessData()
+            val elementResult = visit(expr = value)
+            if (elementResult.isFailure()) return elementResult
+            val element = elementResult.toSuccessData()
             list.add(element)
         }
 
@@ -200,11 +215,13 @@ class LiloInterpreter(private val liloHost: LiloHost) :
 
     override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloValue> {
         val symbolName = expr.value.lexeme!!
-        val builtin = liloStdlib.get(symbolName)
-        if (builtin != null) return runtimeObject(obj = builtin)
         val value = environment.get(symbolName)
-            ?: return runtimeException("Undefined variable `${expr.value.lexeme}`")
-        return runtimeObject(obj = value)
+        if (value != null) return runtimeObject(obj = value)
+
+        val builtin = liloStdlib[symbolName]
+        if (builtin != null) return runtimeObject(obj = builtin)
+
+        return runtimeException("Undefined variable `${expr.value.lexeme}`")
     }
 
     override fun visitIntExpr(expr: IntExpr): LiloResult<LiloValue> {

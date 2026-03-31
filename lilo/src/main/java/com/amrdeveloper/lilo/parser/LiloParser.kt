@@ -9,6 +9,7 @@ import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.DotExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
+import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.GroupExpr
@@ -39,11 +40,52 @@ class LiloParser(val tokens: List<LiloToken>) {
 
     private fun parseStmt(): LiloResult<LiloStmt> {
         return when (peek().kind) {
+            LiloTokenKind.FROM_KEYWORD -> parseFromImportStmt()
             LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
             LiloTokenKind.DEF_KEYWORD -> parseFunctionStmt()
             LiloTokenKind.L_BRACE -> parseBlockStmt()
             else -> parseAssignmentStmt()
         }
+    }
+
+    private fun parseFromImportStmt(): LiloResult<LiloStmt> {
+        // Advance 'from' keyword
+        advance()
+
+        val moduleNameResult = expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect module name after `from`")
+        if (moduleNameResult.isFailure()) return moduleNameResult.toFailure()
+        val moduleName = moduleNameResult.toSuccessData()
+
+        val importResult = expectAndConsume(kind = LiloTokenKind.IMPORT_KEYWORD, "Expect `import` name `from module`")
+        if (importResult.isFailure()) return importResult.toFailure()
+
+        val importedSymbols = mutableListOf<Pair<String, String?>>()
+        do {
+            if (peek().kind == LiloTokenKind.COMMA) {
+                advance()
+            }
+
+            // Parse module name
+            val nameResult = expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect function name")
+            if (nameResult.isFailure()) return nameResult.toFailure()
+            val name = nameResult.toSuccessData()
+            var alias: String? = null
+            if (peek().kind == LiloTokenKind.AS_KEYWORD) {
+                // Advance 'as' keyword
+                advance()
+
+                // Consume alias name
+                val aliasResult =
+                    expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect symbol after `as`")
+                if (aliasResult.isFailure()) return aliasResult.toFailure()
+                alias = aliasResult.toSuccessData().lexeme
+            }
+
+            importedSymbols.add(Pair(name.lexeme!!, alias))
+        } while (peek().kind == LiloTokenKind.COMMA)
+
+        val fromImportStmt = FromImportStmt(module = moduleName.lexeme!!, symbols = importedSymbols)
+        return LiloResult.Success(data = fromImportStmt)
     }
 
     private fun parseImportStmt(): LiloResult<LiloStmt> {

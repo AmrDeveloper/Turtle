@@ -1,6 +1,11 @@
-package com.amrdeveloper.lilo.value
+package com.amrdeveloper.lilo.`object`
 
-sealed interface LiloNumber : LiloValue
+import com.amrdeveloper.lilo.type.LiloBoolType
+import com.amrdeveloper.lilo.type.LiloFloatType
+import com.amrdeveloper.lilo.type.LiloIntType
+import com.amrdeveloper.lilo.type.LiloType
+
+sealed interface LiloNumber : LiloObject
 
 fun LiloNumber.isInt(): Boolean {
     return when (this) {
@@ -35,20 +40,14 @@ fun LiloNumber.asFloat(): Float {
 }
 
 class LiloInt(val value: Int) : LiloNumber {
-    override fun toString(): String {
-        return value.toString()
-    }
+    override val type: LiloType = LiloIntType
 }
 
 class LiloFloat(val value: Float) : LiloNumber {
-    override fun toString(): String {
-        return value.toString()
-    }
+    override val type: LiloType = LiloFloatType
 }
 
 class LiloBool(val value: Boolean) : LiloNumber {
-    override fun toString(): String {
-        return value.toString()
-    }
+    override val type: LiloType = LiloBoolType
 }
 

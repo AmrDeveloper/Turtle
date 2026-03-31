@@ -2,16 +2,16 @@ package com.amrdeveloper.lilo.opertion
 
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloException
-import com.amrdeveloper.lilo.value.LiloFloat
-import com.amrdeveloper.lilo.value.LiloInt
-import com.amrdeveloper.lilo.value.LiloNumber
-import com.amrdeveloper.lilo.value.LiloValue
-import com.amrdeveloper.lilo.value.asFloat
-import com.amrdeveloper.lilo.value.asInt
-import com.amrdeveloper.lilo.value.isFloat
+import com.amrdeveloper.lilo.`object`.LiloFloat
+import com.amrdeveloper.lilo.`object`.LiloInt
+import com.amrdeveloper.lilo.`object`.LiloNumber
+import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.`object`.asFloat
+import com.amrdeveloper.lilo.`object`.asInt
+import com.amrdeveloper.lilo.`object`.isFloat
 
-class LiloAddOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValue> {
-    override fun run(): LiloResult<LiloValue> {
+class LiloAddOp(val lhs: LiloObject, val rhs: LiloObject) : LiloOperation<LiloObject> {
+    override fun run(): LiloResult<LiloObject> {
         if (lhs is LiloNumber && rhs is LiloNumber) {
             val isFloatAdd = lhs.isFloat() || rhs.isFloat()
             val value = if (isFloatAdd) LiloFloat(value = lhs.asFloat() + rhs.asFloat())
@@ -22,8 +22,8 @@ class LiloAddOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValu
     }
 }
 
-class LiloSubOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValue> {
-    override fun run(): LiloResult<LiloValue> {
+class LiloSubOp(val lhs: LiloObject, val rhs: LiloObject) : LiloOperation<LiloObject> {
+    override fun run(): LiloResult<LiloObject> {
         if (lhs is LiloNumber && rhs is LiloNumber) {
             val isFloatAdd = lhs.isFloat() || rhs.isFloat()
             val value = if (isFloatAdd) LiloFloat(value = lhs.asFloat() - rhs.asFloat())
@@ -34,8 +34,8 @@ class LiloSubOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValu
     }
 }
 
-class LiloMulOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValue> {
-    override fun run(): LiloResult<LiloValue> {
+class LiloMulOp(val lhs: LiloObject, val rhs: LiloObject) : LiloOperation<LiloObject> {
+    override fun run(): LiloResult<LiloObject> {
         if (lhs is LiloNumber && rhs is LiloNumber) {
             val isFloatAdd = lhs.isFloat() || rhs.isFloat()
             val value = if (isFloatAdd) LiloFloat(value = lhs.asFloat() * rhs.asFloat())
@@ -46,8 +46,8 @@ class LiloMulOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValu
     }
 }
 
-class LiloDivOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValue> {
-    override fun run(): LiloResult<LiloValue> {
+class LiloDivOp(val lhs: LiloObject, val rhs: LiloObject) : LiloOperation<LiloObject> {
+    override fun run(): LiloResult<LiloObject> {
         if (lhs is LiloNumber && rhs is LiloNumber) {
             val isFloatAdd = lhs.isFloat() || rhs.isFloat()
             val value = if (isFloatAdd) LiloFloat(value = lhs.asFloat() / rhs.asFloat())
@@ -58,8 +58,8 @@ class LiloDivOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValu
     }
 }
 
-class LiloModOp(val lhs: LiloValue, val rhs: LiloValue) : LiloOperation<LiloValue> {
-    override fun run(): LiloResult<LiloValue> {
+class LiloModOp(val lhs: LiloObject, val rhs: LiloObject) : LiloOperation<LiloObject> {
+    override fun run(): LiloResult<LiloObject> {
         if (lhs is LiloNumber && rhs is LiloNumber) {
             val isFloatAdd = lhs.isFloat() || rhs.isFloat()
             val value = if (isFloatAdd) LiloFloat(value = lhs.asFloat() % rhs.asFloat())

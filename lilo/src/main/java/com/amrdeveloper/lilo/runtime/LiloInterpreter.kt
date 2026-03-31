@@ -28,17 +28,17 @@ import com.amrdeveloper.lilo.opertion.LiloMulOp
 import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.std.supportedLiloStdlib
-import com.amrdeveloper.lilo.value.LiloBool
-import com.amrdeveloper.lilo.value.LiloCallable
-import com.amrdeveloper.lilo.value.LiloFloat
-import com.amrdeveloper.lilo.value.LiloFunction
-import com.amrdeveloper.lilo.value.LiloInt
-import com.amrdeveloper.lilo.value.LiloList
-import com.amrdeveloper.lilo.value.LiloModule
-import com.amrdeveloper.lilo.value.LiloValue
+import com.amrdeveloper.lilo.`object`.LiloBool
+import com.amrdeveloper.lilo.`object`.LiloCallable
+import com.amrdeveloper.lilo.`object`.LiloFloat
+import com.amrdeveloper.lilo.`object`.LiloFunction
+import com.amrdeveloper.lilo.`object`.LiloInt
+import com.amrdeveloper.lilo.`object`.LiloList
+import com.amrdeveloper.lilo.`object`.LiloModule
+import com.amrdeveloper.lilo.`object`.LiloObject
 
 class LiloInterpreter(val liloHost: LiloHost) :
-    LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>> {
+    LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
 
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
@@ -66,7 +66,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
                 ?: return runtimeException("No module named `$stmt.module`")
         if (liloStdModule !is LiloModule) return runtimeException("`${stmt.module}` is not module")
         for ((symbolName, alias) in stmt.symbols) {
-            val symbol = liloStdModule.module.lookup(symbolName)
+            val symbol = liloStdModule.lookup(symbolName)
                 ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
             environment.define(name = alias ?: symbolName, value = symbol)
         }
@@ -112,7 +112,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         return LiloResult.Success(data = Unit)
     }
 
-    override fun visitDotExpr(expr: DotExpr): LiloResult<LiloValue> {
+    override fun visitDotExpr(expr: DotExpr): LiloResult<LiloObject> {
         val objResult = visit(expr.obj)
         if (objResult.isFailure()) return objResult.toFailure()
         val obj = objResult.toSuccessData()
@@ -123,8 +123,8 @@ class LiloInterpreter(val liloHost: LiloHost) :
                 return runtimeException("No module named `$moduleName`")
             }
 
-            val liloModule = liloStdlib[moduleName]!! as LiloModule
-            val liloAttribute = liloModule.module.lookup(obj.name)
+            val liloModule = liloStdlib[moduleName]!!
+            val liloAttribute = liloModule.lookup(obj.name)
             if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
             return runtimeException("No attribute named `${obj.name}`")
         }
@@ -132,13 +132,13 @@ class LiloInterpreter(val liloHost: LiloHost) :
         return runtimeException("Invalid Dot expression rhs")
     }
 
-    override fun visitCallExpr(expr: CallExpr): LiloResult<LiloValue> {
+    override fun visitCallExpr(expr: CallExpr): LiloResult<LiloObject> {
         val calleeResult = visit(expr.callee)
         if (calleeResult.isFailure()) return calleeResult
 
         val callee = calleeResult.toSuccessData()
         if (callee is LiloCallable) {
-            val args = mutableListOf<LiloValue>()
+            val args = mutableListOf<LiloObject>()
             for (arg in expr.args) {
                 val valueResult = visit(expr = arg)
                 if (valueResult.isFailure()) return valueResult.toFailure()
@@ -151,7 +151,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         return runtimeException("`$callee` is not callable")
     }
 
-    override fun visitArithExpr(expr: ArithExpr): LiloResult<LiloValue> {
+    override fun visitArithExpr(expr: ArithExpr): LiloResult<LiloObject> {
         val lhsResult = visit(expr.lhs)
         if (lhsResult.isFailure()) return lhsResult.toFailure()
 
@@ -171,12 +171,12 @@ class LiloInterpreter(val liloHost: LiloHost) :
         }
     }
 
-    override fun visitGroupExpr(expr: GroupExpr): LiloResult<LiloValue> {
+    override fun visitGroupExpr(expr: GroupExpr): LiloResult<LiloObject> {
         return visit(expr.expr)
     }
 
-    override fun visitListExpr(expr: ListExpr): LiloResult<LiloValue> {
-        val list = mutableListOf<LiloValue>()
+    override fun visitListExpr(expr: ListExpr): LiloResult<LiloObject> {
+        val list = mutableListOf<LiloObject>()
 
         for (value in expr.values) {
             val elementResult = visit(expr = value)
@@ -188,7 +188,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         return runtimeObject(obj = LiloList(values = list))
     }
 
-    override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloValue> {
+    override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloObject> {
         val symbolName = expr.value.lexeme!!
         val value = environment.get(symbolName)
         if (value != null) return runtimeObject(obj = value)
@@ -199,22 +199,22 @@ class LiloInterpreter(val liloHost: LiloHost) :
         return runtimeException("Undefined variable `${expr.value.lexeme}`")
     }
 
-    override fun visitIntExpr(expr: IntExpr): LiloResult<LiloValue> {
+    override fun visitIntExpr(expr: IntExpr): LiloResult<LiloObject> {
         val value = LiloInt(value = expr.value.lexeme!!.toInt())
         return runtimeObject(obj = value)
     }
 
-    override fun visitFloatExpr(expr: FloatExpr): LiloResult<LiloValue> {
+    override fun visitFloatExpr(expr: FloatExpr): LiloResult<LiloObject> {
         val value = LiloFloat(value = expr.value.lexeme!!.toFloat())
         return runtimeObject(obj = value)
     }
 
-    override fun visitBoolExpr(expr: BoolExpr): LiloResult<LiloValue> {
+    override fun visitBoolExpr(expr: BoolExpr): LiloResult<LiloObject> {
         val value = if (expr.value.kind == LiloTokenKind.TRUE_KEYWORD) TRUE else FALSE
         return runtimeObject(obj = value)
     }
 
-    private fun runtimeObject(obj: LiloValue): LiloResult.Success<LiloValue> {
+    private fun runtimeObject(obj: LiloObject): LiloResult.Success<LiloObject> {
         return LiloResult.Success(data = obj)
     }
 

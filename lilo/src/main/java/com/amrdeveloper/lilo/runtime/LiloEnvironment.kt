@@ -1,16 +1,16 @@
 package com.amrdeveloper.lilo.runtime
 
-import com.amrdeveloper.lilo.value.LiloValue
+import com.amrdeveloper.lilo.`object`.LiloObject
 
 class LiloEnvironment(val enclosing: LiloEnvironment?) {
 
-    val values = mutableMapOf<String, LiloValue>()
+    val values = mutableMapOf<String, LiloObject>()
 
-    fun define(name: String, value: LiloValue) {
+    fun define(name: String, value: LiloObject) {
         values[name] = value
     }
 
-    fun get(name: String): LiloValue? {
+    fun get(name: String): LiloObject? {
         if (values.containsKey(name)) {
             return values[name]
         }
@@ -22,7 +22,7 @@ class LiloEnvironment(val enclosing: LiloEnvironment?) {
         return null
     }
 
-    fun assign(name: String, value: LiloValue): Boolean {
+    fun assign(name: String, value: LiloObject): Boolean {
         if (values.containsKey(name)) {
             values[name] = value
             return true

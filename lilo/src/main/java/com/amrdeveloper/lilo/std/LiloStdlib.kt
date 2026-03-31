@@ -1,14 +1,13 @@
 package com.amrdeveloper.lilo.std
 
 import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
-import com.amrdeveloper.lilo.std.modules.LiloRandomModule
-import com.amrdeveloper.lilo.value.LiloModule
-import com.amrdeveloper.lilo.value.LiloValue
+import com.amrdeveloper.lilo.std.modules.liloRandomModule
+import com.amrdeveloper.lilo.`object`.LiloObject
 
-fun supportedLiloStdlib(): Map<String, LiloValue> {
+fun supportedLiloStdlib(): Map<String, LiloObject> {
     return mapOf(
         // Modules
-        "random" to LiloModule("random", LiloRandomModule()),
+        "random" to liloRandomModule,
 
         // Builtins Functions
         "print" to LiloPrintFunction()

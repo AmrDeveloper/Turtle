@@ -44,7 +44,8 @@ class LiloParserTest {
     fun `test parse dot expression`() {
         val sourceCodes = listOf(
             "a.b",
-            "random.random"
+            "random.random",
+            "a.__add__"
         )
 
         for (sourceCode in sourceCodes) {

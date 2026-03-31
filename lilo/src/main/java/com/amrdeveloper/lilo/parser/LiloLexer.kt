@@ -25,7 +25,7 @@ class LiloLexer(val source: String) {
             columnStart = columnEnd
 
             when (val c = peek()) {
-                in 'a'..'z', in 'A'..'Z' -> {
+                in 'a'..'z', in 'A'..'Z', '_' -> {
                     val tokenOrErr = consumeSymbolOrKeyword()
                     if (tokenOrErr.isFailure()) {
                         return tokenOrErr.toFailure()

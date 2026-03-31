@@ -17,15 +17,11 @@ import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
+import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.toSuccessData
-import com.amrdeveloper.lilo.opertion.LiloAddOp
-import com.amrdeveloper.lilo.opertion.LiloDivOp
-import com.amrdeveloper.lilo.opertion.LiloModOp
-import com.amrdeveloper.lilo.opertion.LiloMulOp
-import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.std.supportedLiloStdlib
 import com.amrdeveloper.lilo.`object`.LiloBool
@@ -161,14 +157,21 @@ class LiloInterpreter(val liloHost: LiloHost) :
         val lhs = lhsResult.toSuccessData()
         val rhs = rhsResult.toSuccessData()
 
-        return when (expr.op.kind) {
-            LiloTokenKind.PLUS -> LiloAddOp(lhs = lhs, rhs = rhs).run()
-            LiloTokenKind.MINUS -> LiloSubOp(lhs = lhs, rhs = rhs).run()
-            LiloTokenKind.STAR -> LiloMulOp(lhs = lhs, rhs = rhs).run()
-            LiloTokenKind.SLASH -> LiloDivOp(lhs = lhs, rhs = rhs).run()
-            LiloTokenKind.MODULO -> LiloModOp(lhs = lhs, rhs = rhs).run()
-            else -> runtimeException("Op `${expr.op.kind.name}` is unsupported between lhs & rhs")
+        val methodName = when (expr.op.kind) {
+            LiloTokenKind.PLUS -> LiloMagicMethod.ADD
+            LiloTokenKind.MINUS -> LiloMagicMethod.SUB
+            LiloTokenKind.STAR -> LiloMagicMethod.MUL
+            LiloTokenKind.SLASH -> LiloMagicMethod.DIV
+            LiloTokenKind.MODULO -> LiloMagicMethod.MOD
+            else -> null
         }
+
+        if (methodName == null) return runtimeException("Op `${expr.op.kind.name}` is unsupported between lhs & rhs")
+        val method = lhs.lookup(methodName)
+            ?: return runtimeException("Method `${methodName}` unsupported between lhs & lhs")
+
+        val callable = method as LiloCallable
+        return callable.invoke(interpreter = this, args = listOf(lhs, rhs))
     }
 
     override fun visitGroupExpr(expr: GroupExpr): LiloResult<LiloObject> {

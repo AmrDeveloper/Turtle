@@ -10,6 +10,6 @@ fun supportedLiloStdlib(): Map<String, LiloObject> {
         "random" to liloRandomModule,
 
         // Builtins Functions
-        "print" to LiloPrintFunction()
+        "print" to LiloPrintFunction
     )
 }

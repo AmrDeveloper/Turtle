@@ -9,14 +9,14 @@ import com.amrdeveloper.lilo.`object`.LiloCallable
 import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloObject
 
-class LiloPrintFunction : LiloCallable {
+object LiloPrintFunction : LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val output = StringBuilder()
         for (arg in args) {
-            val strMethod = arg.lookup(LiloMagicMethod.STR)
+            val strMethod = arg.lookup(name = LiloMagicMethod.STR)
             if (strMethod != null && strMethod is LiloCallable) {
                 val invokeResult = strMethod.invoke(interpreter, args = listOf(arg))
                 if (invokeResult.isFailure()) return invokeResult

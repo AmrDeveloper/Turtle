@@ -9,11 +9,13 @@ import com.amrdeveloper.lilo.`object`.LiloObject
 
 import kotlin.random.Random
 
-val liloRandomModule = LiloModule(name = "random").apply {
-    type.define(name = "random", value = LiloRandomFunction())
+private const val MODULE_NAME = "random"
+
+val liloRandomModule = LiloModule(name = MODULE_NAME).apply {
+    type.define(name = MODULE_NAME, value = LiloRandomFunction)
 }
 
-class LiloRandomFunction : LiloCallable {
+object LiloRandomFunction : LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

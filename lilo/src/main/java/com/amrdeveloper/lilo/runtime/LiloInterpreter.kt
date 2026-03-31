@@ -111,21 +111,11 @@ class LiloInterpreter(val liloHost: LiloHost) :
     override fun visitDotExpr(expr: DotExpr): LiloResult<LiloObject> {
         val objResult = visit(expr.obj)
         if (objResult.isFailure()) return objResult.toFailure()
-        val obj = objResult.toSuccessData()
-
-        if (obj is LiloModule) {
-            val moduleName = obj.name
-            if (liloStdlib.containsKey(moduleName).not()) {
-                return runtimeException("No module named `$moduleName`")
-            }
-
-            val liloModule = liloStdlib[moduleName]!!
-            val liloAttribute = liloModule.lookup(obj.name)
-            if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
-            return runtimeException("No attribute named `${obj.name}`")
-        }
-
-        return runtimeException("Invalid Dot expression rhs")
+        val liloObj = objResult.toSuccessData()
+        val attribute = expr.name.value.lexeme!!
+        val liloAttribute = liloObj.lookup(name = attribute)
+        if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
+        return runtimeException("Invalid `.`` expression on lhs")
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<LiloObject> {

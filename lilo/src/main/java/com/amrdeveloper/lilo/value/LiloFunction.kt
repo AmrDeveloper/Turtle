@@ -1,16 +1,25 @@
 package com.amrdeveloper.lilo.value
 
 import com.amrdeveloper.lilo.ast.LiloStmt
-import com.amrdeveloper.lilo.std.core.LiloStdFunction
+import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.common.isFailure
+import com.amrdeveloper.lilo.common.toFailure
+import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
-class LiloFunction(val params: List<String>, val body: List<LiloStmt>) : LiloValue {
-    override fun toString(): String {
-        return "def (".plus(params.joinToString(", ")).plus(")")
-    }
-}
+class LiloFunction(val params: List<String>, val body: List<LiloStmt>) : LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloValue>
+    ): LiloResult<LiloValue> {
+        for ((index, arg) in args.withIndex()) {
+            interpreter.environment.define(name = params[index], value = arg)
+        }
 
-class LiloBuiltinFunction(val name: String, val function: LiloStdFunction) : LiloValue {
-    override fun toString(): String {
-        return "_builtin_$name(...)"
+        for (stmt in body) {
+            val result = interpreter.visit(stmt)
+            if (result.isFailure()) return result.toFailure()
+        }
+
+        return LiloResult.Success(data = LiloInt(value = 0))
     }
 }

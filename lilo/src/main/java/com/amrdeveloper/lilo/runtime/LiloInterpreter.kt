@@ -27,10 +27,9 @@ import com.amrdeveloper.lilo.opertion.LiloModOp
 import com.amrdeveloper.lilo.opertion.LiloMulOp
 import com.amrdeveloper.lilo.opertion.LiloSubOp
 import com.amrdeveloper.lilo.parser.LiloTokenKind
-import com.amrdeveloper.lilo.std.core.LiloStdFunction
 import com.amrdeveloper.lilo.std.supportedLiloStdlib
 import com.amrdeveloper.lilo.value.LiloBool
-import com.amrdeveloper.lilo.value.LiloBuiltinFunction
+import com.amrdeveloper.lilo.value.LiloCallable
 import com.amrdeveloper.lilo.value.LiloFloat
 import com.amrdeveloper.lilo.value.LiloFunction
 import com.amrdeveloper.lilo.value.LiloInt
@@ -38,13 +37,13 @@ import com.amrdeveloper.lilo.value.LiloList
 import com.amrdeveloper.lilo.value.LiloModule
 import com.amrdeveloper.lilo.value.LiloValue
 
-class LiloInterpreter(private val liloHost: LiloHost) :
+class LiloInterpreter(val liloHost: LiloHost) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloValue>> {
 
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
 
-    private val environment = LiloEnvironment(enclosing = null)
+    val environment = LiloEnvironment(enclosing = null)
 
     private val liloStdlib = supportedLiloStdlib()
 
@@ -68,8 +67,8 @@ class LiloInterpreter(private val liloHost: LiloHost) :
         if (liloStdModule !is LiloModule) return runtimeException("`${stmt.module}` is not module")
         for ((symbolName, alias) in stmt.symbols) {
             val symbol = liloStdModule.module.lookup(symbolName)
-                ?: return runtimeException("No function named `$symbolName` in module `${stmt.module}`")
-           environment.define(name = alias ?: symbolName, value = LiloBuiltinFunction(symbolName, symbol))
+                ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
+            environment.define(name = alias ?: symbolName, value = symbol)
         }
         return LiloResult.Success(data = Unit)
     }
@@ -125,12 +124,9 @@ class LiloInterpreter(private val liloHost: LiloHost) :
             }
 
             val liloModule = liloStdlib[moduleName]!! as LiloModule
-            val liloFunction = liloModule.module.lookup(obj.name)
-            if (liloFunction != null && liloFunction is LiloStdFunction) {
-                return runtimeObject(obj = LiloBuiltinFunction(obj.name, liloFunction))
-            }
-
-            return runtimeException("No function named `${obj.name}`")
+            val liloAttribute = liloModule.module.lookup(obj.name)
+            if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
+            return runtimeException("No attribute named `${obj.name}`")
         }
 
         return runtimeException("Invalid Dot expression rhs")
@@ -141,36 +137,15 @@ class LiloInterpreter(private val liloHost: LiloHost) :
         if (calleeResult.isFailure()) return calleeResult
 
         val callee = calleeResult.toSuccessData()
-        if (callee is LiloFunction) {
-            val function = callee
-            for ((index, arg) in expr.args.withIndex()) {
-                val valueResult = visit(arg)
-                if (valueResult.isFailure()) return valueResult.toFailure()
-                val value = valueResult.toSuccessData()
-                environment.define(name = function.params[index], value = value)
-            }
-
-            for (stmt in function.body) {
-                val result = visit(stmt)
-                if (result.isFailure()) return result.toFailure()
-            }
-
-            return runtimeObject(obj = LiloInt(value = 0))
-        }
-
-        if (callee is LiloBuiltinFunction) {
+        if (callee is LiloCallable) {
             val args = mutableListOf<LiloValue>()
-
             for (arg in expr.args) {
-                val valueResult = visit(arg)
+                val valueResult = visit(expr = arg)
                 if (valueResult.isFailure()) return valueResult.toFailure()
                 val value = valueResult.toSuccessData()
                 args.add(value)
             }
-
-            val callResult = callee.function.call(host = liloHost, args = args)
-            if (callResult.isFailure()) return callResult.toFailure()
-            return runtimeObject(obj = callResult.toSuccessData())
+            return callee.invoke(interpreter = this, args)
         }
 
         return runtimeException("`$callee` is not callable")

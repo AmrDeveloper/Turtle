@@ -10,6 +10,7 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 object LiloIntType : LiloType {
     override val attributes = mutableMapOf<String, LiloObject>()
+    override fun toString() = "<class 'int'>"
 
     init {
         define(name = LiloMagicMethod.ADD, value = AddMethod)

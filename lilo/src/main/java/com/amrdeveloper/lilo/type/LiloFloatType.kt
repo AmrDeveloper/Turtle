@@ -4,4 +4,5 @@ import com.amrdeveloper.lilo.`object`.LiloObject
 
 object LiloFloatType : LiloType {
     override val attributes = mutableMapOf<String, LiloObject>()
+    override fun toString() = "<class 'float'>"
 }

@@ -6,7 +6,7 @@ import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
-import com.amrdeveloper.lilo.ast.DotExpr
+import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
@@ -298,7 +298,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                 )
                 if (callResult.isFailure()) return callResult.toFailure()
 
-                expr = DotExpr(obj = expr, name = SymbolExpr(value = callResult.toSuccessData()))
+                expr = GetExpr(obj = expr, name = SymbolExpr(value = callResult.toSuccessData()))
                 continue
             }
 

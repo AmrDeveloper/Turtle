@@ -8,7 +8,7 @@ import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BlockStmt
-import com.amrdeveloper.lilo.ast.DotExpr
+import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
@@ -110,7 +110,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         return LiloResult.Success(data = Unit)
     }
 
-    override fun visitDotExpr(expr: DotExpr): LiloResult<LiloObject> {
+    override fun visitGetExpr(expr: GetExpr): LiloResult<LiloObject> {
         val objResult = visit(expr.obj)
         if (objResult.isFailure()) return objResult.toFailure()
         val liloObj = objResult.toSuccessData()
@@ -172,14 +172,12 @@ class LiloInterpreter(val liloHost: LiloHost) :
 
     override fun visitListExpr(expr: ListExpr): LiloResult<LiloObject> {
         val list = mutableListOf<LiloObject>()
-
         for (value in expr.values) {
             val elementResult = visit(expr = value)
             if (elementResult.isFailure()) return elementResult
             val element = elementResult.toSuccessData()
             list.add(element)
         }
-
         return runtimeObject(obj = LiloList(values = list))
     }
 

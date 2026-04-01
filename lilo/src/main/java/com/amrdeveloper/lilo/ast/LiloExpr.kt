@@ -6,7 +6,7 @@ sealed interface LiloExpr : LiloNode
 
 data class CallExpr(val callee: LiloExpr, val args: List<LiloExpr>) : LiloExpr
 
-data class DotExpr(val obj: LiloExpr, val name: SymbolExpr) : LiloExpr
+data class GetExpr(val obj: LiloExpr, val name: SymbolExpr) : LiloExpr
 
 data class ArithExpr(val lhs: LiloExpr, val op: LiloToken, val rhs: LiloExpr) : LiloExpr
 

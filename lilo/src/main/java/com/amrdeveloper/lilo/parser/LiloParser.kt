@@ -59,6 +59,12 @@ class LiloParser(val tokens: List<LiloToken>) {
         val importResult = expectAndConsume(kind = LiloTokenKind.IMPORT_KEYWORD, "Expect `import` name `from module`")
         if (importResult.isFailure()) return importResult.toFailure()
 
+        val hasLeftPar = peek().kind == LiloTokenKind.LPAR
+        if (hasLeftPar) {
+            // Advance `(`
+            advance()
+        }
+
         val importedSymbols = mutableListOf<Pair<String, String?>>()
         do {
             if (peek().kind == LiloTokenKind.COMMA) {
@@ -83,6 +89,11 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             importedSymbols.add(Pair(name.lexeme!!, alias))
         } while (peek().kind == LiloTokenKind.COMMA)
+
+        if (hasLeftPar) {
+            val rightParResult = expectAndConsume(kind = LiloTokenKind.RPAR, "Expect `)` after imported symbols")
+            if (rightParResult.isFailure()) return rightParResult.toFailure()
+        }
 
         val fromImportStmt = FromImportStmt(module = moduleName.lexeme!!, symbols = importedSymbols)
         return LiloResult.Success(data = fromImportStmt)

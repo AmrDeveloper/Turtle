@@ -39,7 +39,14 @@ class LiloInterpreterTest {
             """
             from random import random
             a = random()
+            """,
             """
+            from random import (
+                random
+            )
+            
+            a = random()
+            """,
         )
 
         for (sourceCode in sourceCodes) {

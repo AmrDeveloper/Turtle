@@ -30,6 +30,7 @@ enum class LiloTokenKind {
     EQ,
 
     SYMBOL,
+    STR_LITERAL,
     INT_LITERAL,
     FLOAT_LITERAL,
 

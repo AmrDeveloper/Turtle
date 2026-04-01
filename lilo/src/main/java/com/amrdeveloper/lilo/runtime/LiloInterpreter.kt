@@ -17,6 +17,7 @@ import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NoneExpr
+import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
@@ -34,6 +35,7 @@ import com.amrdeveloper.lilo.`object`.LiloList
 import com.amrdeveloper.lilo.`object`.LiloModule
 import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.`object`.LiloStr
 
 class LiloInterpreter(val liloHost: LiloHost) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
@@ -194,6 +196,10 @@ class LiloInterpreter(val liloHost: LiloHost) :
         if (builtin != null) return runtimeObject(obj = builtin)
 
         return runtimeException("Undefined variable `${expr.value.lexeme}`")
+    }
+
+    override fun visitStrExpr(expr: StrExpr): LiloResult<LiloObject> {
+        return runtimeObject(obj = LiloStr(value = expr.value.lexeme!!))
     }
 
     override fun visitIntExpr(expr: IntExpr): LiloResult<LiloObject> {

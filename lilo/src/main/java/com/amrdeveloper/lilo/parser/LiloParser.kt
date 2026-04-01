@@ -19,6 +19,7 @@ import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NoneExpr
+import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -314,6 +315,11 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.SYMBOL -> {
                 advance()
                 LiloResult.Success(data = SymbolExpr(value = token))
+            }
+
+            LiloTokenKind.STR_LITERAL -> {
+                advance()
+                LiloResult.Success(data = StrExpr(value = token))
             }
 
             LiloTokenKind.INT_LITERAL -> {

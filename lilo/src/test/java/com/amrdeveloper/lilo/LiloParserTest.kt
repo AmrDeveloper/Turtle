@@ -1,6 +1,7 @@
 package com.amrdeveloper.lilo
 
 import com.amrdeveloper.lilo.common.LiloDiagnostic
+import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.isSuccess
 import com.amrdeveloper.lilo.common.toFailureError
@@ -29,13 +30,13 @@ class LiloParserTest {
         for (sourceCode in sourceCodes) {
             val lexerResult = LiloLexer(source = sourceCode).tokenize()
             if (lexerResult.isFailure()) {
-                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
             assertTrue("Lexer error", lexerResult.isSuccess())
 
             val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
             if (parseResult.isFailure()) {
-                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
             assertTrue("Parser error", parseResult.isSuccess())
         }
@@ -52,13 +53,13 @@ class LiloParserTest {
         for (sourceCode in sourceCodes) {
             val lexerResult = LiloLexer(source = sourceCode).tokenize()
             if (lexerResult.isFailure()) {
-                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
             assertTrue("Lexer error", lexerResult.isSuccess())
 
             val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
             if (parseResult.isFailure()) {
-                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
             assertTrue("Parser error", parseResult.isSuccess())
         }
@@ -74,13 +75,13 @@ class LiloParserTest {
         for (sourceCode in sourceCodes) {
             val lexerResult = LiloLexer(source = sourceCode).tokenize()
             if (lexerResult.isFailure()) {
-                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
             assertTrue("Lexer error", lexerResult.isSuccess())
 
             val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
             if (parseResult.isFailure()) {
-                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
             assertTrue("Parser error", parseResult.isSuccess())
         }

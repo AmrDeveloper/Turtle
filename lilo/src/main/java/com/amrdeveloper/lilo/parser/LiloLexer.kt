@@ -53,6 +53,14 @@ class LiloLexer(val source: String) {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 
+                '\'', '"' -> {
+                    val stringTokenOrErr = consumeStringLiteral()
+                    if (stringTokenOrErr.isFailure()) {
+                        return stringTokenOrErr.toFailure()
+                    }
+                    tokens.add(stringTokenOrErr.toSuccessData())
+                }
+
                 else -> {
                     return createDiagnostic(message = "Unexpected char `${c}`")
                 }
@@ -91,6 +99,21 @@ class LiloLexer(val source: String) {
         val numberKind =
             if (isFloatingPoint) LiloTokenKind.FLOAT_LITERAL else LiloTokenKind.INT_LITERAL
         return LiloResult.Success(data = createToken(kind = numberKind, lexeme))
+    }
+
+    private fun consumeStringLiteral() : LiloResult<LiloToken> {
+        val start = advance()
+        var literal = ""
+        while (!isAtEnd() && peek() != start) literal += advance()
+        if (isAtEnd() || peek() != start) {
+            return LiloResult.Failure(error = createDiagnostic(message = "Unterminated string literal"))
+        }
+
+        // Consume terminator
+        advance()
+
+        val str = createToken(kind = LiloTokenKind.STR_LITERAL, lexeme = literal)
+        return LiloResult.Success(data = str)
     }
 
     private fun ignoreCommentsAndSpaces() {

@@ -5,8 +5,5 @@ import com.amrdeveloper.lilo.type.LiloType
 
 class LiloStr(val value: String) : LiloObject {
     override val type: LiloType = LiloStrType
-
-    override fun toString(): String {
-        return value
-    }
+    override fun toString() = value
 }

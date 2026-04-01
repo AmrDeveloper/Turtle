@@ -21,3 +21,5 @@ data class IntExpr(val value: LiloToken) : LiloExpr
 data class FloatExpr(val value: LiloToken) : LiloExpr
 
 data class BoolExpr(val value: LiloToken) : LiloExpr
+
+data class NoneExpr(val value: LiloToken) : LiloExpr

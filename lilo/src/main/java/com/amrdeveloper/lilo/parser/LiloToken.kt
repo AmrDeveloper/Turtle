@@ -9,6 +9,7 @@ enum class LiloTokenKind {
 
     TRUE_KEYWORD,
     FALSE_KEYWORD,
+    NONE_KEYWORD,
 
     PLUS,
     MINUS,
@@ -48,6 +49,7 @@ fun getLiloKeywordsMap() = mapOf(
 
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,
+    "None" to LiloTokenKind.NONE_KEYWORD,
 )
 
 fun getLiloOneCharTokenMap() = mapOf(

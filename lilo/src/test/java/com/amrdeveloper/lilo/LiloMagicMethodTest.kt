@@ -17,10 +17,14 @@ import org.junit.Assert.*
 class LiloMagicMethodTest {
 
     class LiloHostTest : LiloHost {
-        val buffer = StringBuilder()
+        var buffer = StringBuilder()
 
         override fun write(message: String) {
             buffer.append(message)
+        }
+
+        fun clear() {
+            buffer = buffer.clear()
         }
     }
 
@@ -66,10 +70,22 @@ class LiloMagicMethodTest {
             b = 2
             c = a + b
             print(c)
+            """,
+            """
+            print(1)
+            """,
+            """
+            print(None)
             """
         )
 
-        for (sourceCode in sourceCodes) {
+        val expectedOutput = listOf(
+            "3",
+            "1",
+            "None"
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
             val lexerResult = LiloLexer(source = sourceCode).tokenize()
             if (lexerResult.isFailure()) {
                 println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
@@ -90,7 +106,8 @@ class LiloMagicMethodTest {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.buffer.toString() == "3")
+            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
+            liloHostTest.clear()
         }
     }
 }

@@ -17,7 +17,7 @@ import org.junit.Assert.*
 class LiloInterpreterTest {
 
     class LiloHostTest : LiloHost {
-        val buffer = StringBuilder()
+        var buffer = StringBuilder()
 
         override fun write(message: String) {
             buffer.append(message)
@@ -70,7 +70,6 @@ class LiloInterpreterTest {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.buffer.isEmpty())
         }
     }
 

@@ -16,6 +16,7 @@ import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
+import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
@@ -31,6 +32,7 @@ import com.amrdeveloper.lilo.`object`.LiloFunction
 import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloList
 import com.amrdeveloper.lilo.`object`.LiloModule
+import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
 
 class LiloInterpreter(val liloHost: LiloHost) :
@@ -205,6 +207,10 @@ class LiloInterpreter(val liloHost: LiloHost) :
     override fun visitBoolExpr(expr: BoolExpr): LiloResult<LiloObject> {
         val value = if (expr.value.kind == LiloTokenKind.TRUE_KEYWORD) TRUE else FALSE
         return runtimeObject(obj = value)
+    }
+
+    override fun visitNoneExpr(expr: NoneExpr): LiloResult<LiloObject> {
+        return runtimeObject(obj = LiloNone())
     }
 
     private fun runtimeObject(obj: LiloObject): LiloResult.Success<LiloObject> {

@@ -21,84 +21,84 @@ object LiloIntType : LiloType {
 
         define(name = LiloMagicMethod.STR, value = StrMethod)
     }
-}
 
-private object AddMethod : LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value + rhs.value))
+    private object AddMethod : LiloCallable {
+        override fun invoke(
+            interpreter: LiloInterpreter,
+            args: List<LiloObject>
+        ): LiloResult<LiloObject> {
+            val lhs = args[0]
+            val rhs = args[1]
+            if (lhs is LiloInt && rhs is LiloInt) {
+                return LiloResult.Success(data = LiloInt(value = lhs.value + rhs.value))
+            }
+            return LiloResult.Failure(error = RuntimeException("Op `+` is unsupported between lhs & rhs"))
         }
-        return LiloResult.Failure(error = RuntimeException("Op `+` is unsupported between lhs & rhs"))
     }
-}
 
-private object SubMethod : LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value - rhs.value))
+    private object SubMethod : LiloCallable {
+        override fun invoke(
+            interpreter: LiloInterpreter,
+            args: List<LiloObject>
+        ): LiloResult<LiloObject> {
+            val lhs = args[0]
+            val rhs = args[1]
+            if (lhs is LiloInt && rhs is LiloInt) {
+                return LiloResult.Success(data = LiloInt(value = lhs.value - rhs.value))
+            }
+            return LiloResult.Failure(error = RuntimeException("Op `-` is unsupported between lhs & rhs"))
         }
-        return LiloResult.Failure(error = RuntimeException("Op `-` is unsupported between lhs & rhs"))
     }
-}
 
-private object MulMethod : LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value * rhs.value))
+    private object MulMethod : LiloCallable {
+        override fun invoke(
+            interpreter: LiloInterpreter,
+            args: List<LiloObject>
+        ): LiloResult<LiloObject> {
+            val lhs = args[0]
+            val rhs = args[1]
+            if (lhs is LiloInt && rhs is LiloInt) {
+                return LiloResult.Success(data = LiloInt(value = lhs.value * rhs.value))
+            }
+            return LiloResult.Failure(error = RuntimeException("Op `*` is unsupported between lhs & rhs"))
         }
-        return LiloResult.Failure(error = RuntimeException("Op `*` is unsupported between lhs & rhs"))
     }
-}
 
-private object DivMethod : LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
+    private object DivMethod : LiloCallable {
+        override fun invoke(
+            interpreter: LiloInterpreter,
+            args: List<LiloObject>
+        ): LiloResult<LiloObject> {
+            val lhs = args[0]
+            val rhs = args[1]
+            if (lhs is LiloInt && rhs is LiloInt) {
+                return LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
+            }
+            return LiloResult.Failure(error = RuntimeException("Op `/` is unsupported between lhs & rhs"))
         }
-        return LiloResult.Failure(error = RuntimeException("Op `/` is unsupported between lhs & rhs"))
     }
-}
 
-private object ModMethod : LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value % rhs.value))
+    private object ModMethod : LiloCallable {
+        override fun invoke(
+            interpreter: LiloInterpreter,
+            args: List<LiloObject>
+        ): LiloResult<LiloObject> {
+            val lhs = args[0]
+            val rhs = args[1]
+            if (lhs is LiloInt && rhs is LiloInt) {
+                return LiloResult.Success(data = LiloInt(value = lhs.value % rhs.value))
+            }
+            return LiloResult.Failure(error = RuntimeException("Op `%` is unsupported between lhs & rhs"))
         }
-        return LiloResult.Failure(error = RuntimeException("Op `%` is unsupported between lhs & rhs"))
     }
-}
 
-private object StrMethod : LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        val lhs = args[0] as LiloInt
-        return LiloResult.Success(data = LiloStr(value = lhs.value.toString()))
+    private object StrMethod : LiloCallable {
+        override fun invoke(
+            interpreter: LiloInterpreter,
+            args: List<LiloObject>
+        ): LiloResult<LiloObject> {
+            val lhs = args[0] as LiloInt
+            return LiloResult.Success(data = LiloStr(value = lhs.value.toString()))
+        }
     }
 }

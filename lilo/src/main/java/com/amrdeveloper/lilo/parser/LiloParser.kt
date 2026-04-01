@@ -18,6 +18,7 @@ import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.ast.ListExpr
+import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -328,6 +329,11 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.TRUE_KEYWORD, LiloTokenKind.FALSE_KEYWORD -> {
                 advance()
                 LiloResult.Success(data = BoolExpr(value = token))
+            }
+
+            LiloTokenKind.NONE_KEYWORD-> {
+                advance()
+                LiloResult.Success(data = NoneExpr(value = token))
             }
 
             LiloTokenKind.L_BRACKET -> parseListExpr()

@@ -158,12 +158,16 @@ class LiloInterpreter(val liloHost: LiloHost) :
             else -> null
         }
 
-        if (methodName == null) return runtimeException("Op `${expr.op.kind.name}` is unsupported between lhs & rhs")
-        val method = lhs.lookup(methodName)
-            ?: return runtimeException("Method `${methodName}` unsupported between lhs & lhs")
+        if (methodName == null)
+            return runtimeException("Op `${expr.op.kind.name}` is unsupported between ${lhs.type} & ${rhs.type}")
 
-        val callable = method as LiloCallable
-        return callable.invoke(interpreter = this, args = listOf(lhs, rhs))
+        val method = lhs.lookup(methodName)
+            ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
+
+        if (method !is LiloCallable)
+            return runtimeException("Op `${lhs.type}` has no ${methodName} attribute")
+
+        return method.invoke(interpreter = this, args = listOf(lhs, rhs))
     }
 
     override fun visitGroupExpr(expr: GroupExpr): LiloResult<LiloObject> {

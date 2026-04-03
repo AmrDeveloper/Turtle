@@ -68,7 +68,8 @@ class LiloParserTest {
     @Test
     fun `test parse list`() {
         val sourceCodes = listOf(
-            "b[1]"
+            "b = [1]",
+            "b = [1, 2, 3]"
         )
 
         for (sourceCode in sourceCodes) {
@@ -81,6 +82,29 @@ class LiloParserTest {
             val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
             if (parseResult.isFailure()) {
                 println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+        }
+    }
+
+    @Test
+    fun `test parse tuple`() {
+        val sourceCodes = listOf(
+            "b = (1)",
+            "b = (1, 2, 3)",
+            "b = ()"
+        )
+
+        for (sourceCode in sourceCodes) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
             }
             assertTrue("Parser error", parseResult.isSuccess())
         }

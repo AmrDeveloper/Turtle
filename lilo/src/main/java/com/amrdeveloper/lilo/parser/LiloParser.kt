@@ -22,6 +22,7 @@ import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
+import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
@@ -358,7 +359,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             }
 
             LiloTokenKind.L_BRACKET -> parseListExpr()
-            LiloTokenKind.LPAR -> parseGroupExpr()
+            LiloTokenKind.LPAR -> parseGroupOrTupleExpr()
             else -> createDiagnostic(
                 loc = token.loc,
                 message = "Unexpected primary expr `${token.kind.name}`"
@@ -395,22 +396,29 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = ListExpr(values = list))
     }
 
-    private fun parseGroupExpr(): LiloResult<LiloExpr> {
-        run {
-            val consumeRes = expectAndConsume(kind = LiloTokenKind.LPAR, message = "expected '('")
-            if (consumeRes.isFailure()) return consumeRes.toFailure()
+    private fun parseGroupOrTupleExpr(): LiloResult<LiloExpr> {
+        // Advance '('
+        advance()
+
+        val values = mutableListOf<LiloExpr>()
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.RPAR).not()) {
+            val exprResult = parseExpr()
+            if (exprResult.isFailure()) return exprResult.toFailure()
+            val expr = exprResult.toSuccessData()
+            values.add(expr)
+
+            if (isPeek(kind = LiloTokenKind.COMMA)) {
+                advance()
+            } else {
+                break
+            }
         }
 
-        val exprResult = parseExpr()
-        if (exprResult.isFailure()) return exprResult.toFailure()
-        val expr = exprResult.toSuccessData()
+        val consumeRes = expectAndConsume(kind = LiloTokenKind.RPAR, message = "expected ')' after group or tuple expr")
+        if (consumeRes.isFailure()) return consumeRes.toFailure()
 
-        run {
-            val consumeRes = expectAndConsume(kind = LiloTokenKind.RPAR, message = "expected ')'")
-            if (consumeRes.isFailure()) return consumeRes.toFailure()
-        }
-
-        return LiloResult.Success(data = GroupExpr(expr = expr))
+        val expr = if (values.size == 1) GroupExpr(expr = values[0]) else TupleExpr(values = values)
+        return LiloResult.Success(data = expr)
     }
 
     private fun expectAndConsume(kind: LiloTokenKind, message: String): LiloResult<LiloToken> {

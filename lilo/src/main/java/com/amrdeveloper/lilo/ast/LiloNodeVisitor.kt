@@ -10,8 +10,8 @@ interface LiloStmtVisitor<T> {
         is AssignStmt -> visitAssignStmt(stmt)
     }
 
-    fun visitFromImportStmt(stmt : FromImportStmt) : T
-    fun visitImportStmt(stmt : ImportStmt) : T
+    fun visitFromImportStmt(stmt: FromImportStmt): T
+    fun visitImportStmt(stmt: ImportStmt): T
     fun visitFunctionStmt(stmt: FunctionStmt): T
     fun visitBlockStmt(stmt: BlockStmt): T
     fun visitExprStmt(stmt: ExprStmt): T
@@ -26,6 +26,7 @@ interface LiloExprVisitor<T> {
         is ArithExpr -> visitArithExpr(expr)
         is GroupExpr -> visitGroupExpr(expr)
         is ListExpr -> visitListExpr(expr)
+        is TupleExpr -> visitTupleExpr(expr)
         is SymbolExpr -> visitSymbolExpr(expr)
         is StrExpr -> visitStrExpr(expr)
         is IntExpr -> visitIntExpr(expr)
@@ -40,6 +41,7 @@ interface LiloExprVisitor<T> {
     fun visitArithExpr(expr: ArithExpr): T
     fun visitGroupExpr(expr: GroupExpr): T
     fun visitListExpr(expr: ListExpr): T
+    fun visitTupleExpr(expr: TupleExpr): T
     fun visitSymbolExpr(expr: SymbolExpr): T
     fun visitStrExpr(expr: StrExpr): T
     fun visitIntExpr(expr: IntExpr): T
@@ -49,5 +51,5 @@ interface LiloExprVisitor<T> {
 }
 
 interface LiloTreeVisitor<S, E> : LiloStmtVisitor<S>, LiloExprVisitor<E> {
-    fun visitProgram(program: LiloProgram) : S
+    fun visitProgram(program: LiloProgram): S
 }

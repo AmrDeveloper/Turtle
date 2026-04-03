@@ -16,6 +16,8 @@ data class GroupExpr(val expr: LiloExpr) : LiloExpr
 
 data class ListExpr(val values: List<LiloExpr>) : LiloExpr
 
+data class TupleExpr(val values: List<LiloExpr>) : LiloExpr
+
 data class SymbolExpr(val value: LiloToken) : LiloExpr
 
 data class StrExpr(val value: LiloToken) : LiloExpr

@@ -123,6 +123,7 @@ class LiloMagicMethodTest {
     @Test
     fun `test __getitem__ magic method`() {
         val sourceCodes = mutableListOf(
+            // List
             """
             a = [1, 2, 3]
             print(a[0])
@@ -135,9 +136,25 @@ class LiloMagicMethodTest {
             a = [1, 2, 3]
             print(a[2])
             """,
+            // Tuple
+            """
+            a = (1, 2, 3)
+            print(a[0])
+            """,
+            """
+            a = (1, 2, 3)
+            print(a[1])
+            """,
+            """
+            a = (1, 2, 3)
+            print(a[2])
+            """,
         )
 
         val expectedOutput = listOf(
+            "1",
+            "2",
+            "3",
             "1",
             "2",
             "3",

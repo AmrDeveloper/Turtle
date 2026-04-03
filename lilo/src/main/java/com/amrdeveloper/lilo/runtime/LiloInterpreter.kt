@@ -20,6 +20,7 @@ import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
+import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -37,6 +38,7 @@ import com.amrdeveloper.lilo.`object`.LiloModule
 import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloStr
+import com.amrdeveloper.lilo.`object`.LiloTuple
 
 class LiloInterpreter(val liloHost: LiloHost) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
@@ -204,6 +206,17 @@ class LiloInterpreter(val liloHost: LiloHost) :
             list.add(element)
         }
         return runtimeObject(obj = LiloList(values = list))
+    }
+
+    override fun visitTupleExpr(expr: TupleExpr): LiloResult<LiloObject> {
+        val list = mutableListOf<LiloObject>()
+        for (value in expr.values) {
+            val elementResult = visit(expr = value)
+            if (elementResult.isFailure()) return elementResult
+            val element = elementResult.toSuccessData()
+            list.add(element)
+        }
+        return runtimeObject(obj = LiloTuple(values = list))
     }
 
     override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloObject> {

@@ -11,6 +11,7 @@ import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
+import com.amrdeveloper.lilo.ast.GetItemExpr
 import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.ImportStmt
@@ -241,13 +242,13 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseMultiplicativeExpr(): LiloResult<LiloExpr> {
-        val lhsResult = visitCallExpr()
+        val lhsResult = parseCallOrGetExpr()
         if (lhsResult.isFailure()) return lhsResult.toFailure()
         var lhs = lhsResult.toSuccessData()
 
         while (!isAtEnd() && peek().kind.isFactorOperator()) {
             val op = advance()
-            val rhsResult = visitCallExpr()
+            val rhsResult = parseCallOrGetExpr()
             if (rhsResult.isFailure()) return rhsResult.toFailure()
 
             val rhs = rhsResult.toSuccessData()
@@ -257,7 +258,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = lhs)
     }
 
-    private fun visitCallExpr(): LiloResult<LiloExpr> {
+    private fun parseCallOrGetExpr(): LiloResult<LiloExpr> {
         val calleeResult = parsePrimaryExpr()
         if (calleeResult.isFailure()) return calleeResult.toFailure()
         var expr = calleeResult.toSuccessData()
@@ -287,6 +288,21 @@ class LiloParser(val tokens: List<LiloToken>) {
                 }
 
                 expr = CallExpr(callee = expr, args = args)
+                continue
+            }
+
+            if (isPeek(kind =LiloTokenKind.L_BRACKET)) {
+                // (
+                advance()
+
+                val indexResult = parseExpr()
+                if (indexResult.isFailure()) return indexResult.toFailure()
+                val index = indexResult.toSuccessData()
+
+                val consumeRes = expectAndConsume(kind = LiloTokenKind.R_BRACKET, message = "expected ']' after index value")
+                if (consumeRes.isFailure()) return consumeRes.toFailure()
+
+                expr = GetItemExpr(obj = expr, index = index)
                 continue
             }
 

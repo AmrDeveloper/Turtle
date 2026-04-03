@@ -12,6 +12,7 @@ import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
+import com.amrdeveloper.lilo.ast.GetItemExpr
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
@@ -120,6 +121,24 @@ class LiloInterpreter(val liloHost: LiloHost) :
         val liloAttribute = liloObj.lookup(name = attribute)
         if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
         return runtimeException("Invalid `.`` expression on lhs")
+    }
+
+    override fun visitGetItemExpr(expr: GetItemExpr): LiloResult<LiloObject> {
+        val objResult = visit(expr.obj)
+        if (objResult.isFailure()) return objResult.toFailure()
+
+        val indexResult = visit(expr.index)
+        if (indexResult.isFailure()) return indexResult.toFailure()
+
+        val liloObj = objResult.toSuccessData()
+        val index = indexResult.toSuccessData()
+
+        val liloGetItemMethod = liloObj.lookup(name = LiloMagicMethod.GET_ITEM)
+        if (liloGetItemMethod == null || liloGetItemMethod !is LiloCallable) {
+            return runtimeException("`${liloObj}` object is not subscriptable")
+        }
+
+        return liloGetItemMethod.invoke(interpreter = this, args = listOf(liloObj, index))
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<LiloObject> {

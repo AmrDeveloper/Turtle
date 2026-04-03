@@ -68,7 +68,7 @@ class LiloInterpreterTest {
             val interpreter = LiloInterpreter(liloHostTest)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
         }
@@ -108,7 +108,7 @@ class LiloInterpreterTest {
             val interpreter = LiloInterpreter(liloHostTest)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
             assertTrue(liloHostTest.buffer.isEmpty())
@@ -141,7 +141,7 @@ class LiloInterpreterTest {
             val interpreter = LiloInterpreter(liloHostTest)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
             assertTrue(liloHostTest.buffer.toString() == "42")

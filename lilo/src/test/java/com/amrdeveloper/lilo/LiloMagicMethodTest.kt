@@ -112,7 +112,56 @@ class LiloMagicMethodTest {
             val interpreter = LiloInterpreter(liloHostTest)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
+            liloHostTest.clear()
+        }
+    }
+
+    @Test
+    fun `test __getitem__ magic method`() {
+        val sourceCodes = mutableListOf(
+            """
+            a = [1, 2, 3]
+            print(a[0])
+            """,
+            """
+            a = [1, 2, 3]
+            print(a[1])
+            """,
+            """
+            a = [1, 2, 3]
+            print(a[2])
+            """,
+        )
+
+        val expectedOutput = listOf(
+            "1",
+            "2",
+            "3",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloHostTest = LiloHostTest()
+            val interpreter = LiloInterpreter(liloHostTest)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
             assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])

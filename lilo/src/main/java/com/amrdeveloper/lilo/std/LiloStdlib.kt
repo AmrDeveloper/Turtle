@@ -3,6 +3,7 @@ package com.amrdeveloper.lilo.std
 import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
 import com.amrdeveloper.lilo.std.modules.liloRandomModule
 import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.std.builtins.LiloLenFunction
 import com.amrdeveloper.lilo.std.builtins.LiloTypeFunction
 
 fun supportedLiloStdlib(): Map<String, LiloObject> {
@@ -12,6 +13,7 @@ fun supportedLiloStdlib(): Map<String, LiloObject> {
 
         // Builtins Functions
         "print" to LiloPrintFunction,
-        "type" to LiloTypeFunction
+        "len" to LiloLenFunction,
+        "type" to LiloTypeFunction,
     )
 }

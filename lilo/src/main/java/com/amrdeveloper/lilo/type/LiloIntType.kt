@@ -6,6 +6,7 @@ import com.amrdeveloper.lilo.`object`.LiloCallable
 import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloStr
+import com.amrdeveloper.lilo.runtime.LiloException
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 object LiloIntType : LiloType {
@@ -32,7 +33,7 @@ object LiloIntType : LiloType {
             if (lhs is LiloInt && rhs is LiloInt) {
                 return LiloResult.Success(data = LiloInt(value = lhs.value + rhs.value))
             }
-            return LiloResult.Failure(error = RuntimeException("Op `+` is unsupported between lhs & rhs"))
+            return LiloResult.Failure(error = LiloException("Op `+` is unsupported between lhs & rhs"))
         }
     }
 
@@ -46,7 +47,7 @@ object LiloIntType : LiloType {
             if (lhs is LiloInt && rhs is LiloInt) {
                 return LiloResult.Success(data = LiloInt(value = lhs.value - rhs.value))
             }
-            return LiloResult.Failure(error = RuntimeException("Op `-` is unsupported between lhs & rhs"))
+            return LiloResult.Failure(error = LiloException("Op `-` is unsupported between lhs & rhs"))
         }
     }
 
@@ -60,7 +61,7 @@ object LiloIntType : LiloType {
             if (lhs is LiloInt && rhs is LiloInt) {
                 return LiloResult.Success(data = LiloInt(value = lhs.value * rhs.value))
             }
-            return LiloResult.Failure(error = RuntimeException("Op `*` is unsupported between lhs & rhs"))
+            return LiloResult.Failure(error = LiloException("Op `*` is unsupported between lhs & rhs"))
         }
     }
 
@@ -74,7 +75,7 @@ object LiloIntType : LiloType {
             if (lhs is LiloInt && rhs is LiloInt) {
                 return LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
             }
-            return LiloResult.Failure(error = RuntimeException("Op `/` is unsupported between lhs & rhs"))
+            return LiloResult.Failure(error = LiloException("Op `/` is unsupported between lhs & rhs"))
         }
     }
 
@@ -88,7 +89,7 @@ object LiloIntType : LiloType {
             if (lhs is LiloInt && rhs is LiloInt) {
                 return LiloResult.Success(data = LiloInt(value = lhs.value % rhs.value))
             }
-            return LiloResult.Failure(error = RuntimeException("Op `%` is unsupported between lhs & rhs"))
+            return LiloResult.Failure(error = LiloException("Op `%` is unsupported between lhs & rhs"))
         }
     }
 

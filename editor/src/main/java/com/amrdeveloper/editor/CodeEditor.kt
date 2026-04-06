@@ -61,12 +61,12 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
                     .verticalScroll(scrollState)
                     .drawBehind {
                         if (activeLine != -1 && textLayoutResult != null) {
-                            val top = textLayoutResult!!.getLineTop(activeLine)
-                            val bottom = textLayoutResult!!.getLineBottom(activeLine)
+                            val top = textLayoutResult!!.getLineTop(lineIndex = activeLine)
+                            val bottom = textLayoutResult!!.getLineBottom(lineIndex =activeLine)
                             drawRect(
                                 color = highlightColor,
-                                topLeft = Offset(0f, top),
-                                size = Size(size.width, bottom - top)
+                                topLeft = Offset(x = 0f, y = top),
+                                size = Size(size.width, height = bottom - top)
                             )
                         }
                     }

@@ -55,8 +55,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // The Lilo Programming Language
     implementation(project(path = ":lilo"))
+    implementation(project(path = ":editor"))
 
     testImplementation(libs.junit)
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

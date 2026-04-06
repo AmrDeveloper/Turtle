@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -18,13 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.amrdeveloper.turtle.R
+import com.amrdeveloper.turtle.ui.home.CodeEditorScreen
 
 data class Tab(val title: String, val icon: Int, val content: @Composable () -> Unit)
 
 private val homeTabs = listOf(
-    Tab(title = "Code", icon = R.drawable.ic_code, content = {}),
-    Tab(title = "Draw", icon = R.drawable.ic_draw, content = {}),
-    Tab(title = "Terminal", icon = R.drawable.ic_terminal, content = {}),
+    Tab(title = "Code", icon = R.drawable.ic_code, content = { CodeEditorScreen() }),
+    Tab(title = "Draw", icon = R.drawable.ic_draw, content = { Text("Placeholder for Draw screen") }),
+    Tab(title = "Terminal", icon = R.drawable.ic_terminal, content = { Text("Placeholder for Terminal screen") }),
 )
 
 @Composable

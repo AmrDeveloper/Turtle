@@ -35,6 +35,7 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.weight(1f)) {
             Gutter(
+                editorState = editorState,
                 textLayoutResult = textLayoutResult,
                 scrollState = scrollState,
             )

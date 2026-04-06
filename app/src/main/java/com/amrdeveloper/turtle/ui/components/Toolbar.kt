@@ -31,7 +31,7 @@ import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.ui.search.SearchScreen
 
 @Composable
-fun TurtleToolbar() {
+fun TurtleToolbar(onRunActionClicked: () -> Unit = {}) {
     var expanded by rememberSaveable { mutableStateOf(value = false) }
     val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
 
@@ -77,7 +77,7 @@ fun TurtleToolbar() {
 
             if (!expanded) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = onRunActionClicked) {
                         Icon(
                             painter = painterResource(R.drawable.ic_run),
                             contentDescription = "Run",

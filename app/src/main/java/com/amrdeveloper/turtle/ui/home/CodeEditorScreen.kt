@@ -5,6 +5,6 @@ import androidx.compose.runtime.Composable
 import com.amrdeveloper.editor.CodeEditor
 
 @Composable
-fun CodeEditorScreen(editorState: TextFieldState,) {
+fun CodeEditorScreen(editorState: TextFieldState) {
     CodeEditor(editorState)
 }

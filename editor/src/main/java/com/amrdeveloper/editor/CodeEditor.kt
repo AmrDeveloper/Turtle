@@ -25,6 +25,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.amrdeveloper.editor.core.Gutter
 import com.amrdeveloper.editor.core.StatusBar
+import com.amrdeveloper.editor.plugin.buildPluginTransformation
 
 @Composable
 fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
@@ -53,7 +54,8 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
                     .padding(start = 8.dp),
                 textStyle = MaterialTheme.typography.titleMedium.copy(),
                 onTextLayout = { textLayoutResult = it.invoke() },
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                inputTransformation = buildPluginTransformation()
             )
         }
 

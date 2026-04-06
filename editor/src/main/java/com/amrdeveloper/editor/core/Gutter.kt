@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,18 +25,14 @@ import androidx.compose.ui.unit.max
 
 @Composable
 internal fun Gutter(
-    editorState: TextFieldState,
     textLayoutResult: TextLayoutResult?,
     scrollState: ScrollState,
+    activeLine: Int = -1,
     textStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
     activeTextStyle: TextStyle = textStyle.copy(color = Color.DarkGray, fontWeight = FontWeight.Bold),
     horizontalPadding: Dp = 8.dp,
     modifier: Modifier = Modifier,
 ) {
-    val activeLine = remember(editorState.selection, textLayoutResult) {
-        textLayoutResult?.getLineForOffset(editorState.selection.start) ?: -1
-    }
-
     val lineCount = textLayoutResult?.lineCount ?: 1
 
     // Dynamically calculate gutter width based on max line digits

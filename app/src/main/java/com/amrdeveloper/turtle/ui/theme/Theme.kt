@@ -16,6 +16,8 @@ private val VSCodeDarkColorScheme = darkColorScheme(
     onPrimary = Color.White,
     onBackground = VSCodeDarkOnSurface,
     onSurface = VSCodeDarkOnSurface,
+    secondaryContainer = VSCodeDarkStatusBar,
+    onSecondaryContainer = Color.White
 )
 
 private val VSCodeLightColorScheme = lightColorScheme(
@@ -26,6 +28,8 @@ private val VSCodeLightColorScheme = lightColorScheme(
     onPrimary = Color.White,
     onBackground = VSCodeLightOnSurface,
     onSurface = VSCodeLightOnSurface,
+    secondaryContainer = VSCodeLightStatusBar,
+    onSecondaryContainer = Color.White
 )
 
 @Composable

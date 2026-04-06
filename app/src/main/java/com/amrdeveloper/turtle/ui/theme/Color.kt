@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 val VSCodeDarkBackground = Color(0xFF1E1E1E)
 val VSCodeDarkSurface = Color(0xFF252526)
 val VSCodeDarkTitleBar = Color(0xFF3C3C3C)
+val VSCodeDarkStatusBar = Color(0xFF007ACC)
 val VSCodeDarkPrimary = Color(0xFF007ACC)
 val VSCodeDarkOnSurface = Color(0xFFD4D4D4)
 
@@ -13,6 +14,7 @@ val VSCodeDarkOnSurface = Color(0xFFD4D4D4)
 val VSCodeLightBackground = Color(0xFFFFFFFF)
 val VSCodeLightSurface = Color(0xFFF3F3F3)
 val VSCodeLightTitleBar = Color(0xFFDDDDDD)
+val VSCodeLightStatusBar = Color(0xFF007ACC)
 val VSCodeLightPrimary = Color(0xFF007ACC)
 val VSCodeLightOnSurface = Color(0xFF000000)
 

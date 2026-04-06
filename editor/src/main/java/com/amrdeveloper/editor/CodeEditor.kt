@@ -1,6 +1,7 @@
 package com.amrdeveloper.editor
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,35 +23,40 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
-import com.amrdeveloper.editor.core.EditorGutter
+import com.amrdeveloper.editor.core.Gutter
+import com.amrdeveloper.editor.core.StatusBar
 
 @Composable
 fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(value = null) }
 
-    Row(modifier = Modifier.fillMaxSize()) {
-        EditorGutter(
-            textLayoutResult = textLayoutResult,
-            scrollState = scrollState,
-        )
+    Column(modifier = modifier.fillMaxSize()) {
+        Row(modifier = Modifier.weight(1f)) {
+            Gutter(
+                textLayoutResult = textLayoutResult,
+                scrollState = scrollState,
+            )
 
-        Spacer(
-            modifier = Modifier
-                .width(1.dp)
-                .fillMaxHeight()
-                .background(Color.LightGray.copy(alpha = 0.5f))
-        )
+            Spacer(
+                modifier = Modifier
+                    .width(1.dp)
+                    .fillMaxHeight()
+                    .background(Color.LightGray.copy(alpha = 0.5f))
+            )
 
-        BasicTextField(
-            state = editorState,
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(start = 8.dp),
-            textStyle = MaterialTheme.typography.titleMedium.copy(),
-            onTextLayout = { textLayoutResult = it.invoke() },
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
-        )
+            BasicTextField(
+                state = editorState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(start = 8.dp),
+                textStyle = MaterialTheme.typography.titleMedium.copy(),
+                onTextLayout = { textLayoutResult = it.invoke() },
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
+            )
+        }
+
+        StatusBar(editorState, textLayoutResult)
     }
 }

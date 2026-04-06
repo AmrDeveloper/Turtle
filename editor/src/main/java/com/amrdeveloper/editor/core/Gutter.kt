@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EditorGutter(
+internal fun Gutter(
     textLayoutResult: TextLayoutResult?,
     scrollState: ScrollState,
     modifier: Modifier = Modifier,

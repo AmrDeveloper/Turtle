@@ -103,8 +103,7 @@ class LiloLexer(val source: String) {
 
     private fun consumeStringLiteral() : LiloResult<LiloToken> {
         val start = advance()
-        var literal = ""
-        while (!isAtEnd() && peek() != start) literal += advance()
+        while (!isAtEnd() && peek() != start) advance()
         if (isAtEnd() || peek() != start) {
             return LiloResult.Failure(error = createDiagnostic(message = "Unterminated string literal"))
         }
@@ -112,7 +111,8 @@ class LiloLexer(val source: String) {
         // Consume terminator
         advance()
 
-        val str = createToken(kind = LiloTokenKind.STR_LITERAL, lexeme = literal)
+        val lexeme = source.substring(startPos + 1, currentPos - 1)
+        val str = createToken(kind = LiloTokenKind.STR_LITERAL, lexeme = lexeme)
         return LiloResult.Success(data = str)
     }
 

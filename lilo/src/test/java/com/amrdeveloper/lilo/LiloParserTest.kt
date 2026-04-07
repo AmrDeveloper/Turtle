@@ -8,10 +8,8 @@ import com.amrdeveloper.lilo.common.toFailureError
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
-import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import org.junit.Assert.assertTrue
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class LiloParserTest {
 
@@ -115,6 +113,29 @@ class LiloParserTest {
         val sourceCodes = listOf(
             "list[1]",
             "list[1][2]"
+        )
+
+        for (sourceCode in sourceCodes) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+        }
+    }
+
+    @Test
+    fun `test if expr`() {
+        val sourceCodes = listOf(
+            "a = 1 if (True) else 2",
+            "a = 1 if (True) else (2 if (True) else 3)",
+            "a = (2 if (True) else 3) if (True) else 2",
         )
 
         for (sourceCode in sourceCodes) {

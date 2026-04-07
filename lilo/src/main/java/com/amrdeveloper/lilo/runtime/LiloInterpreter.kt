@@ -1,19 +1,20 @@
 package com.amrdeveloper.lilo.runtime
 
 import com.amrdeveloper.lilo.ast.ArithExpr
-import com.amrdeveloper.lilo.ast.BoolExpr
-import com.amrdeveloper.lilo.ast.CallExpr
-import com.amrdeveloper.lilo.ast.FloatExpr
-import com.amrdeveloper.lilo.ast.IntExpr
-import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BlockStmt
-import com.amrdeveloper.lilo.ast.GetExpr
+import com.amrdeveloper.lilo.ast.BoolExpr
+import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
+import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
+import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.GetItemExpr
+import com.amrdeveloper.lilo.ast.GroupExpr
+import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.ImportStmt
+import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
@@ -26,8 +27,6 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.toSuccessData
-import com.amrdeveloper.lilo.parser.LiloTokenKind
-import com.amrdeveloper.lilo.std.supportedLiloStdlib
 import com.amrdeveloper.lilo.`object`.LiloBool
 import com.amrdeveloper.lilo.`object`.LiloCallable
 import com.amrdeveloper.lilo.`object`.LiloFloat
@@ -39,6 +38,8 @@ import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.`object`.LiloTuple
+import com.amrdeveloper.lilo.parser.LiloTokenKind
+import com.amrdeveloper.lilo.std.supportedLiloStdlib
 
 class LiloInterpreter(val liloHost: LiloHost) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
@@ -123,6 +124,22 @@ class LiloInterpreter(val liloHost: LiloHost) :
         val liloAttribute = liloObj.lookup(name = attribute)
         if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
         return runtimeException("Invalid `.`` expression on lhs")
+    }
+
+    override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {
+        val conditionResult = visit(expr.condition)
+        if (conditionResult.isFailure()) return conditionResult.toFailure()
+
+        val condition = conditionResult.toSuccessData()
+        if (condition is LiloBool && condition.value) {
+            val thenValueResult = visit(expr.thenValue)
+            if (thenValueResult.isFailure()) return thenValueResult.toFailure()
+            return thenValueResult
+        }
+
+        val elseValueResult = visit(expr.elseValue)
+        if (elseValueResult.isFailure()) return elseValueResult.toFailure()
+        return elseValueResult
     }
 
     override fun visitGetItemExpr(expr: GetItemExpr): LiloResult<LiloObject> {

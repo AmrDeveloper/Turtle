@@ -10,6 +10,8 @@ data class GetExpr(val obj: LiloExpr, val name: SymbolExpr) : LiloExpr
 
 data class GetItemExpr(val obj: LiloExpr, val index: LiloExpr) : LiloExpr
 
+data class IfExpr(val condition: LiloExpr, val thenValue: LiloExpr, val elseValue: LiloExpr) : LiloExpr
+
 data class ArithExpr(val lhs: LiloExpr, val op: LiloToken, val rhs: LiloExpr) : LiloExpr
 
 data class GroupExpr(val expr: LiloExpr) : LiloExpr

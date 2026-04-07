@@ -1,20 +1,20 @@
 package com.amrdeveloper.lilo.parser
 
-import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.ast.ArithExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
-import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
+import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.GetItemExpr
-import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.GroupExpr
+import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.ImportStmt
+import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
@@ -23,6 +23,7 @@ import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
+import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
@@ -223,7 +224,37 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseExpr(): LiloResult<LiloExpr> {
-        return parseAdditiveExpr()
+        return parseIfExpr()
+    }
+
+    private fun parseIfExpr(): LiloResult<LiloExpr> {
+        val expr = parseAdditiveExpr()
+        if (expr.isFailure()) return expr.toFailure()
+
+        if (isPeek(kind = LiloTokenKind.IF_KEYWORD)) {
+            // Advance `if`
+            advance()
+
+            val conditionResult = parseIfExpr()
+            if (conditionResult.isFailure()) return conditionResult.toFailure()
+
+            // Advance `else`
+            val expectResult = expectAndConsume(
+                kind = LiloTokenKind.ELSE_KEYWORD,
+                message = "Expect `else` after `if` value"
+            )
+            if (expectResult.isFailure()) return expectResult.toFailure()
+
+            val elseResult = parseIfExpr()
+            if (elseResult.isFailure()) return elseResult.toFailure()
+
+            val conditionValue = conditionResult.toSuccessData()
+            val thenValue = expr.toSuccessData()
+            val elseValue = elseResult.toSuccessData()
+            return LiloResult.Success(data = IfExpr(conditionValue, thenValue, elseValue))
+        }
+
+        return expr
     }
 
     private fun parseAdditiveExpr(): LiloResult<LiloExpr> {

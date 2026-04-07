@@ -11,9 +11,8 @@ import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloException
 import com.amrdeveloper.lilo.runtime.LiloHost
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import org.junit.Assert.assertTrue
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class LiloInterpreterTest {
 
@@ -145,6 +144,54 @@ class LiloInterpreterTest {
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
             assertTrue(liloHostTest.buffer.toString() == "42")
+        }
+    }
+
+    @Test
+    fun `test evaluate if expr`() {
+        val sourceCodes = mutableListOf(
+            """
+            a = 1 if True else 2
+            print(a)
+            """,
+            """
+            a = 1 if False else (2 if True else 3)
+            print(a)  
+            """,
+            """
+            a = (2 if (False) else 3) if (True) else 2
+            print(a)
+            """
+        )
+
+        val expectedOutput = listOf(
+            "1",
+            "2",
+            "3",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloHostTest = LiloHostTest()
+            val interpreter = LiloInterpreter(liloHostTest)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
         }
     }
 }

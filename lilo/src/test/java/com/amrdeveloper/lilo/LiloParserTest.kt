@@ -90,7 +90,7 @@ class LiloParserTest {
         val sourceCodes = listOf(
             "b = (1)",
             "b = (1, 2, 3)",
-            "b = ()"
+            "b = (1,)"
         )
 
         for (sourceCode in sourceCodes) {

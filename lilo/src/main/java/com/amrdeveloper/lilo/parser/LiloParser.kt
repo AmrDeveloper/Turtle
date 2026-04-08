@@ -432,6 +432,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance '('
         advance()
 
+        var hasComma = false
         val values = mutableListOf<LiloExpr>()
         while (!isAtEnd() && isPeek(kind = LiloTokenKind.RPAR).not()) {
             val exprResult = parseExpr()
@@ -440,6 +441,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             values.add(expr)
 
             if (isPeek(kind = LiloTokenKind.COMMA)) {
+                hasComma = true
                 advance()
             } else {
                 break
@@ -449,7 +451,8 @@ class LiloParser(val tokens: List<LiloToken>) {
         val consumeRes = expectAndConsume(kind = LiloTokenKind.RPAR, message = "expected ')' after group or tuple expr")
         if (consumeRes.isFailure()) return consumeRes.toFailure()
 
-        val expr = if (values.size == 1) GroupExpr(expr = values[0]) else TupleExpr(values = values)
+        val expr =
+            if (values.size == 1 && !hasComma) GroupExpr(expr = values[0]) else TupleExpr(values = values)
         return LiloResult.Success(data = expr)
     }
 

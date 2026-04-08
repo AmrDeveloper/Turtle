@@ -64,12 +64,12 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         val importResult = expectAndConsume(
             kind = LiloTokenKind.IMPORT_KEYWORD,
-            "Expect `import` name `from module`"
+            "Expect `import` keyword `from module`"
         )
         if (importResult.isFailure()) return importResult.toFailure()
 
-        val hasLeftPar = isPeek(kind = LiloTokenKind.LPAR)
-        if (hasLeftPar) {
+        val hasOpenParentheses = isPeek(kind = LiloTokenKind.LPAR)
+        if (hasOpenParentheses) {
             // Advance `(`
             advance()
         }
@@ -81,7 +81,8 @@ class LiloParser(val tokens: List<LiloToken>) {
             }
 
             // Parse module name
-            val nameResult = expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect function name")
+            val nameResult =
+                expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect symbol name after 'import'")
             if (nameResult.isFailure()) return nameResult.toFailure()
             val name = nameResult.toSuccessData()
             var alias: String? = null
@@ -99,7 +100,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             importedSymbols.add(Pair(name.lexeme!!, alias))
         } while (isPeek(kind = LiloTokenKind.COMMA))
 
-        if (hasLeftPar) {
+        if (hasOpenParentheses) {
             val rightParResult =
                 expectAndConsume(kind = LiloTokenKind.RPAR, "Expect `)` after imported symbols")
             if (rightParResult.isFailure()) return rightParResult.toFailure()

@@ -22,19 +22,19 @@ class LiloParserTest {
             "import a, b",
             "import one as o, two as t",
             "from random import random",
-            "from random import (random)"
+            "from random import (random)",
         )
 
         for (sourceCode in sourceCodes) {
             val lexerResult = LiloLexer(source = sourceCode).tokenize()
             if (lexerResult.isFailure()) {
-                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
             }
             assertTrue("Lexer error", lexerResult.isSuccess())
 
             val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
             if (parseResult.isFailure()) {
-                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
             }
             assertTrue("Parser error", parseResult.isSuccess())
         }

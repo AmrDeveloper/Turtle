@@ -1,10 +1,11 @@
 package com.amrdeveloper.lilo.std
 
-import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
-import com.amrdeveloper.lilo.std.modules.liloRandomModule
 import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.std.builtins.LiloIdFunction
 import com.amrdeveloper.lilo.std.builtins.LiloLenFunction
+import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
 import com.amrdeveloper.lilo.std.builtins.LiloTypeFunction
+import com.amrdeveloper.lilo.std.modules.liloRandomModule
 
 fun supportedLiloStdlib(): Map<String, LiloObject> {
     return mapOf(
@@ -15,5 +16,6 @@ fun supportedLiloStdlib(): Map<String, LiloObject> {
         "print" to LiloPrintFunction,
         "len" to LiloLenFunction,
         "type" to LiloTypeFunction,
+        "id" to LiloIdFunction,
     )
 }

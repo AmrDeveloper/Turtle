@@ -38,7 +38,7 @@ import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.parser.LiloTokenKind
-import com.amrdeveloper.lilo.std.supportedLiloStdlib
+import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
 
 class LiloInterpreter(val liloHost: LiloHost) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
@@ -46,9 +46,9 @@ class LiloInterpreter(val liloHost: LiloHost) :
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
 
-    val environment = LiloEnvironment(enclosing = null)
-
-    private val liloStdlib = supportedLiloStdlib()
+    val environment = LiloEnvironment(enclosing = null).also {
+        registerLiloStandardLibrary(environment = it)
+    }
 
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
         return visitProgram(program)
@@ -65,7 +65,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
 
     override fun visitFromImportStmt(stmt: FromImportStmt): LiloResult<Unit> {
         val liloStdModule =
-            liloStdlib[stmt.module]
+            environment.get(stmt.module)
                 ?: return runtimeException("No module named `$stmt.module`")
         if (liloStdModule !is LiloModule) return runtimeException("`${stmt.module}` is not module")
         for ((symbolName, alias) in stmt.symbols) {
@@ -79,7 +79,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
     override fun visitImportStmt(stmt: ImportStmt): LiloResult<Unit> {
         for ((moduleName, alias) in stmt.modules) {
             val liloStdModule =
-                liloStdlib.get(moduleName)
+                environment.get(moduleName)
                     ?: return runtimeException("No module named `$moduleName`")
             if (liloStdModule !is LiloModule) return runtimeException("`$moduleName` is not module")
             environment.define(name = alias ?: moduleName, value = liloStdModule)
@@ -239,10 +239,6 @@ class LiloInterpreter(val liloHost: LiloHost) :
         val symbolName = expr.value.lexeme!!
         val value = environment.get(symbolName)
         if (value != null) return runtimeObject(obj = value)
-
-        val builtin = liloStdlib[symbolName]
-        if (builtin != null) return runtimeObject(obj = builtin)
-
         return runtimeException("Undefined variable `${expr.value.lexeme}`")
     }
 

@@ -20,6 +20,7 @@ open class LiloObject(var type: LiloType? = null) {
     open fun hasAttr(name: String): Boolean {
         if (dict.containsKey(name)) return true
         dict[name]?.let { return true }
+        val t = type ?: return false
         if (this == type) return false
         return t.hasAttr(name)
     }

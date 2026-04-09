@@ -28,7 +28,6 @@ import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.`object`.LiloBool
-import com.amrdeveloper.lilo.`object`.LiloCallable
 import com.amrdeveloper.lilo.`object`.LiloFloat
 import com.amrdeveloper.lilo.`object`.LiloFunction
 import com.amrdeveloper.lilo.`object`.LiloInt
@@ -70,7 +69,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
                 ?: return runtimeException("No module named `$stmt.module`")
         if (liloStdModule !is LiloModule) return runtimeException("`${stmt.module}` is not module")
         for ((symbolName, alias) in stmt.symbols) {
-            val symbol = liloStdModule.lookup(symbolName)
+            val symbol = liloStdModule.getAttr(symbolName)
                 ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
             environment.define(name = alias ?: symbolName, value = symbol)
         }
@@ -121,7 +120,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         if (objResult.isFailure()) return objResult.toFailure()
         val liloObj = objResult.toSuccessData()
         val attribute = expr.name.value.lexeme!!
-        val liloAttribute = liloObj.lookup(name = attribute)
+        val liloAttribute = liloObj.getAttr(name = attribute)
         if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
         return runtimeException("Invalid `.`` expression on lhs")
     }
@@ -152,7 +151,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         val liloObj = objResult.toSuccessData()
         val index = indexResult.toSuccessData()
 
-        val liloGetItemMethod = liloObj.lookup(name = LiloMagicMethod.GET_ITEM)
+        val liloGetItemMethod = liloObj.getAttr(name = LiloMagicMethod.GET_ITEM)
         if (liloGetItemMethod == null || liloGetItemMethod !is LiloCallable) {
             return runtimeException("`${liloObj}` object is not subscriptable")
         }
@@ -201,7 +200,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         if (methodName == null)
             return runtimeException("Op `${expr.op.kind.name}` is unsupported between ${lhs.type} & ${rhs.type}")
 
-        val method = lhs.lookup(methodName)
+        val method = lhs.getAttr(methodName)
             ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
 
         if (method !is LiloCallable)

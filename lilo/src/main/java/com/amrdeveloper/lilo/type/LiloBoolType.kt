@@ -1,8 +1,5 @@
 package com.amrdeveloper.lilo.type
 
-import com.amrdeveloper.lilo.`object`.LiloObject
-
-object LiloBoolType : LiloType {
-    override val attributes = mutableMapOf<String, LiloObject>()
-    override fun toString() = "<class 'bool'>"
+val liloBoolType = LiloType(name = "bool", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
+    it.type = LiloBaseType.LILO_TYPE_TYPE
 }

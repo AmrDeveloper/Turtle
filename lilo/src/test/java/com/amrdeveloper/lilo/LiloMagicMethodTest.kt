@@ -11,9 +11,8 @@ import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloException
 import com.amrdeveloper.lilo.runtime.LiloHost
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import org.junit.Assert.assertTrue
 import org.junit.Test
-
-import org.junit.Assert.*
 
 class LiloMagicMethodTest {
 
@@ -83,6 +82,12 @@ class LiloMagicMethodTest {
             """,
             """
             print("Lilo")
+            """,
+            """
+            print(int)
+            """,
+            """
+            print(float)
             """
         )
 
@@ -91,7 +96,9 @@ class LiloMagicMethodTest {
             "1",
             "None",
             "Lilo",
-            "Lilo"
+            "Lilo",
+            "<class 'int'>",
+            "<class 'float'>"
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

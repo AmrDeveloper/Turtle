@@ -1,8 +1,5 @@
 package com.amrdeveloper.lilo.type
 
-import com.amrdeveloper.lilo.`object`.LiloObject
-
-class LiloModuleType : LiloType {
-    override val attributes = mutableMapOf<String, LiloObject>()
-    override fun toString() = "<class 'module'>"
+val liloModuleType = LiloType(name = "module", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
+    it.type = LiloBaseType.LILO_TYPE_TYPE
 }

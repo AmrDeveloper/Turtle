@@ -1,7 +1,7 @@
 package com.amrdeveloper.lilo.parser
 
-import com.amrdeveloper.lilo.ast.ArithExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
+import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
@@ -268,7 +268,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             val rhsResult = parseMultiplicativeExpr()
             if (rhsResult.isFailure()) return rhsResult.toFailure()
             val rhs = rhsResult.toSuccessData()
-            lhs = ArithExpr(lhs = lhs, op = op, rhs = rhs)
+            lhs = BinaryExpr(lhs = lhs, op = op, rhs = rhs)
         }
 
         return LiloResult.Success(data = lhs)
@@ -285,7 +285,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             if (rhsResult.isFailure()) return rhsResult.toFailure()
 
             val rhs = rhsResult.toSuccessData()
-            lhs = ArithExpr(lhs = lhs, op = op, rhs = rhs)
+            lhs = BinaryExpr(lhs = lhs, op = op, rhs = rhs)
         }
 
         return LiloResult.Success(data = lhs)

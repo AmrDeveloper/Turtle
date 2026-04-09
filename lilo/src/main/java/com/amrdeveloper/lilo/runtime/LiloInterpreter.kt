@@ -1,7 +1,7 @@
 package com.amrdeveloper.lilo.runtime
 
-import com.amrdeveloper.lilo.ast.ArithExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
+import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
@@ -178,7 +178,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         return runtimeException("`$callee` is not callable")
     }
 
-    override fun visitArithExpr(expr: ArithExpr): LiloResult<LiloObject> {
+    override fun visitBinaryExpr(expr: BinaryExpr): LiloResult<LiloObject> {
         val lhsResult = visit(expr.lhs)
         if (lhsResult.isFailure()) return lhsResult.toFailure()
 
@@ -214,7 +214,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
     }
 
     override fun visitListExpr(expr: ListExpr): LiloResult<LiloObject> {
-        val list = mutableListOf<LiloObject>()
+        val list = ArrayList<LiloObject>(expr.values.size)
         for (value in expr.values) {
             val elementResult = visit(expr = value)
             if (elementResult.isFailure()) return elementResult
@@ -225,7 +225,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
     }
 
     override fun visitTupleExpr(expr: TupleExpr): LiloResult<LiloObject> {
-        val list = mutableListOf<LiloObject>()
+        val list = ArrayList<LiloObject>(expr.values.size)
         for (value in expr.values) {
             val elementResult = visit(expr = value)
             if (elementResult.isFailure()) return elementResult

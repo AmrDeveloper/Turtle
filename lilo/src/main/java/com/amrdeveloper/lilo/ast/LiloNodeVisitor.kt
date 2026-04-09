@@ -24,7 +24,7 @@ interface LiloExprVisitor<T> {
         is GetItemExpr -> visitGetItemExpr(expr)
         is IfExpr -> visitIfExpr(expr)
         is CallExpr -> visitCallExpr(expr)
-        is ArithExpr -> visitArithExpr(expr)
+        is BinaryExpr -> visitBinaryExpr(expr)
         is GroupExpr -> visitGroupExpr(expr)
         is ListExpr -> visitListExpr(expr)
         is TupleExpr -> visitTupleExpr(expr)
@@ -40,7 +40,7 @@ interface LiloExprVisitor<T> {
     fun visitGetItemExpr(expr: GetItemExpr): T
     fun visitIfExpr(expr: IfExpr): T
     fun visitCallExpr(expr: CallExpr): T
-    fun visitArithExpr(expr: ArithExpr): T
+    fun visitBinaryExpr(expr: BinaryExpr): T
     fun visitGroupExpr(expr: GroupExpr): T
     fun visitListExpr(expr: ListExpr): T
     fun visitTupleExpr(expr: TupleExpr): T

@@ -1,6 +1,7 @@
 package com.amrdeveloper.lilo.std
 
 import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.std.builtins.LiloHasAttrFunction
 import com.amrdeveloper.lilo.std.builtins.LiloIdFunction
 import com.amrdeveloper.lilo.std.builtins.LiloLenFunction
 import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
@@ -17,5 +18,6 @@ fun supportedLiloStdlib(): Map<String, LiloObject> {
         "len" to LiloLenFunction,
         "type" to LiloTypeFunction,
         "id" to LiloIdFunction,
+        "hasattr" to LiloHasAttrFunction,
     )
 }

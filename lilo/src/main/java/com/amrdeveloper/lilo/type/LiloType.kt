@@ -25,6 +25,17 @@ class LiloType(
         return null
     }
 
+    override fun hasAttr(name: String): Boolean {
+        if (dict.containsKey(name)) return true
+
+        for (base in bases) {
+            val found = base.getAttr(name)
+            if (found != null) return true
+        }
+
+        return false
+    }
+
     override fun toString(): String = "<class '$name'>"
 }
 

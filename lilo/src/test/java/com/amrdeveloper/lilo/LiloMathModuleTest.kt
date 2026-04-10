@@ -35,10 +35,15 @@ class LiloMathModuleTest {
             import math
             print(math.inf)
             """,
+            """
+            import math
+            print(math.nan)
+            """,
         )
 
         val expectedOutput = listOf(
             "inf",
+            "nan"
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
@@ -62,6 +67,7 @@ class LiloMathModuleTest {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
+            println(liloHostTest.buffer.toString())
             assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
         }
     }

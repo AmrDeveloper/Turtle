@@ -9,6 +9,8 @@ enum class LiloTokenKind {
     IF_KEYWORD,
     ELSE_KEYWORD,
 
+    NOT_KEYWORD,
+
     TRUE_KEYWORD,
     FALSE_KEYWORD,
     NONE_KEYWORD,
@@ -89,6 +91,7 @@ fun LiloTokenKind.isFactorOperator() = this in listOf(
 )
 
 fun LiloTokenKind.isUnaryOperator() = this in listOf(
+    LiloTokenKind.PLUS,
     LiloTokenKind.MINUS,
 )
 

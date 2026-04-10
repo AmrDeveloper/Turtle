@@ -200,11 +200,15 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             """
             print(-10)
+            """,
+            """
+            print(+10)
             """
         )
 
         val expectedOutput = listOf(
             "-10",
+            "10"
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

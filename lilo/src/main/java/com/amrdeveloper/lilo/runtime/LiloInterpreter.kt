@@ -216,6 +216,7 @@ class LiloInterpreter(val liloHost: LiloHost) :
         val operand = operandResult.toSuccessData()
 
         val methodName = when (expr.op.kind) {
+            LiloTokenKind.PLUS -> LiloMagicMethod.POS
             LiloTokenKind.MINUS -> LiloMagicMethod.NEG
             else -> null
         }

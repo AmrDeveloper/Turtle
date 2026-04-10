@@ -7,6 +7,7 @@ object LiloMagicMethod {
     const val DIV = "__truediv__"
     const val MOD = "__mod__"
 
+    const val POS = "__pos__"
     const val NEG = "__neg__"
 
     const val GET_ITEM = "__getitem__"

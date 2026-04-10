@@ -6,11 +6,13 @@ import com.amrdeveloper.lilo.std.builtins.LiloIdFunction
 import com.amrdeveloper.lilo.std.builtins.LiloLenFunction
 import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
 import com.amrdeveloper.lilo.std.builtins.LiloTypeFunction
+import com.amrdeveloper.lilo.std.modules.liloMathModule
 import com.amrdeveloper.lilo.std.modules.liloRandomModule
 
 fun registerLiloStandardLibrary(environment: LiloEnvironment) {
     // Register Stdlib modules
     environment.values["random"] = liloRandomModule
+    environment.values["math"] = liloMathModule
 
     // Register Stdlib functions
     environment.values["print"] = LiloPrintFunction

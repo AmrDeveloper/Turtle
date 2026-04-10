@@ -14,6 +14,8 @@ data class IfExpr(val condition: LiloExpr, val thenValue: LiloExpr, val elseValu
 
 data class BinaryExpr(val lhs: LiloExpr, val op: LiloToken, val rhs: LiloExpr) : LiloExpr
 
+data class UnaryExpr(val op: LiloToken, val operand: LiloExpr) : LiloExpr
+
 data class GroupExpr(val expr: LiloExpr) : LiloExpr
 
 data class ListExpr(val values: List<LiloExpr>) : LiloExpr

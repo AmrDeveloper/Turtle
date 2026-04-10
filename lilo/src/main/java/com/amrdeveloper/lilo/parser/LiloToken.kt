@@ -88,4 +88,8 @@ fun LiloTokenKind.isFactorOperator() = this in listOf(
     LiloTokenKind.MODULO
 )
 
+fun LiloTokenKind.isUnaryOperator() = this in listOf(
+    LiloTokenKind.MINUS,
+)
+
 fun LiloTokenKind.isEOF() = this == LiloTokenKind.END_OF_FILE

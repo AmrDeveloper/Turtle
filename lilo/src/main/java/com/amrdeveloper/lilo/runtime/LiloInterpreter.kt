@@ -22,6 +22,7 @@ import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
+import com.amrdeveloper.lilo.ast.UnaryExpr
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -204,9 +205,31 @@ class LiloInterpreter(val liloHost: LiloHost) :
             ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
 
         if (method !is LiloCallable)
-            return runtimeException("Op `${lhs.type}` has no ${methodName} attribute")
+            return runtimeException("Op `${lhs.type}` has no $methodName attribute")
 
         return method.invoke(interpreter = this, args = listOf(lhs, rhs))
+    }
+
+    override fun visitUnaryExpr(expr: UnaryExpr): LiloResult<LiloObject> {
+        val operandResult = visit(expr.operand)
+        if (operandResult.isFailure()) return operandResult
+        val operand = operandResult.toSuccessData()
+
+        val methodName = when (expr.op.kind) {
+            LiloTokenKind.MINUS -> LiloMagicMethod.NEG
+            else -> null
+        }
+
+        if (methodName == null)
+            return runtimeException("Op `${expr.op.kind.name}` is unsupported on ${operand.type}")
+
+        val method = operand.getAttr(methodName)
+            ?: return runtimeException("Method `${methodName}` unsupported from ${operand.type}")
+
+        if (method !is LiloCallable)
+            return runtimeException("Op `${operand.type}` has no $methodName attribute")
+
+        return method.invoke(interpreter = this, args = listOf(operand))
     }
 
     override fun visitGroupExpr(expr: GroupExpr): LiloResult<LiloObject> {

@@ -16,6 +16,8 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     it.setAttr(name = LiloMagicMethod.MUL, value = IntMul)
     it.setAttr(name = LiloMagicMethod.DIV, value = IntDiv)
     it.setAttr(name = LiloMagicMethod.MOD, value = IntMod)
+
+    it.setAttr(name = LiloMagicMethod.NEG, value = IntNeg)
 }
 
 private object IntAdd : LiloObject(liloFunctionType), LiloCallable {
@@ -85,5 +87,18 @@ private object IntMod : LiloObject(liloFunctionType), LiloCallable {
             return LiloResult.Success(data = LiloInt(value = lhs.value % rhs.value))
         }
         return LiloResult.Failure(error = LiloException("Op `%` is unsupported between lhs & rhs"))
+    }
+}
+
+private object IntNeg : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val operand = args[0]
+        if (operand is LiloInt) {
+            return LiloResult.Success(data = LiloInt(value = -operand.value))
+        }
+        return LiloResult.Failure(error = LiloException("descriptor '__neg__' requires a 'int' object but received a '${operand.type}'"))
     }
 }

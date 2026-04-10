@@ -23,6 +23,7 @@ import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
+import com.amrdeveloper.lilo.ast.UnaryExpr
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -275,13 +276,13 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseMultiplicativeExpr(): LiloResult<LiloExpr> {
-        val lhsResult = parseCallOrGetExpr()
+        val lhsResult = parseUnaryExpr()
         if (lhsResult.isFailure()) return lhsResult.toFailure()
         var lhs = lhsResult.toSuccessData()
 
         while (!isAtEnd() && peek().kind.isFactorOperator()) {
             val op = advance()
-            val rhsResult = parseCallOrGetExpr()
+            val rhsResult = parseUnaryExpr()
             if (rhsResult.isFailure()) return rhsResult.toFailure()
 
             val rhs = rhsResult.toSuccessData()
@@ -289,6 +290,21 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
 
         return LiloResult.Success(data = lhs)
+    }
+
+    private fun parseUnaryExpr(): LiloResult<LiloExpr> {
+        if (peek().kind.isUnaryOperator()) {
+            // Advance unary operator
+            val op = advance()
+
+            val exprResult = parseUnaryExpr()
+            if (exprResult.isFailure()) return exprResult.toFailure()
+            val expr = exprResult.toSuccessData()
+
+            return LiloResult.Success(data = UnaryExpr(op = op, operand = expr))
+        }
+
+        return parseCallOrGetExpr()
     }
 
     private fun parseCallOrGetExpr(): LiloResult<LiloExpr> {

@@ -194,4 +194,41 @@ class LiloInterpreterTest {
             assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
         }
     }
+
+    @Test
+    fun `test evaluate unary expr`() {
+        val sourceCodes = mutableListOf(
+            """
+            print(-10)
+            """
+        )
+
+        val expectedOutput = listOf(
+            "-10",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloHostTest = LiloHostTest()
+            val interpreter = LiloInterpreter(liloHostTest)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
+        }
+    }
 }

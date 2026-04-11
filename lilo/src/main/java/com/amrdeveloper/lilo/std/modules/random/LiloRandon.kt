@@ -1,4 +1,4 @@
-package com.amrdeveloper.lilo.std.modules
+package com.amrdeveloper.lilo.std.modules.random
 
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.`object`.LiloFloat

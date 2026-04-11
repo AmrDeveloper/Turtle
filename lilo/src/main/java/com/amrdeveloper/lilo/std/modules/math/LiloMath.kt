@@ -1,4 +1,4 @@
-package com.amrdeveloper.lilo.std.modules
+package com.amrdeveloper.lilo.std.modules.math
 
 import com.amrdeveloper.lilo.`object`.LiloFloat
 import com.amrdeveloper.lilo.`object`.LiloModule

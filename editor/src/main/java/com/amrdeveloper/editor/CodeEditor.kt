@@ -62,7 +62,7 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
                     .drawBehind {
                         if (activeLine != -1 && textLayoutResult != null) {
                             val top = textLayoutResult!!.getLineTop(lineIndex = activeLine)
-                            val bottom = textLayoutResult!!.getLineBottom(lineIndex =activeLine)
+                            val bottom = textLayoutResult!!.getLineBottom(lineIndex = activeLine)
                             drawRect(
                                 color = highlightColor,
                                 topLeft = Offset(x = 0f, y = top),
@@ -71,7 +71,7 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
                         }
                     }
                     .padding(start = 8.dp),
-                textStyle = MaterialTheme.typography.titleMedium.copy(),
+                textStyle = MaterialTheme.typography.titleSmall.copy(),
                 onTextLayout = { textLayoutResult = it.invoke() },
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                 inputTransformation = buildPluginTransformation()

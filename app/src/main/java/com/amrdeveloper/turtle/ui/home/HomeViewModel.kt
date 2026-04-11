@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.machine.LiloMachine
+import com.amrdeveloper.lilo.machine.device.LiloWebGPU
 import com.amrdeveloper.lilo.machine.host.LiloHost
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
@@ -18,7 +19,8 @@ class HomeViewModel : ViewModel() {
     val terminalOutput = mutableStateListOf<String>()
 
     private val liloHost = LiloHost { terminalOutput.add(it) }
-    private val liloMachine = LiloMachine(liloHost)
+    private val liloGPU = LiloWebGPU()
+    private val liloMachine = LiloMachine(liloHost, liloGPU)
 
     init {
         viewModelScope.launch {

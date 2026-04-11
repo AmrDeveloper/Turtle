@@ -40,6 +40,7 @@ import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
+import com.amrdeveloper.lilo.type.LiloType
 
 class LiloInterpreter(val liloHost: LiloHost) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
@@ -164,18 +165,26 @@ class LiloInterpreter(val liloHost: LiloHost) :
         val calleeResult = visit(expr.callee)
         if (calleeResult.isFailure()) return calleeResult
 
-        val callee = calleeResult.toSuccessData()
-        if (callee is LiloCallable) {
-            val args = mutableListOf<LiloObject>()
-            for (arg in expr.args) {
-                val valueResult = visit(expr = arg)
-                if (valueResult.isFailure()) return valueResult.toFailure()
-                val value = valueResult.toSuccessData()
-                args.add(value)
-            }
-            return callee.invoke(interpreter = this, args)
+        val args = ArrayList<LiloObject>(expr.args.size)
+        for (arg in expr.args) {
+            val valueResult = visit(expr = arg)
+            if (valueResult.isFailure()) return valueResult.toFailure()
+            val value = valueResult.toSuccessData()
+            args.add(value)
         }
 
+        // Call `__init__` if the callee is LiloType
+        val callee = calleeResult.toSuccessData()
+        if (callee is LiloType) {
+            val initFunction = callee.getAttr(name = LiloMagicMethod.INIT)
+            if (initFunction == null || initFunction !is LiloCallable) {
+                return runtimeException("`${callee.type}` has no `__init__` attribute")
+            }
+            return initFunction.invoke(interpreter = this, args = args)
+        }
+
+        // In case of function call
+        if (callee is LiloCallable) return callee.invoke(interpreter = this, args)
         return runtimeException("`$callee` is not callable")
     }
 

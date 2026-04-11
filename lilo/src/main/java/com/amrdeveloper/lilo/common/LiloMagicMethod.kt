@@ -1,6 +1,8 @@
 package com.amrdeveloper.lilo.common
 
 object LiloMagicMethod {
+    const val INIT = "__init__"
+
     const val ADD = "__add__"
     const val SUB = "__sub__"
     const val MUL = "__mul__"

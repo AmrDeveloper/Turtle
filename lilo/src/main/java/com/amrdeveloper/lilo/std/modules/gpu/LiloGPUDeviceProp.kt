@@ -40,3 +40,15 @@ object LiloGPUMaxThreadsDim : LiloObject(liloFunctionType), LiloCallable {
         return LiloResult.Success(data = maxThreadsDim)
     }
 }
+
+object LiloGPUWrapSize : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val gpu = interpreter.liloMachine.getGPU()
+        if (gpu == null) return LiloResult.Failure(error = RuntimeException("No GPU found"))
+        val wrapSize = gpu.getGPUDevice().getAdapterInfo().subgroupMaxSize
+        return LiloResult.Success(data = LiloInt(value = wrapSize))
+    }
+}

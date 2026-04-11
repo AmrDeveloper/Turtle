@@ -26,7 +26,7 @@ object LiloPrintFunction : LiloObject(liloFunctionType), LiloCallable {
             }
             output.append(arg.toString())
         }
-        interpreter.liloHost.write(output.toString())
+        interpreter.liloMachine.getHost().write(output.toString())
         return LiloResult.Success<LiloObject>(data = LiloInt(value = 0))
     }
 }

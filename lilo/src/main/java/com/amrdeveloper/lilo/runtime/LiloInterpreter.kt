@@ -29,6 +29,7 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.toSuccessData
+import com.amrdeveloper.lilo.machine.LiloAbstractMachine
 import com.amrdeveloper.lilo.`object`.LiloBool
 import com.amrdeveloper.lilo.`object`.LiloComplex
 import com.amrdeveloper.lilo.`object`.LiloFloat
@@ -44,7 +45,7 @@ import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.type.LiloType
 
-class LiloInterpreter(val liloHost: LiloHost) :
+class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
 
     private val TRUE = LiloBool(value = true)

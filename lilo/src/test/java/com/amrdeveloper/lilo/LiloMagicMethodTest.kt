@@ -9,24 +9,12 @@ import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloException
-import com.amrdeveloper.lilo.runtime.LiloHost
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import com.amrdeveloper.lilo.utils.LiloMockMachine
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LiloMagicMethodTest {
-
-    class LiloHostTest : LiloHost {
-        var buffer = StringBuilder()
-
-        override fun write(message: String) {
-            buffer.append(message)
-        }
-
-        fun clear() {
-            buffer = buffer.clear()
-        }
-    }
 
     @Test
     fun `test __add__ magic method`() {
@@ -52,8 +40,8 @@ class LiloMagicMethodTest {
             assertTrue("Parser error", parseResult.isSuccess())
 
             val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloHostTest()
-            val interpreter = LiloInterpreter(liloHostTest)
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
@@ -115,15 +103,15 @@ class LiloMagicMethodTest {
             assertTrue("Parser error", parseResult.isSuccess())
 
             val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloHostTest()
+            val liloHostTest = LiloMockMachine()
             val interpreter = LiloInterpreter(liloHostTest)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
-            liloHostTest.clear()
+            assertTrue(liloHostTest.getHost().buffer.toString() == expectedOutput[index])
+            liloHostTest.getHost().clear()
         }
     }
 
@@ -181,15 +169,15 @@ class LiloMagicMethodTest {
             assertTrue("Parser error", parseResult.isSuccess())
 
             val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloHostTest()
+            val liloHostTest = LiloMockMachine()
             val interpreter = LiloInterpreter(liloHostTest)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
-            liloHostTest.clear()
+            assertTrue(liloHostTest.getHost().buffer.toString() == expectedOutput[index])
+            liloHostTest.getHost().clear()
         }
     }
 
@@ -227,15 +215,15 @@ class LiloMagicMethodTest {
             assertTrue("Parser error", parseResult.isSuccess())
 
             val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloHostTest()
-            val interpreter = LiloInterpreter(liloHostTest)
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloException>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
-            liloHostTest.clear()
+            assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
+            liloMachine.getHost().clear()
         }
     }
 }

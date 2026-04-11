@@ -9,24 +9,12 @@ import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloException
-import com.amrdeveloper.lilo.runtime.LiloHost
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import com.amrdeveloper.lilo.utils.LiloMockMachine
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LiloBuiltinTest {
-
-    class LiloHostTest : LiloHost {
-        var buffer = StringBuilder()
-
-        override fun write(message: String) {
-            buffer.append(message)
-        }
-
-        fun clear() {
-            buffer = buffer.clear()
-        }
-    }
 
     @Test
     fun `test builtin type`() {
@@ -56,15 +44,15 @@ class LiloBuiltinTest {
             assertTrue("Parser error", parseResult.isSuccess())
 
             val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloHostTest()
-            val interpreter = LiloInterpreter(liloHostTest)
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
-            liloHostTest.clear()
+            assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
+            liloMachine.getHost().clear()
         }
     }
 
@@ -94,14 +82,14 @@ class LiloBuiltinTest {
             assertTrue("Parser error", parseResult.isSuccess())
 
             val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloHostTest()
-            val interpreter = LiloInterpreter(liloHostTest)
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine = liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.buffer.toString() == expectedOutput[index])
+            assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
         }
     }
 }

@@ -5,6 +5,7 @@ import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
+import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
@@ -29,6 +30,7 @@ import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.`object`.LiloBool
+import com.amrdeveloper.lilo.`object`.LiloComplex
 import com.amrdeveloper.lilo.`object`.LiloFloat
 import com.amrdeveloper.lilo.`object`.LiloFunction
 import com.amrdeveloper.lilo.`object`.LiloInt
@@ -287,6 +289,12 @@ class LiloInterpreter(val liloHost: LiloHost) :
     override fun visitFloatExpr(expr: FloatExpr): LiloResult<LiloObject> {
         val value = LiloFloat(value = expr.value.lexeme!!.toFloat())
         return runtimeObject(obj = value)
+    }
+
+    override fun visitComplexExpr(expr: ComplexExpr): LiloResult<LiloObject> {
+        val complexImag = expr.value.lexeme!!.toFloat()
+        val complex = LiloComplex(real = 0f, imag = complexImag)
+        return runtimeObject(obj = complex)
     }
 
     override fun visitBoolExpr(expr: BoolExpr): LiloResult<LiloObject> {

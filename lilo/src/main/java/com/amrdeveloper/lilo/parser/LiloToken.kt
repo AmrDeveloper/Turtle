@@ -37,6 +37,7 @@ enum class LiloTokenKind {
     STR_LITERAL,
     INT_LITERAL,
     FLOAT_LITERAL,
+    COMPLEX_LITERAL,
 
     END_OF_FILE,
 }

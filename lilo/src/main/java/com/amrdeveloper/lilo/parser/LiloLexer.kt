@@ -80,10 +80,10 @@ class LiloLexer(val source: String) {
     }
 
     private fun consumeNumber(): LiloResult<LiloToken> {
-        return consumeIntOrFloatNumber()
+        return consumeIntOrFloatOrComplexNumber()
     }
 
-    private fun consumeIntOrFloatNumber(): LiloResult<LiloToken> {
+    private fun consumeIntOrFloatOrComplexNumber(): LiloResult<LiloToken> {
         var isFloatingPoint = false
         while (!isAtEnd() && peek().isDigitOrDot()) {
             if (peek().isDot()) {
@@ -96,6 +96,17 @@ class LiloLexer(val source: String) {
         }
 
         val lexeme = source.substring(startPos, currentPos)
+        if (!isAtEnd() && (peek() == 'j' || peek() == 'J')) {
+            // Consume `j`
+            advance()
+            return LiloResult.Success(
+                data = createToken(
+                    kind = LiloTokenKind.COMPLEX_LITERAL,
+                    lexeme
+                )
+            )
+        }
+
         val numberKind =
             if (isFloatingPoint) LiloTokenKind.FLOAT_LITERAL else LiloTokenKind.INT_LITERAL
         return LiloResult.Success(data = createToken(kind = numberKind, lexeme))
@@ -142,8 +153,8 @@ class LiloLexer(val source: String) {
 
     private fun createDiagnostic(message: String): LiloResult.Failure<LiloDiagnostic> {
         val loc = createSourceLoc()
-        val disagnostic = LiloDiagnostic(loc, message)
-        return LiloResult.Failure(error = disagnostic)
+        val diagnostic = LiloDiagnostic(loc, message)
+        return LiloResult.Failure(error = diagnostic)
     }
 
     private fun createSourceLoc(): LiloLoc {

@@ -5,6 +5,7 @@ import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
+import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
@@ -394,6 +395,11 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.FLOAT_LITERAL -> {
                 advance()
                 LiloResult.Success(data = FloatExpr(value = token))
+            }
+
+            LiloTokenKind.COMPLEX_LITERAL -> {
+                advance()
+                LiloResult.Success(data = ComplexExpr(value = token))
             }
 
             LiloTokenKind.TRUE_KEYWORD, LiloTokenKind.FALSE_KEYWORD -> {

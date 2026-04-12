@@ -55,7 +55,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
     }
 
-    private fun parseFromImportStmt(): LiloResult<LiloStmt> {
+    private fun parseFromImportStmt(): LiloResult<FromImportStmt> {
         // Advance 'from' keyword
         advance()
 
@@ -112,7 +112,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = fromImportStmt)
     }
 
-    private fun parseImportStmt(): LiloResult<LiloStmt> {
+    private fun parseImportStmt(): LiloResult<ImportStmt> {
         // Advance 'import' keyword
         advance()
 
@@ -123,7 +123,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             }
 
             // Parse module name
-            val nameResult = expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect function name")
+            val nameResult = expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect module name")
             if (nameResult.isFailure()) return nameResult.toFailure()
             val name = nameResult.toSuccessData()
             var alias: String? = null
@@ -145,7 +145,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = importStmt)
     }
 
-    private fun parseFunctionStmt(): LiloResult<LiloStmt> {
+    private fun parseFunctionStmt(): LiloResult<FunctionStmt> {
         // Advance 'def' keyword
         advance()
 
@@ -172,18 +172,18 @@ class LiloParser(val tokens: List<LiloToken>) {
             break
         }
 
-        val rParResult = expectAndConsume(kind = LiloTokenKind.RPAR, "Expect `)` after paramters")
+        val rParResult = expectAndConsume(kind = LiloTokenKind.RPAR, "Expect `)` after parameters")
         if (rParResult.isFailure()) return rParResult.toFailure()
 
         val bodyResult = parseBlockStmt()
         if (bodyResult.isFailure()) return bodyResult.toFailure()
-        val block = bodyResult.toSuccessData() as BlockStmt
+        val block = bodyResult.toSuccessData()
 
         val functionStmt = FunctionStmt(name = name.lexeme!!, params = nodes, body = block.nodes)
         return LiloResult.Success(data = functionStmt)
     }
 
-    private fun parseBlockStmt(): LiloResult<LiloStmt> {
+    private fun parseBlockStmt(): LiloResult<BlockStmt> {
         // Advance '{'
         advance()
 

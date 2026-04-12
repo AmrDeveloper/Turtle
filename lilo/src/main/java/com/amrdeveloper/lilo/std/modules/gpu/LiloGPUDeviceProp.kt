@@ -31,7 +31,7 @@ object LiloGPUMaxThreadsDim : LiloObject(liloFunctionType), LiloCallable {
         val maxThreadsDimX = gpuLimits.maxComputeWorkgroupSizeX
         val maxThreadsDimY = gpuLimits.maxComputeWorkgroupSizeY
         val maxThreadsDimZ = gpuLimits.maxComputeWorkgroupSizeZ
-        val maxThreadsDimArray = listOf(
+        val maxThreadsDimArray = mutableListOf<LiloObject>(
             LiloInt(value = maxThreadsDimX),
             LiloInt(value = maxThreadsDimY),
             LiloInt(value = maxThreadsDimZ)

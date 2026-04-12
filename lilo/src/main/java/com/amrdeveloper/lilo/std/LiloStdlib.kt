@@ -2,6 +2,7 @@ package com.amrdeveloper.lilo.std
 
 import com.amrdeveloper.lilo.runtime.LiloEnvironment
 import com.amrdeveloper.lilo.std.builtins.LiloHasAttrFunction
+import com.amrdeveloper.lilo.std.builtins.LiloHexFunction
 import com.amrdeveloper.lilo.std.builtins.LiloIdFunction
 import com.amrdeveloper.lilo.std.builtins.LiloLenFunction
 import com.amrdeveloper.lilo.std.builtins.LiloOctFunction
@@ -23,5 +24,7 @@ fun registerLiloStandardLibrary(environment: LiloEnvironment) {
     environment.values["type"] = LiloTypeFunction
     environment.values["id"] = LiloIdFunction
     environment.values["hasattr"] = LiloHasAttrFunction
+
     environment.values["oct"] = LiloOctFunction
+    environment.values["hex"] = LiloHexFunction
 }

@@ -9,7 +9,7 @@ import com.amrdeveloper.lilo.runtime.LiloException
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloFunctionType
 
-object LiloOctFunction : LiloObject(liloFunctionType), LiloCallable {
+object LiloHexFunction : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -18,6 +18,6 @@ object LiloOctFunction : LiloObject(liloFunctionType), LiloCallable {
         if (argument !is LiloInt) {
             return LiloResult.Failure(error = LiloException(message = "Expect `Int` but got `${argument.type}`"))
         }
-        return LiloResult.Success(data = LiloStr(value = "0o" + argument.value.toString(radix = 8)))
+        return LiloResult.Success(data = LiloStr(value = "0x" + argument.value.toString(radix = 16)))
     }
 }

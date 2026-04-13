@@ -8,6 +8,7 @@ import com.amrdeveloper.lilo.std.builtins.LiloIdFunction
 import com.amrdeveloper.lilo.std.builtins.LiloLenFunction
 import com.amrdeveloper.lilo.std.builtins.LiloOctFunction
 import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
+import com.amrdeveloper.lilo.std.builtins.LiloRangeFunction
 import com.amrdeveloper.lilo.std.builtins.LiloTypeFunction
 import com.amrdeveloper.lilo.std.modules.gpu.liloGPUModule
 import com.amrdeveloper.lilo.std.modules.math.liloMathModule
@@ -28,4 +29,5 @@ fun registerLiloStandardLibrary(environment: LiloEnvironment) {
     environment.values["bin"] = LiloBinFunction
     environment.values["oct"] = LiloOctFunction
     environment.values["hex"] = LiloHexFunction
+    environment.values["range"] = LiloRangeFunction
 }

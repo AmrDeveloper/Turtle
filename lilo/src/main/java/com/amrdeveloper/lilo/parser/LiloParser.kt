@@ -21,6 +21,7 @@ import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NoneExpr
+import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
@@ -412,6 +413,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                 LiloResult.Success(data = NoneExpr(value = token))
             }
 
+            LiloTokenKind.L_BRACE -> parseSetOrMapExpr()
             LiloTokenKind.L_BRACKET -> parseListExpr()
             LiloTokenKind.LPAR -> parseGroupOrTupleExpr()
             else -> createDiagnostic(
@@ -476,6 +478,35 @@ class LiloParser(val tokens: List<LiloToken>) {
         val expr =
             if (values.size == 1 && !hasComma) GroupExpr(expr = values[0]) else TupleExpr(values = values)
         return LiloResult.Success(data = expr)
+    }
+
+    private fun parseSetOrMapExpr(): LiloResult<LiloExpr> {
+        // Advance '{'
+        advance()
+
+        val list = mutableListOf<LiloExpr>()
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_BRACE).not()) {
+            val exprResult = parseExpr()
+            if (exprResult.isFailure()) return exprResult.toFailure()
+            list.add(exprResult.toSuccessData())
+
+            if (isPeek(kind = LiloTokenKind.COMMA)) {
+                advance()
+                continue
+            }
+
+            break
+        }
+
+        run {
+            val consumeRes = expectAndConsume(
+                kind = LiloTokenKind.R_BRACE,
+                message = "expected '}' at end of set"
+            )
+            if (consumeRes.isFailure()) return consumeRes.toFailure()
+        }
+
+        return LiloResult.Success(data = SetExpr(values = list))
     }
 
     private fun expectAndConsume(kind: LiloTokenKind, message: String): LiloResult<LiloToken> {

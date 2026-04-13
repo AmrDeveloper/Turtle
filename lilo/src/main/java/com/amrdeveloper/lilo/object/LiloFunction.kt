@@ -8,9 +8,8 @@ import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloFunctionType
 
-class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
-    LiloObject(liloFunctionType),
-    LiloCallable {
+data class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
+    LiloObject(liloFunctionType), LiloCallable {
 
     override fun invoke(
         interpreter: LiloInterpreter,

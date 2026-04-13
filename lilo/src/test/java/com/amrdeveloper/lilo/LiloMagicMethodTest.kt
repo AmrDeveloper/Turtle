@@ -189,6 +189,15 @@ class LiloMagicMethodTest {
             a = [1, 2, 3]
             print(len(a))
             """,
+            // Set
+            """
+            a = {1, True, "Hello"}
+            print(len(a))
+            """,
+            """
+            a = {1, 1, 1}
+            print(len(a))
+            """,
             // Tuple
             """
             a = (1, True, "Hello")
@@ -198,6 +207,8 @@ class LiloMagicMethodTest {
 
         val expectedOutput = listOf(
             "3",
+            "3",
+            "1",
             "3",
         )
 

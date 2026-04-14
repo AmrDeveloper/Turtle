@@ -9,6 +9,8 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloFunctionType
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.tan
+import kotlin.math.tanh
 
 private const val MODULE_NAME = "math"
 
@@ -24,6 +26,8 @@ val liloMathModule = LiloModule(name = MODULE_NAME).also {
     // Functions
     it.setAttr(name = "sin", value = LiloMathSin)
     it.setAttr(name = "cos", value = LiloMathCos)
+    it.setAttr(name = "tan", value = LiloMathTan)
+    it.setAttr(name = "tanh", value = LiloMathTanh)
 }
 
 object LiloMathSin : LiloObject(liloFunctionType), LiloCallable {
@@ -50,6 +54,35 @@ object LiloMathCos : LiloObject(liloFunctionType), LiloCallable {
             return LiloResult.Failure(error = RuntimeException("`math.cos` expect `float` type but got `${argument.type.toString()}`"))
         }
         val sin = cos(argument.value)
+        return LiloResult.Success(data = LiloFloat(value = sin))
+    }
+}
+
+object LiloMathTan : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val argument = args[0]
+        if (argument !is LiloFloat) {
+            return LiloResult.Failure(error = RuntimeException("`math.tan` expect `float` type but got `${argument.type.toString()}`"))
+        }
+        val sin = tan(argument.value)
+        return LiloResult.Success(data = LiloFloat(value = sin))
+    }
+}
+
+
+object LiloMathTanh : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val argument = args[0]
+        if (argument !is LiloFloat) {
+            return LiloResult.Failure(error = RuntimeException("`math.tanh` expect `float` type but got `${argument.type.toString()}`"))
+        }
+        val sin = tanh(argument.value)
         return LiloResult.Success(data = LiloFloat(value = sin))
     }
 }

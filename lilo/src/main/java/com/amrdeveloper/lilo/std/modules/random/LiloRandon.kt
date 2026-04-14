@@ -14,11 +14,11 @@ import kotlin.random.Random
 private const val MODULE_NAME = "random"
 
 val liloRandomModule = LiloModule(name = MODULE_NAME).also {
-    it.setAttr(name = "random", value = LiloRandomFunction)
-    it.setAttr(name = "shuffle", value = LiloShuffleFunction)
+    it.setAttr(name = "random", value = LiloRandom)
+    it.setAttr(name = "shuffle", value = LiloShuffle)
 }
 
-object LiloRandomFunction : LiloObject(liloFunctionType), LiloCallable {
+object LiloRandom : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -28,7 +28,7 @@ object LiloRandomFunction : LiloObject(liloFunctionType), LiloCallable {
     }
 }
 
-object LiloShuffleFunction : LiloObject(liloFunctionType), LiloCallable {
+object LiloShuffle : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

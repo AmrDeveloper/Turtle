@@ -37,6 +37,7 @@ import com.amrdeveloper.lilo.`object`.LiloFloat
 import com.amrdeveloper.lilo.`object`.LiloFunction
 import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloList
+import com.amrdeveloper.lilo.`object`.LiloMethod
 import com.amrdeveloper.lilo.`object`.LiloModule
 import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
@@ -46,6 +47,7 @@ import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.type.LiloType
+import com.amrdeveloper.lilo.type.liloMethodType
 
 class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
@@ -128,7 +130,12 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val liloObj = objResult.toSuccessData()
         val attribute = expr.name.value.lexeme!!
         val liloAttribute = liloObj.getAttr(name = attribute)
-        if (liloAttribute != null) return runtimeObject(obj = liloAttribute)
+        if (liloAttribute != null) {
+            val methodOrAttribute = if (liloAttribute.type == liloMethodType)
+                LiloMethod(self = liloObj, method = liloAttribute)
+            else liloAttribute
+            return runtimeObject(obj = methodOrAttribute)
+        }
         return runtimeException("Invalid `.`` expression on lhs")
     }
 

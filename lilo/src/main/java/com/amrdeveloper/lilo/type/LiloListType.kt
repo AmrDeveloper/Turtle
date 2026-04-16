@@ -4,6 +4,7 @@ import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloList
+import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloException
@@ -13,8 +14,22 @@ val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJE
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = ListGetItem)
-
     it.setAttr(name = LiloMagicMethod.LEN, value = ListLen)
+
+    it.setAttr(name = "append", value = ListAppend)
+}
+
+private object ListAppend : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val self = args[0]
+        val index = args[1]
+        val list = self as LiloList
+        list.values.add(index)
+        return LiloResult.Success(data = LiloNone())
+    }
 }
 
 private object ListGetItem : LiloObject(liloFunctionType), LiloCallable {

@@ -3,6 +3,7 @@ package com.amrdeveloper.editor.plugin
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.delete
+import com.amrdeveloper.editor.constant.tokenPairs
 
 @OptIn(ExperimentalFoundationApi::class)
 val smartBackspaceTransformation = InputTransformation {

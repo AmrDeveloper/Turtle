@@ -28,6 +28,7 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.amrdeveloper.editor.core.Gutter
 import com.amrdeveloper.editor.core.StatusBar
+import com.amrdeveloper.editor.plugin.SyntaxHighlighter
 import com.amrdeveloper.editor.plugin.buildPluginTransformation
 
 @Composable
@@ -37,7 +38,9 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
     val activeLine = remember(editorState.selection, textLayoutResult) {
         textLayoutResult?.getLineForOffset(editorState.selection.start) ?: -1
     }
+
     val highlightColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+    val syntaxHighlighter = remember { SyntaxHighlighter() }
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.weight(1f)) {
@@ -73,8 +76,9 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
                     .padding(start = 8.dp),
                 textStyle = MaterialTheme.typography.titleSmall.copy(),
                 onTextLayout = { textLayoutResult = it.invoke() },
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                inputTransformation = buildPluginTransformation()
+                cursorBrush = SolidColor(value = MaterialTheme.colorScheme.primary),
+                inputTransformation = buildPluginTransformation(),
+                outputTransformation = syntaxHighlighter,
             )
         }
 

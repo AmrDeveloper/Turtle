@@ -1,4 +1,4 @@
-package com.amrdeveloper.editor.plugin
+package com.amrdeveloper.editor.constant
 
 val tokenPairs = mapOf(
     '(' to ')',

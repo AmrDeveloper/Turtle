@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.insert
 import androidx.compose.ui.text.TextRange
+import com.amrdeveloper.editor.constant.tokenPairs
 
 @OptIn(ExperimentalFoundationApi::class)
 val autoBracketTransformation = InputTransformation {

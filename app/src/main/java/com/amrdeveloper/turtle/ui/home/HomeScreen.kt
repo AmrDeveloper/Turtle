@@ -14,6 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.amrdeveloper.editor.CodeEditor
+import com.amrdeveloper.terminal.Terminal
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.ui.components.TurtleHomeTabLayout
 import com.amrdeveloper.turtle.ui.components.TurtleTab
@@ -53,9 +55,9 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     when (selectedTabIndex) {
-                        0 -> CodeEditorScreen(editorState = currentCodeInEditor)
+                        0 -> CodeEditor(editorState = currentCodeInEditor)
                         1 -> DrawScreen()
-                        2 -> TerminalScreen(output = viewModel.terminalOutput)
+                        2 -> Terminal(output = viewModel.terminalOutput)
                     }
                 }
             }

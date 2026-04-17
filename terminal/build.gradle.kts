@@ -1,19 +1,15 @@
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.android.library)
     alias(libs.plugins.compose.compiler)
 }
 
 android {
+    namespace = "com.amrdeveloper.terminal"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    namespace = "com.amrdeveloper.turtle"
 
     defaultConfig {
-        applicationId = "com.amrdeveloper.turtle"
         minSdk = libs.versions.minSdk.get().toInt()
-
-        versionCode = 20
-        versionName = "1.6.4"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -25,7 +21,6 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -33,13 +28,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    dependenciesInfo {
-        // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
-        includeInApk = false
-        // Disables dependency metadata when building Android App Bundles (for Google Play)
-        includeInBundle = false
     }
 }
 
@@ -54,13 +42,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-
-    implementation(project(path = ":lilo"))
-    implementation(project(path = ":editor"))
-    implementation(project(path = ":terminal"))
 
     testImplementation(libs.junit)
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

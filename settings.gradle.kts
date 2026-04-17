@@ -16,3 +16,4 @@ rootProject.name = "Turtle"
 include(":app")
 include(":lilo")
 include(":editor")
+include(":terminal")

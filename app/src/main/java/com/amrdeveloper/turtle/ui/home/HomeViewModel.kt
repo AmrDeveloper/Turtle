@@ -29,7 +29,6 @@ class HomeViewModel : ViewModel() {
     }
 
     fun runLiloCode(source: String) {
-        terminalOutput.clear()
         viewModelScope.launch(Dispatchers.Default) {
             val lexer = LiloLexer(source)
             val tokensResult = lexer.tokenize()

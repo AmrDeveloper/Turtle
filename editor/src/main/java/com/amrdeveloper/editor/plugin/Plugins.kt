@@ -4,7 +4,8 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.then
 
 private val transformations = listOf(
-    autoBracketTransformation
+    autoBracketTransformation,
+    smartBackspaceTransformation
 )
 
 fun buildPluginTransformation(): InputTransformation? {

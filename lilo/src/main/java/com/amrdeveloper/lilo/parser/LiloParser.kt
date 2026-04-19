@@ -16,6 +16,7 @@ import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.IntExpr
+import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
@@ -413,9 +414,12 @@ class LiloParser(val tokens: List<LiloToken>) {
                 LiloResult.Success(data = NoneExpr(value = token))
             }
 
+            LiloTokenKind.LAMBDA_KEYWORD -> parseLambdaExpr()
+
             LiloTokenKind.L_BRACE -> parseSetOrMapExpr()
             LiloTokenKind.L_BRACKET -> parseListExpr()
             LiloTokenKind.LPAR -> parseGroupOrTupleExpr()
+
             else -> createDiagnostic(
                 loc = token.loc,
                 message = "Unexpected primary expr `${token.kind.name}`"
@@ -478,6 +482,43 @@ class LiloParser(val tokens: List<LiloToken>) {
         val expr =
             if (values.size == 1 && !hasComma) GroupExpr(expr = values[0]) else TupleExpr(values = values)
         return LiloResult.Success(data = expr)
+    }
+
+    private fun parseLambdaExpr(): LiloResult<LambdaExpr> {
+        // Advance 'lambda'
+        advance()
+
+        val parameters = mutableListOf<String>()
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.COLON).not()) {
+            val consumeRes = expectAndConsume(
+                kind = LiloTokenKind.SYMBOL,
+                message = "expected 'symbol' as lambda parameter name"
+            )
+            if (consumeRes.isFailure()) return consumeRes.toFailure()
+
+            val parameter = consumeRes.toSuccessData()
+            parameters.add(parameter.lexeme!!)
+
+            if (isPeek(kind = LiloTokenKind.COMMA)) {
+                advance()
+                continue
+            } else {
+                break
+            }
+        }
+
+        val consumeRes = expectAndConsume(
+            kind = LiloTokenKind.COLON,
+            message = "expected ':' after lambda parameters"
+        )
+        if (consumeRes.isFailure()) return consumeRes.toFailure()
+
+        // TODO: Wrap the body expression into ReturnStmt
+        val bodyResult = parseExpr()
+        if (bodyResult.isFailure()) return bodyResult.toFailure()
+        val body = bodyResult.toSuccessData()
+
+        return LiloResult.Success(data = LambdaExpr(params = parameters, body = body))
     }
 
     private fun parseSetOrMapExpr(): LiloResult<LiloExpr> {

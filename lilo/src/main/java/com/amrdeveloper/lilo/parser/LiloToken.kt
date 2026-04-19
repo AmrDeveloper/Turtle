@@ -9,7 +9,7 @@ enum class LiloTokenKind {
     IF_KEYWORD,
     ELSE_KEYWORD,
 
-    NOT_KEYWORD,
+    LAMBDA_KEYWORD,
 
     TRUE_KEYWORD,
     FALSE_KEYWORD,
@@ -30,6 +30,7 @@ enum class LiloTokenKind {
 
     DOT,
     COMMA,
+    COLON,
 
     EQ,
 
@@ -54,6 +55,7 @@ fun getLiloKeywordsMap() = mapOf(
     "return" to LiloTokenKind.RETURN_KEYWORD,
     "if" to LiloTokenKind.IF_KEYWORD,
     "else" to LiloTokenKind.ELSE_KEYWORD,
+    "lambda" to LiloTokenKind.LAMBDA_KEYWORD,
 
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,
@@ -78,6 +80,7 @@ fun getLiloOneCharTokenMap() = mapOf(
 
     '.' to LiloTokenKind.DOT,
     ',' to LiloTokenKind.COMMA,
+    ':' to LiloTokenKind.COLON,
 )
 
 fun LiloTokenKind.isTermOperator() = this in listOf(

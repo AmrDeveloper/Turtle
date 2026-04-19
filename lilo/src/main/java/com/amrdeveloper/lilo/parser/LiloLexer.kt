@@ -49,7 +49,7 @@ class LiloLexer(val source: String) {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 
-                '.', ',' -> {
+                '.', ',', ':' -> {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 

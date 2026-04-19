@@ -16,6 +16,7 @@ import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.IntExpr
+import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
@@ -122,6 +123,13 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val value = valueResult.toSuccessData()
         environment.define(name = stmt.name, value = value)
         return LiloResult.Success(data = Unit)
+    }
+
+    override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {
+        val lambdaName = "Function"
+        val function = LiloFunction(params = expr.params, body = listOf(ExprStmt(expr.body)))
+        environment.define(name = lambdaName, value = function)
+        return LiloResult.Success(data = function)
     }
 
     override fun visitGetExpr(expr: GetExpr): LiloResult<LiloObject> {

@@ -30,6 +30,7 @@ enum class LiloTokenKind {
     DOT,
     COMMA,
     COLON,
+    SEMICOLON,
 
     EQ,
 
@@ -80,6 +81,7 @@ fun getLiloOneCharTokenMap() = mapOf(
     '.' to LiloTokenKind.DOT,
     ',' to LiloTokenKind.COMMA,
     ':' to LiloTokenKind.COLON,
+    ';' to LiloTokenKind.SEMICOLON,
 )
 
 fun LiloTokenKind.isTermOperator() = this in listOf(

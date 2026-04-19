@@ -181,6 +181,7 @@ class LiloParserTest {
         val sourceCodes = listOf(
             "lambda a : a",
             "foo = lambda a : a + 1",
+            "foo = lambda a : a + 1;",
         )
 
         for (sourceCode in sourceCodes) {

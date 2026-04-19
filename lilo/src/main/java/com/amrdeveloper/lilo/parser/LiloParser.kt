@@ -213,10 +213,21 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'return' keyword
         advance()
 
-        // TODO: Support return without value
+        if (isPeek(kind = LiloTokenKind.SEMICOLON)) {
+            // Advance `;`
+            advance()
+            return LiloResult.Success(data = ReturnStmt())
+        }
+
+        if (isPeek(kind = LiloTokenKind.R_BRACE)) {
+            return LiloResult.Success(data = ReturnStmt())
+        }
+
         val returnValueRes = parseExpr()
         if (returnValueRes.isFailure()) return returnValueRes.toFailure()
         val returnValue = returnValueRes.toSuccessData()
+
+        consumeOptionalSemicolon()
 
         return LiloResult.Success(data = ReturnStmt(value = returnValue))
     }
@@ -531,6 +542,8 @@ class LiloParser(val tokens: List<LiloToken>) {
         if (bodyResult.isFailure()) return bodyResult.toFailure()
         val body = bodyResult.toSuccessData()
 
+        consumeOptionalSemicolon()
+
         val returnStmt = ReturnStmt(value = body)
         return LiloResult.Success(data = LambdaExpr(params = parameters, body = returnStmt))
     }
@@ -570,6 +583,12 @@ class LiloParser(val tokens: List<LiloToken>) {
             return LiloResult.Success(data = previous())
         }
         return createDiagnostic(peek().loc, message)
+    }
+
+    private fun consumeOptionalSemicolon() {
+        if (isPeek(kind = LiloTokenKind.SEMICOLON)) {
+            advance()
+        }
     }
 
     private fun createDiagnostic(

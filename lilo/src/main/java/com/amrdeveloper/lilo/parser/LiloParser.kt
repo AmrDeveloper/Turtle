@@ -22,6 +22,7 @@ import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NoneExpr
+import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
@@ -53,6 +54,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
             LiloTokenKind.DEF_KEYWORD -> parseFunctionStmt()
             LiloTokenKind.L_BRACE -> parseBlockStmt()
+            LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
             else -> parseAssignmentStmt()
         }
     }
@@ -205,6 +207,18 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
 
         return LiloResult.Success(data = BlockStmt(nodes = nodes))
+    }
+
+    private fun parseReturnStmt(): LiloResult<ReturnStmt> {
+        // Advance 'return' keyword
+        advance()
+
+        // TODO: Support return without value
+        val returnValueRes = parseExpr()
+        if (returnValueRes.isFailure()) return returnValueRes.toFailure()
+        val returnValue = returnValueRes.toSuccessData()
+
+        return LiloResult.Success(data = ReturnStmt(value = returnValue))
     }
 
     private fun parseAssignmentStmt(): LiloResult<LiloStmt> {
@@ -513,12 +527,12 @@ class LiloParser(val tokens: List<LiloToken>) {
         )
         if (consumeRes.isFailure()) return consumeRes.toFailure()
 
-        // TODO: Wrap the body expression into ReturnStmt
         val bodyResult = parseExpr()
         if (bodyResult.isFailure()) return bodyResult.toFailure()
         val body = bodyResult.toSuccessData()
 
-        return LiloResult.Success(data = LambdaExpr(params = parameters, body = body))
+        val returnStmt = ReturnStmt(value = body)
+        return LiloResult.Success(data = LambdaExpr(params = parameters, body = returnStmt))
     }
 
     private fun parseSetOrMapExpr(): LiloResult<LiloExpr> {

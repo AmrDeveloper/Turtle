@@ -8,6 +8,7 @@ interface LiloStmtVisitor<T> {
         is BlockStmt -> visitBlockStmt(stmt)
         is ExprStmt -> visitExprStmt(stmt)
         is AssignStmt -> visitAssignStmt(stmt)
+        is ReturnStmt -> visitReturnStmt(stmt)
     }
 
     fun visitFromImportStmt(stmt: FromImportStmt): T
@@ -16,6 +17,7 @@ interface LiloStmtVisitor<T> {
     fun visitBlockStmt(stmt: BlockStmt): T
     fun visitExprStmt(stmt: ExprStmt): T
     fun visitAssignStmt(stmt: AssignStmt): T
+    fun visitReturnStmt(stmt: ReturnStmt): T
 }
 
 interface LiloExprVisitor<T> {

@@ -8,7 +8,6 @@ enum class LiloTokenKind {
     RETURN_KEYWORD,
     IF_KEYWORD,
     ELSE_KEYWORD,
-
     LAMBDA_KEYWORD,
 
     TRUE_KEYWORD,

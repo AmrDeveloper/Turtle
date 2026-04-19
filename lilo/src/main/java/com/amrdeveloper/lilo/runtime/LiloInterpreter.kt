@@ -21,6 +21,7 @@ import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NoneExpr
+import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
@@ -46,6 +47,7 @@ import com.amrdeveloper.lilo.`object`.LiloSet
 import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.parser.LiloTokenKind
+import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.type.LiloType
 import com.amrdeveloper.lilo.type.liloMethodType
@@ -125,9 +127,19 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return LiloResult.Success(data = Unit)
     }
 
+    override fun visitReturnStmt(stmt: ReturnStmt): LiloResult<Unit> {
+        if (stmt.value != null) {
+            val valueResult = visit(expr = stmt.value)
+            if (valueResult.isFailure()) return valueResult.toFailure()
+            val value = valueResult.toSuccessData()
+            throw LiloReturnSignal(value = value)
+        }
+        throw LiloReturnSignal()
+    }
+
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {
         val lambdaName = "Function"
-        val function = LiloFunction(params = expr.params, body = listOf(ExprStmt(expr.body)))
+        val function = LiloFunction(params = expr.params, body = listOf(expr.body))
         environment.define(name = lambdaName, value = function)
         return LiloResult.Success(data = function)
     }

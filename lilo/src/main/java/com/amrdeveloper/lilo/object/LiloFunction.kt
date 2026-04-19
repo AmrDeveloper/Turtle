@@ -6,6 +6,7 @@ import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.type.liloFunctionType
 
 data class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
@@ -19,11 +20,16 @@ data class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
             interpreter.environment.define(name = params[index], value = arg)
         }
 
-        for (stmt in body) {
-            val result = interpreter.visit(stmt)
-            if (result.isFailure()) return result.toFailure()
+        try {
+            for (stmt in body) {
+                val result = interpreter.visit(stmt)
+                if (result.isFailure()) return result.toFailure()
+            }
+        } catch (retSignal: LiloReturnSignal) {
+            if (retSignal.value != null) return LiloResult.Success(data = retSignal.value)
+            return LiloResult.Success(data = LiloNone())
         }
 
-        return LiloResult.Success(data = LiloInt(value = 0))
+        return LiloResult.Success(data = LiloNone())
     }
 }

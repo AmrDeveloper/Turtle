@@ -4,7 +4,7 @@ import com.amrdeveloper.lilo.parser.LiloToken
 
 sealed interface LiloExpr : LiloNode
 
-data class LambdaExpr(val params: List<String>, val body: LiloExpr) : LiloExpr
+data class LambdaExpr(val params: List<String>, val body: LiloStmt) : LiloExpr
 
 data class CallExpr(val callee: LiloExpr, val args: List<LiloExpr>) : LiloExpr
 

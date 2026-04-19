@@ -25,14 +25,21 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import com.amrdeveloper.colorschema.core.EditorSchema
 import com.amrdeveloper.editor.core.Gutter
 import com.amrdeveloper.editor.core.StatusBar
 import com.amrdeveloper.editor.plugin.SyntaxHighlighter
 import com.amrdeveloper.editor.plugin.buildPluginTransformation
 
 @Composable
-fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
+fun CodeEditor(
+    editorState: TextFieldState,
+    colorSchema: EditorSchema,
+    modifier: Modifier = Modifier
+) {
     val scrollState = rememberScrollState()
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(value = null) }
     val activeLine = remember(editorState.selection, textLayoutResult) {
@@ -40,7 +47,7 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
     }
 
     val highlightColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-    val syntaxHighlighter = remember { SyntaxHighlighter() }
+    val syntaxHighlighter = remember { SyntaxHighlighter(colorSchema) }
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.weight(1f)) {
@@ -74,7 +81,10 @@ fun CodeEditor(editorState: TextFieldState, modifier: Modifier = Modifier) {
                         }
                     }
                     .padding(start = 8.dp),
-                textStyle = MaterialTheme.typography.titleSmall.copy(),
+                textStyle = TextStyle(
+                    color = colorSchema.textColor,
+                    fontFamily = FontFamily.Monospace
+                ),
                 onTextLayout = { textLayoutResult = it.invoke() },
                 cursorBrush = SolidColor(value = MaterialTheme.colorScheme.primary),
                 inputTransformation = buildPluginTransformation(),

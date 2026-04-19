@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.amrdeveloper.colorschema.core.LiloColorSchema
 import com.amrdeveloper.editor.CodeEditor
 import com.amrdeveloper.terminal.Terminal
 import com.amrdeveloper.turtle.R
@@ -33,7 +34,10 @@ private val turtleAppHomeTabs = listOf(
 )
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(
+    colorSchema: LiloColorSchema,
+    viewModel: HomeViewModel = viewModel()
+) {
     var selectedTabIndex by remember { mutableIntStateOf(value = 0) }
     val currentCodeInEditor = rememberTextFieldState(initialText = starterLiloCode)
 
@@ -55,9 +59,15 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     when (selectedTabIndex) {
-                        0 -> CodeEditor(editorState = currentCodeInEditor)
+                        0 -> CodeEditor(
+                            editorState = currentCodeInEditor,
+                            colorSchema = colorSchema.editorSchema
+                        )
                         1 -> DrawScreen()
-                        2 -> Terminal(output = viewModel.terminalOutput)
+                        2 -> Terminal(
+                            colorSchema = colorSchema.terminalSchema,
+                            output = viewModel.terminalOutput
+                        )
                     }
                 }
             }

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.amrdeveloper.terminal"
+    namespace = "com.amrdeveloper.colorschema"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -21,6 +21,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -42,8 +43,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-
-    implementation(project(path = ":colorschema"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

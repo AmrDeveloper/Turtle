@@ -24,25 +24,18 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.amrdeveloper.colorschema.core.TerminalSchema
 import kotlinx.coroutines.launch
 
-object TerminalColors {
-    val Background = Color(0xFF1E1E1E)
-    val Prompt = Color(0xFFB267E6)
-    val Start = Color(0xFF3794FF)
-    val Warning = Color(0xFFCCA700)
-    val Error = Color(0xFFF14C4C)
-    val Normal = Color(0xFFCCCCCC)
-    val Divider = Color(0xFF333333)
-}
-
 @Composable
-fun Terminal(output: SnapshotStateList<TerminalLine>) {
+fun Terminal(
+    colorSchema: TerminalSchema,
+    output: SnapshotStateList<TerminalLine>
+) {
     val scrollState = rememberLazyListState()
     LaunchedEffect(output.size) {
         if (output.isNotEmpty()) {
@@ -52,7 +45,7 @@ fun Terminal(output: SnapshotStateList<TerminalLine>) {
         }
     }
 
-    Surface(modifier = Modifier.fillMaxSize(), color = TerminalColors.Background) {
+    Surface(modifier = Modifier.fillMaxSize(), color = colorSchema.background) {
         LazyColumn(
             state = scrollState,
             modifier = Modifier
@@ -60,20 +53,20 @@ fun Terminal(output: SnapshotStateList<TerminalLine>) {
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             items(output) { line ->
-                TerminalLineItem(line)
+                TerminalLineItem(colorSchema, line)
             }
         }
     }
 }
 
 @Composable
-private fun TerminalLineItem(line: TerminalLine) {
+private fun TerminalLineItem(colorSchema: TerminalSchema, line: TerminalLine) {
     val color = when (line) {
-        is TerminalLine.Start -> TerminalColors.Start
-        is TerminalLine.Normal -> TerminalColors.Normal
-        is TerminalLine.Warning -> TerminalColors.Warning
-        is TerminalLine.Error -> TerminalColors.Error
-        is TerminalLine.Exit -> TerminalColors.Normal
+        is TerminalLine.Start -> colorSchema.start
+        is TerminalLine.Normal -> colorSchema.normal
+        is TerminalLine.Warning -> colorSchema.warning
+        is TerminalLine.Error -> colorSchema.error
+        is TerminalLine.Exit -> colorSchema.normal
     }
 
     Column(
@@ -89,7 +82,7 @@ private fun TerminalLineItem(line: TerminalLine) {
                         fontFamily = FontFamily.Monospace,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TerminalColors.Prompt
+                        color = colorSchema.prompt
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -114,7 +107,7 @@ private fun TerminalLineItem(line: TerminalLine) {
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = 1.dp,
-                    color = TerminalColors.Divider
+                    color = colorSchema.divider
                 )
                 Spacer(modifier = Modifier.height(4.dp))
             }
@@ -126,7 +119,7 @@ private fun TerminalLineItem(line: TerminalLine) {
                             .padding(top = 4.dp)
                             .size(6.dp)
                             .clip(CircleShape)
-                            .background(TerminalColors.Error)
+                            .background(colorSchema.error)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(

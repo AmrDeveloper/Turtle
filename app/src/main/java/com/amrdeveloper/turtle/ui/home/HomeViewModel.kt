@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amrdeveloper.lilo.common.LiloDiagnostic
-import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailureError
 import com.amrdeveloper.lilo.common.toSuccessData
@@ -40,7 +39,7 @@ class HomeViewModel : ViewModel() {
             val tokensResult = lexer.tokenize()
             if (tokensResult.isFailure()) {
                 val lexerError =
-                    tokensResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error
+                    tokensResult.toFailureError<LiloDiagnostic>()
                 val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
                 terminalOutput.add(TerminalLine.Error(text = errorMessage))
                 return@launch
@@ -50,7 +49,7 @@ class HomeViewModel : ViewModel() {
             val programResult = parser.parse()
             if (programResult.isFailure()) {
                 val lexerError =
-                    programResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error
+                    programResult.toFailureError<LiloDiagnostic>()
                 val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
                 terminalOutput.add(TerminalLine.Error(text = errorMessage))
                 return@launch

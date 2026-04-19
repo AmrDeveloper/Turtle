@@ -59,6 +59,7 @@ dependencies {
     implementation(project(path = ":lilo"))
     implementation(project(path = ":editor"))
     implementation(project(path = ":terminal"))
+    implementation(project(path = ":colorschema"))
 
     testImplementation(libs.junit)
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

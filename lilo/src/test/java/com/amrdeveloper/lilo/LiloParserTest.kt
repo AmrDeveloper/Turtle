@@ -18,11 +18,18 @@ class LiloParserTest {
         val sourceCodes = listOf(
             "import a",
             "import complex",
+            "import complex;",
             "import random as r",
+            "import random as r;",
             "import a, b",
+            "import a, b;",
             "import one as o, two as t",
+            "import one as o, two as t;",
             "from random import random",
             "from random import (random)",
+            "from random import (random);",
+            "from random import *",
+            "from random import *;"
         )
 
         for (sourceCode in sourceCodes) {

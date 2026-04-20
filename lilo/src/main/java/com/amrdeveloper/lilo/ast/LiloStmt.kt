@@ -2,7 +2,8 @@ package com.amrdeveloper.lilo.ast
 
 sealed interface LiloStmt : LiloNode
 
-data class FromImportStmt(val module : String, val symbols : List<Pair<String, String?>>) : LiloStmt
+data class FromImportStmt(val module: String, val symbols: List<Pair<String, String?>>? = null) :
+    LiloStmt
 
 data class ImportStmt(val modules : List<Pair<String, String?>>) : LiloStmt
 

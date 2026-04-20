@@ -80,11 +80,21 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             environment.get(stmt.module)
                 ?: return runtimeException("No module named `$stmt.module`")
         if (liloStdModule !is LiloModule) return runtimeException("`${stmt.module}` is not module")
-        for ((symbolName, alias) in stmt.symbols) {
-            val symbol = liloStdModule.getAttr(symbolName)
-                ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
-            environment.define(name = alias ?: symbolName, value = symbol)
+
+        if (stmt.symbols != null) {
+            for ((symbolName, alias) in stmt.symbols) {
+                val symbol = liloStdModule.getAttr(symbolName)
+                    ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
+                environment.define(name = alias ?: symbolName, value = symbol)
+            }
+            return LiloResult.Success(data = Unit)
         }
+
+        // From <module> import *
+        for ((name, value) in liloStdModule.dict) {
+            environment.define(name = name, value = value)
+        }
+
         return LiloResult.Success(data = Unit)
     }
 

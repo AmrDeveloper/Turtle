@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 class LiloPointer(
     var x: Float = 0f,
     var y: Float = 0f,
+    val degree: Float = 0f,
     var path: Path = Path(),
 
     var color: Color = Color.Black,

@@ -27,7 +27,8 @@ private val starterLiloCode = """
     
     t = turtle.Turtle()
     t.goto(500.0, 500.0)
-    t.circle(30.0)
+    t.forward(100.0)
+    t.circle(20.0)
     
     print(t.pos())
 """.trimIndent()

@@ -13,10 +13,13 @@ import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloException
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloMethodType
+import kotlin.math.cos
+import kotlin.math.sin
 
 data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
 
     init {
+        setAttr(name = "forward", value = TurtleForward)
         setAttr(name = "circle", value = TurtleCircle)
 
         setAttr(name = "showturtle", value = TurtleShowTurtle)
@@ -30,6 +33,32 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
     }
 
     override fun toString() = "<turtle.Turtle object at idx ${id}>"
+}
+
+private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2 || args[1] !is LiloFloat) {
+            return LiloResult.Failure(error = LiloException("`turtle.distance` expect 1 floats as distance"))
+        }
+
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val distance = (args[1] as LiloFloat).value
+        val pointer = screen.getPointerAt(idx = self.id)!!
+
+        val radius = Math.toRadians(pointer.degree.toDouble())
+        val dstX = pointer.x + (distance * cos(x = radius)).toFloat()
+        val dstY = pointer.y + (distance * sin(x = radius)).toFloat()
+
+        pointer.path.lineTo(x = dstX, y = dstY)
+
+        pointer.x = dstX
+        pointer.y = dstY
+        return LiloResult.Success(data = LiloNone())
+    }
 }
 
 private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
@@ -49,7 +78,6 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
         return LiloResult.Success(data = LiloNone())
     }
 }
-
 
 private object TurtleShowTurtle : LiloObject(liloMethodType), LiloCallable {
     override fun invoke(
@@ -133,6 +161,9 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
         val y = (args[2] as LiloFloat).value
 
         val pointer = screen.getPointerAt(idx = self.id)!!
+
+        // TODO: line or move depends on if pen is down or not
+        pointer.path.relativeLineTo(dx = x, dy = y)
         pointer.x = x
         pointer.y = y
 

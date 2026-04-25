@@ -25,6 +25,7 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
         setAttr(name = "showturtle", value = TurtleShowTurtle)
         setAttr(name = "hideturtle", value = TurtleHideTurtle)
         setAttr(name = "isvisible", value = TurtleIsVisible)
+        setAttr(name = "isdown", value = TurtleIsDown)
 
         setAttr(name = "goto", value = TurtleGoto)
 
@@ -53,7 +54,11 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
         val dstX = pointer.x + (distance * cos(x = radius)).toFloat()
         val dstY = pointer.y + (distance * sin(x = radius)).toFloat()
 
-        pointer.path.lineTo(x = dstX, y = dstY)
+        if (pointer.penDown) {
+            pointer.path.lineTo(x = dstX, y = dstY)
+        } else {
+            pointer.path.moveTo(x = dstX, y = dstY)
+        }
 
         pointer.x = dstX
         pointer.y = dstY
@@ -117,6 +122,18 @@ private object TurtleIsVisible : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
+private object TurtleIsDown : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        return LiloResult.Success(data = LiloBool(value = pointer.penDown))
+    }
+}
+
 private object TurtlePos : LiloObject(liloMethodType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
@@ -161,9 +178,12 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
         val y = (args[2] as LiloFloat).value
 
         val pointer = screen.getPointerAt(idx = self.id)!!
+        if (pointer.penDown) {
+            pointer.path.relativeLineTo(dx = x, dy = y)
+        } else {
+            pointer.path.moveTo(x = x, y = y)
+        }
 
-        // TODO: line or move depends on if pen is down or not
-        pointer.path.relativeLineTo(dx = x, dy = y)
         pointer.x = x
         pointer.y = y
 

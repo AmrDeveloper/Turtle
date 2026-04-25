@@ -12,5 +12,6 @@ class LiloPointer(
 
     var color: Color = Color.Black,
     val pen: Stroke = Stroke(width = 5.0f),
+    val penDown: Boolean = true,
     var visible: Boolean = true
 )

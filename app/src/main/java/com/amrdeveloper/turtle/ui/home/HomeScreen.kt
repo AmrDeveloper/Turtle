@@ -44,7 +44,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TurtleToolbar {
-                viewModel.runLiloCode(currentCodeInEditor.text.toString())
+                viewModel.runLiloCode(source = currentCodeInEditor.text.toString())
             }
         },
         content = { padding ->
@@ -63,7 +63,8 @@ fun HomeScreen(
                             editorState = currentCodeInEditor,
                             colorSchema = colorSchema.editorSchema
                         )
-                        1 -> DrawScreen()
+
+                        1 -> DrawScreen(viewModel, value = viewModel.screenUpdate)
                         2 -> Terminal(
                             colorSchema = colorSchema.terminalSchema,
                             output = viewModel.terminalOutput

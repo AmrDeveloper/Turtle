@@ -28,6 +28,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.webgpu)
 
     testImplementation(libs.junit)

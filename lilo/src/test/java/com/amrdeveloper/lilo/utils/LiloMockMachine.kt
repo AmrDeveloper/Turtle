@@ -8,6 +8,8 @@ class LiloMockMachine : LiloAbstractMachine {
 
     override fun getHost() = host
 
+    override fun getScreen() = null
+
     override fun getGPU() = null
     override fun hasGpu() = false
 }

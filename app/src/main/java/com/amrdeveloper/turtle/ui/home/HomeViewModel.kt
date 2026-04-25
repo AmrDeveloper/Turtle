@@ -1,5 +1,6 @@
 package com.amrdeveloper.turtle.ui.home
 
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.machine.LiloMachine
 import com.amrdeveloper.lilo.machine.device.LiloWebGPU
 import com.amrdeveloper.lilo.machine.host.LiloHost
+import com.amrdeveloper.lilo.machine.screen.LiloScreen
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloException
@@ -21,10 +23,17 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
 
     val terminalOutput = mutableStateListOf<TerminalLine>()
+    val screenUpdate = mutableLongStateOf(value = 0)
 
-    private val liloHost = LiloHost { terminalOutput.add(TerminalLine.Normal(text = it)) }
+    private val liloHost = LiloHost(
+        onStdout = { terminalOutput.add(TerminalLine.Normal(text = it)) })
+    private val liloScreen = LiloScreen(update = { screenUpdate.longValue = System.nanoTime() })
     private val liloGPU = LiloWebGPU()
-    private val liloMachine = LiloMachine(liloHost, liloGPU)
+    private val liloMachine = LiloMachine(
+        liloHost = liloHost,
+        liloScreen = liloScreen,
+        liloGPU = liloGPU
+    )
 
     init {
         viewModelScope.launch {
@@ -67,4 +76,6 @@ class HomeViewModel : ViewModel() {
             terminalOutput.add(TerminalLine.Exit(text = "Exit: 0"))
         }
     }
+
+    fun getLiloMachine() = liloMachine
 }

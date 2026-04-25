@@ -42,14 +42,14 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
         for (pointer in screen.getPointers()) {
             val turtlePath = pointer.path
             if (turtlePath.isEmpty) {
-                drawImage(image = logo, topLeft = Offset(x = 0f, y = 0f))
+                drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
                 continue
             }
 
             drawPath(path = turtlePath, color = pointer.color, style = Stroke(width = 5f))
 
             val pathMeasure = PathMeasure()
-            pathMeasure.setPath(turtlePath, false)
+            pathMeasure.setPath(turtlePath, forceClosed = false)
 
             val lastPoint = if (pathMeasure.length > 0) {
                 pathMeasure.getPosition(distance = pathMeasure.length)
@@ -57,6 +57,8 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
                 Offset.Zero
             }
 
+            pointer.x = lastPoint.x
+            pointer.y = lastPoint.y
             drawImage(image = logo, topLeft = Offset(x = lastPoint.x, y = lastPoint.y))
         }
     }

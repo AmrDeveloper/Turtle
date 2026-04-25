@@ -14,6 +14,7 @@ import com.amrdeveloper.lilo.std.modules.gpu.liloGPUModule
 import com.amrdeveloper.lilo.std.modules.math.liloMathModule
 import com.amrdeveloper.lilo.std.modules.random.liloRandomModule
 import com.amrdeveloper.lilo.std.modules.time.liloTimeModule
+import com.amrdeveloper.lilo.std.modules.turtle.liloTurtleModule
 
 fun registerLiloStandardLibrary(environment: LiloEnvironment) {
     // Register Stdlib modules
@@ -21,6 +22,7 @@ fun registerLiloStandardLibrary(environment: LiloEnvironment) {
     environment.values["math"] = liloMathModule
     environment.values["gpu"] = liloGPUModule
     environment.values["time"] = liloTimeModule
+    environment.values["turtle"] = liloTurtleModule
 
     // Register Stdlib functions
     environment.values["print"] = LiloPrintFunction

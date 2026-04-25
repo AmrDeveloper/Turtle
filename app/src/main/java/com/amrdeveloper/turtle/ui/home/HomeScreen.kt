@@ -23,8 +23,12 @@ import com.amrdeveloper.turtle.ui.components.TurtleTab
 import com.amrdeveloper.turtle.ui.components.TurtleToolbar
 
 private val starterLiloCode = """
-    msg = "Hello, World!"
-    print(msg)
+    import turtle
+    
+    t = turtle.Turtle()
+    t.goto(200.0, 300.0)
+    
+    print("Done :D")
 """.trimIndent()
 
 private val turtleAppHomeTabs = listOf(

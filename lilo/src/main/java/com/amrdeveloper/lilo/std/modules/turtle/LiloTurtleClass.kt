@@ -85,7 +85,14 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val radius = (args[1] as LiloFloat).value
         val pointer = screen.getPointerAt(idx = self.id)!!
-        pointer.path.addOval(Rect(center = Offset(x = pointer.x, y = pointer.y), radius = radius))
+        if (pointer.penDown) {
+            pointer.path.addOval(
+                Rect(
+                    center = Offset(x = pointer.x, y = pointer.y),
+                    radius = radius
+                )
+            )
+        }
         return LiloResult.Success(data = LiloNone())
     }
 }

@@ -27,6 +27,7 @@ private val starterLiloCode = """
     
     t = turtle.Turtle()
     t.goto(200.0, 300.0)
+    t.hideturtle()
     
     print("Done :D")
 """.trimIndent()

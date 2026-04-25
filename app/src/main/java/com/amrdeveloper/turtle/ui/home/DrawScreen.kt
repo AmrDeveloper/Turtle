@@ -41,7 +41,7 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
             .onSizeChanged { canvasSize = it }) {
         for (pointer in screen.getPointers()) {
             val turtlePath = pointer.path
-            if (turtlePath.isEmpty) {
+            if (pointer.visible && turtlePath.isEmpty) {
                 drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
                 continue
             }
@@ -59,7 +59,10 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
 
             pointer.x = lastPoint.x
             pointer.y = lastPoint.y
-            drawImage(image = logo, topLeft = Offset(x = lastPoint.x, y = lastPoint.y))
+
+            if (pointer.visible) {
+                drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
+            }
         }
     }
 }

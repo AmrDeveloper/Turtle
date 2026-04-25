@@ -8,4 +8,5 @@ class LiloPointer(
     var y: Float = 0f,
     var color: Color = Color.Black,
     var path: Path = Path(),
+    var visible: Boolean = true,
 )

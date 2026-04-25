@@ -14,7 +14,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
@@ -46,19 +45,16 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
                 continue
             }
 
-            drawPath(path = turtlePath, color = pointer.color, style = Stroke(width = 5f))
+            drawPath(path = turtlePath, color = pointer.color, style = pointer.pen)
 
             val pathMeasure = PathMeasure()
             pathMeasure.setPath(turtlePath, forceClosed = false)
 
-            val lastPoint = if (pathMeasure.length > 0) {
-                pathMeasure.getPosition(distance = pathMeasure.length)
-            } else {
-                Offset.Zero
+            if (pathMeasure.length > 0) {
+                val lastPoint = pathMeasure.getPosition(distance = pathMeasure.length)
+                pointer.x = lastPoint.x
+                pointer.y = lastPoint.y
             }
-
-            pointer.x = lastPoint.x
-            pointer.y = lastPoint.y
 
             if (pointer.visible) {
                 drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))

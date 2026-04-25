@@ -1,5 +1,7 @@
 package com.amrdeveloper.lilo.std.modules.turtle
 
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.machine.screen.LiloScreen
 import com.amrdeveloper.lilo.`object`.LiloBool
@@ -15,16 +17,39 @@ import com.amrdeveloper.lilo.type.liloMethodType
 data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
 
     init {
+        setAttr(name = "circle", value = TurtleCircle)
+
         setAttr(name = "showturtle", value = TurtleShowTurtle)
         setAttr(name = "hideturtle", value = TurtleHideTurtle)
         setAttr(name = "isvisible", value = TurtleIsVisible)
+
         setAttr(name = "goto", value = TurtleGoto)
+
         setAttr(name = "clear", value = TurtleClear)
         setAttr(name = "pos", value = TurtlePos)
     }
 
     override fun toString() = "<turtle.Turtle object at idx ${id}>"
 }
+
+private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2 || args[1] !is LiloFloat) {
+            return LiloResult.Failure(error = LiloException("`turtle.circle` expect 1 floats as radius"))
+        }
+
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val radius = (args[1] as LiloFloat).value
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        pointer.path.addOval(Rect(center = Offset(x = pointer.x, y = pointer.y), radius = radius))
+        return LiloResult.Success(data = LiloNone())
+    }
+}
+
 
 private object TurtleShowTurtle : LiloObject(liloMethodType), LiloCallable {
     override fun invoke(

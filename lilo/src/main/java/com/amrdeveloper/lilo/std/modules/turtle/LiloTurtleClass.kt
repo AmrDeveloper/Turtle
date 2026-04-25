@@ -19,12 +19,18 @@ import kotlin.math.sin
 data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
 
     init {
+        // Draw shapes
         setAttr(name = "forward", value = TurtleForward)
         setAttr(name = "circle", value = TurtleCircle)
 
+        // Pointer control
         setAttr(name = "showturtle", value = TurtleShowTurtle)
         setAttr(name = "hideturtle", value = TurtleHideTurtle)
         setAttr(name = "isvisible", value = TurtleIsVisible)
+
+        // Pen control
+        setAttr(name = "up", value = TurtlePenUp)
+        setAttr(name = "down", value = TurtlePenDown)
         setAttr(name = "isdown", value = TurtleIsDown)
 
         setAttr(name = "goto", value = TurtleGoto)
@@ -119,6 +125,32 @@ private object TurtleIsVisible : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
         return LiloResult.Success(data = LiloBool(value = pointer.visible))
+    }
+}
+
+private object TurtlePenUp : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        pointer.penDown = false
+        return LiloResult.Success(data = LiloNone())
+    }
+}
+
+private object TurtlePenDown : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        pointer.penDown = true
+        return LiloResult.Success(data = LiloNone())
     }
 }
 

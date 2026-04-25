@@ -17,6 +17,7 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
         setAttr(name = "showturtle", value = TurtleShowTurtle)
         setAttr(name = "hideturtle", value = TurtleHideTurtle)
         setAttr(name = "goto", value = TurtleGoto)
+        setAttr(name = "clear", value = TurtleClear)
         setAttr(name = "pos", value = TurtlePos)
     }
 
@@ -62,6 +63,19 @@ private object TurtlePos : LiloObject(liloMethodType), LiloCallable {
             LiloFloat(value = pointer.y)
         )
         return LiloResult.Success(data = LiloTuple(values = position))
+    }
+}
+
+private object TurtleClear : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        pointer.path.reset()
+        return LiloResult.Success(data = LiloNone())
     }
 }
 

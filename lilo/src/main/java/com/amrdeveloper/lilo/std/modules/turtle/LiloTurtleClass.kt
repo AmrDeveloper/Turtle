@@ -2,6 +2,7 @@ package com.amrdeveloper.lilo.std.modules.turtle
 
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.machine.screen.LiloScreen
+import com.amrdeveloper.lilo.`object`.LiloBool
 import com.amrdeveloper.lilo.`object`.LiloFloat
 import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
@@ -16,6 +17,7 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
     init {
         setAttr(name = "showturtle", value = TurtleShowTurtle)
         setAttr(name = "hideturtle", value = TurtleHideTurtle)
+        setAttr(name = "isvisible", value = TurtleIsVisible)
         setAttr(name = "goto", value = TurtleGoto)
         setAttr(name = "clear", value = TurtleClear)
         setAttr(name = "pos", value = TurtlePos)
@@ -47,6 +49,18 @@ private object TurtleHideTurtle : LiloObject(liloMethodType), LiloCallable {
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.visible = false
         return LiloResult.Success(data = LiloNone())
+    }
+}
+
+private object TurtleIsVisible : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        return LiloResult.Success(data = LiloBool(value = pointer.visible))
     }
 }
 

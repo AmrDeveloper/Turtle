@@ -21,6 +21,8 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
     init {
         // Draw shapes
         setAttr(name = "forward", value = TurtleForward)
+        setAttr(name = "left", value = TurtleLeft)
+        setAttr(name = "right", value = TurtleRight)
         setAttr(name = "circle", value = TurtleCircle)
 
         // Pointer control
@@ -68,6 +70,42 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
 
         pointer.x = dstX
         pointer.y = dstY
+        return LiloResult.Success(data = LiloNone())
+    }
+}
+
+private object TurtleLeft : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2 || args[1] !is LiloFloat) {
+            return LiloResult.Failure(error = LiloException("`turtle.left` expect 1 floats as degree"))
+        }
+
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val degree = (args[1] as LiloFloat).value
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        pointer.degree = (pointer.degree + degree) % 360
+        return LiloResult.Success(data = LiloNone())
+    }
+}
+
+private object TurtleRight : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2 || args[1] !is LiloFloat) {
+            return LiloResult.Failure(error = LiloException("`turtle.right` expect 1 floats as degree"))
+        }
+
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val degree = (args[1] as LiloFloat).value
+        val pointer = screen.getPointerAt(idx = self.id)!!
+        pointer.degree = (pointer.degree - degree) % 360
         return LiloResult.Success(data = LiloNone())
     }
 }

@@ -27,12 +27,18 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
 
         // Pointer control
         setAttr(name = "showturtle", value = TurtleShowTurtle)
+        setAttr(name = "st", value = TurtleShowTurtle)
         setAttr(name = "hideturtle", value = TurtleHideTurtle)
+        setAttr(name = "ht", value = TurtleHideTurtle)
         setAttr(name = "isvisible", value = TurtleIsVisible)
 
         // Pen control
+        setAttr(name = "penup", value = TurtlePenUp)
         setAttr(name = "up", value = TurtlePenUp)
+        setAttr(name = "pu", value = TurtlePenUp)
+        setAttr(name = "pendown", value = TurtlePenDown)
         setAttr(name = "down", value = TurtlePenDown)
+        setAttr(name = "pd", value = TurtlePenDown)
         setAttr(name = "isdown", value = TurtleIsDown)
 
         setAttr(name = "goto", value = TurtleGoto)

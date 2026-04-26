@@ -136,6 +136,13 @@ class LiloLexer(val source: String) {
                     continue
                 }
 
+                '#' -> {
+                    while (!isAtEnd() && peek() != '\n') {
+                        advance()
+                    }
+                    continue
+                }
+
                 else -> break
             }
         }

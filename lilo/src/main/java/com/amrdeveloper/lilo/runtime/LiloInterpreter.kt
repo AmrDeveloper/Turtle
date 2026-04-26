@@ -6,6 +6,7 @@ import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ComplexExpr
+import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
@@ -36,6 +37,7 @@ import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.machine.LiloAbstractMachine
 import com.amrdeveloper.lilo.`object`.LiloBool
 import com.amrdeveloper.lilo.`object`.LiloComplex
+import com.amrdeveloper.lilo.`object`.LiloDict
 import com.amrdeveloper.lilo.`object`.LiloFloat
 import com.amrdeveloper.lilo.`object`.LiloFunction
 import com.amrdeveloper.lilo.`object`.LiloInt
@@ -336,6 +338,22 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             set.add(element)
         }
         return runtimeObject(obj = LiloSet(values = set))
+    }
+
+    override fun visitDictExpr(expr: DictExpr): LiloResult<LiloObject> {
+        val map = mutableMapOf<LiloObject, LiloObject>()
+        for ((key, value) in expr.values) {
+            val keyResult = visit(expr = key)
+            if (keyResult.isFailure()) return keyResult
+            val key = keyResult.toSuccessData()
+
+            val valueResult = visit(expr = value)
+            if (valueResult.isFailure()) return valueResult
+            val value = valueResult.toSuccessData()
+
+            map[key] = value
+        }
+        return runtimeObject(obj = LiloDict(values = map))
     }
 
     override fun visitTupleExpr(expr: TupleExpr): LiloResult<LiloObject> {

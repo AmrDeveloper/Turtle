@@ -202,6 +202,11 @@ class LiloMagicMethodTest {
             """
             a = (1, True, "Hello")
             print(len(a))
+            """,
+            // Dict
+            """
+            a = { 1 : [1, 2, 3], 2 : [4, 5, 6] }
+            print(len(a))
             """
         )
 
@@ -210,6 +215,7 @@ class LiloMagicMethodTest {
             "3",
             "1",
             "3",
+            "2",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

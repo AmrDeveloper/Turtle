@@ -6,6 +6,7 @@ import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ComplexExpr
+import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.FromImportStmt
@@ -515,7 +516,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             LiloTokenKind.LAMBDA_KEYWORD -> parseLambdaExpr()
 
-            LiloTokenKind.L_BRACE -> parseSetOrMapExpr()
+            LiloTokenKind.L_BRACE -> parseSetOrDictionaryExpr()
             LiloTokenKind.L_BRACKET -> parseListExpr()
             LiloTokenKind.LPAR -> parseGroupOrTupleExpr()
 
@@ -622,33 +623,58 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = LambdaExpr(params = parameters, body = returnStmt))
     }
 
-    private fun parseSetOrMapExpr(): LiloResult<LiloExpr> {
+    private fun parseSetOrDictionaryExpr(): LiloResult<LiloExpr> {
         // Advance '{'
         advance()
 
-        val list = mutableListOf<LiloExpr>()
+        var isDictionary = false
+
+        val setList = mutableListOf<LiloExpr>()
+        val dictPairs = mutableListOf<Pair<LiloExpr, LiloExpr>>()
         while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_BRACE).not()) {
-            val exprResult = parseExpr()
-            if (exprResult.isFailure()) return exprResult.toFailure()
-            list.add(exprResult.toSuccessData())
+            val keyResult = parseExpr()
+            if (keyResult.isFailure()) return keyResult.toFailure()
+            val key = keyResult.toSuccessData()
+
+            // Parse map key and value pairs
+            if (isPeek(kind = LiloTokenKind.COLON)) {
+                // Advance `:`
+                advance()
+
+                isDictionary = true
+
+                val valueResult = parseExpr()
+                if (valueResult.isFailure()) return valueResult.toFailure()
+                val value = valueResult.toSuccessData()
+
+                dictPairs.add(key to value)
+            } else if (isDictionary) {
+                return createDiagnostic(
+                    loc = peek().loc,
+                    message = "Expected `:` between the key and value of map element"
+                )
+            }
+
+            // Register it as set value
+            setList.add(key)
 
             if (isPeek(kind = LiloTokenKind.COMMA)) {
                 advance()
                 continue
             }
-
             break
         }
 
         run {
             val consumeRes = expectAndConsume(
                 kind = LiloTokenKind.R_BRACE,
-                message = "expected '}' at end of set"
+                message = "expected '}' at end of set or dict"
             )
             if (consumeRes.isFailure()) return consumeRes.toFailure()
         }
 
-        return LiloResult.Success(data = SetExpr(values = list))
+        return if (isDictionary) LiloResult.Success(data = DictExpr(values = dictPairs))
+        else LiloResult.Success(data = SetExpr(values = setList))
     }
 
     private fun expectAndConsume(kind: LiloTokenKind, message: String): LiloResult<LiloToken> {

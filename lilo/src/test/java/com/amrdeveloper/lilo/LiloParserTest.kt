@@ -114,7 +114,6 @@ class LiloParserTest {
         }
     }
 
-
     @Test
     fun `test parse tuple`() {
         val sourceCodes = listOf(
@@ -137,6 +136,30 @@ class LiloParserTest {
             assertTrue("Parser error", parseResult.isSuccess())
         }
     }
+
+    @Test
+    fun `test parse dictionary`() {
+        val sourceCodes = listOf(
+            "a = { 1 : 2 }",
+            "a = {}",
+            "a = { 1 : [1, 2, 3], 2 : [4, 5, 6] }"
+        )
+
+        for (sourceCode in sourceCodes) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+        }
+    }
+
 
     @Test
     fun `test subscript list`() {

@@ -56,7 +56,7 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || args[1] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloException("`turtle.distance` expect 1 floats as distance"))
+            return LiloResult.Failure(error = LiloException("`turtle.forward` expect 1 floats as distance"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen

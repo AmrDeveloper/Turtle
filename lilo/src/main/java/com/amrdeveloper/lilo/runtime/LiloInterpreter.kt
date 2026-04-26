@@ -399,7 +399,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         // Call `obj.__bool__` and make sure result is boolean
         val callable = magicMethod as LiloCallable
-        val boolResult = callable.invoke(interpreter = this, args = listOf())
+        val boolResult = callable.invoke(interpreter = this, args = listOf(obj))
         if (boolResult.isFailure()) return boolResult.toFailure()
         val condBool = boolResult.toSuccessData()
         if (condBool !is LiloBool) {

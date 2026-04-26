@@ -7,6 +7,7 @@ enum class LiloTokenKind {
     DEF_KEYWORD,
     RETURN_KEYWORD,
     IF_KEYWORD,
+    ELIF_KEYWORD,
     ELSE_KEYWORD,
     LAMBDA_KEYWORD,
 
@@ -54,6 +55,7 @@ fun getLiloKeywordsMap() = mapOf(
     "def" to LiloTokenKind.DEF_KEYWORD,
     "return" to LiloTokenKind.RETURN_KEYWORD,
     "if" to LiloTokenKind.IF_KEYWORD,
+    "elif" to LiloTokenKind.ELIF_KEYWORD,
     "else" to LiloTokenKind.ELSE_KEYWORD,
     "lambda" to LiloTokenKind.LAMBDA_KEYWORD,
 

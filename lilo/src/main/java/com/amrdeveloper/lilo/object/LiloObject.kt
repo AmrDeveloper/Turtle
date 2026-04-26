@@ -1,13 +1,17 @@
 package com.amrdeveloper.lilo.`object`
 
 import com.amrdeveloper.lilo.type.LiloType
+import com.amrdeveloper.lilo.type.liloMethodType
 
 open class LiloObject(var type: LiloType? = null) {
 
     open val dict: MutableMap<String, LiloObject> = mutableMapOf()
 
     open fun getAttr(name: String): LiloObject? {
-        dict[name]?.let { return it }
+        dict[name]?.let {
+            return if (it.type == liloMethodType) LiloMethod(self = this, method = it)
+            else it
+        }
         val t = type ?: return null
         if (this == type) return null
         return t.getAttr(name)

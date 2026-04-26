@@ -14,6 +14,8 @@ object LiloMagicMethod {
 
     const val GET_ITEM = "__getitem__"
 
+    const val BOOL = "__bool__"
+
     const val LEN = "__len__"
     const val STR = "__str__"
 }

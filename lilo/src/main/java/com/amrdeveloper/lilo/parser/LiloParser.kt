@@ -14,6 +14,7 @@ import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.GetItemExpr
 import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.IfExpr
+import com.amrdeveloper.lilo.ast.IfStmt
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.LambdaExpr
@@ -53,6 +54,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.FROM_KEYWORD -> parseFromImportStmt()
             LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
             LiloTokenKind.DEF_KEYWORD -> parseFunctionStmt()
+            LiloTokenKind.IF_KEYWORD -> parseIfStmt()
             LiloTokenKind.L_BRACE -> parseBlockStmt()
             LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
             else -> parseAssignmentStmt()
@@ -211,6 +213,52 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         val functionStmt = FunctionStmt(name = name.lexeme!!, params = nodes, body = block.nodes)
         return LiloResult.Success(data = functionStmt)
+    }
+
+    private fun parseIfStmt(): LiloResult<IfStmt> {
+        // Advance 'if' keyword
+        advance()
+
+        val conditionRes = parseExpr()
+        if (conditionRes.isFailure()) return conditionRes.toFailure()
+        val condition = conditionRes.toSuccessData()
+
+        val bodyRes = parseStmt()
+        if (bodyRes.isFailure()) return bodyRes.toFailure()
+        val body = bodyRes.toSuccessData()
+
+        val ifs = mutableListOf<Pair<LiloExpr, LiloStmt>>()
+        ifs.add(condition to body)
+
+        // Parse zero or multiples else if statements
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.ELIF_KEYWORD)) {
+            // Advance 'elif' keyword
+            advance()
+
+            val conditionRes = parseExpr()
+            if (conditionRes.isFailure()) return conditionRes.toFailure()
+            val condition = conditionRes.toSuccessData()
+
+            val bodyRes = parseStmt()
+            if (bodyRes.isFailure()) return bodyRes.toFailure()
+            val body = bodyRes.toSuccessData()
+
+            ifs.add(condition to body)
+        }
+
+        // Parse `else` body
+        var elseBlock: LiloStmt? = null
+        if (!isAtEnd() && isPeek(kind = LiloTokenKind.ELSE_KEYWORD)) {
+            // Advance 'else' keyword
+            advance()
+
+            val bodyRes = parseStmt()
+            if (bodyRes.isFailure()) return bodyRes.toFailure()
+            elseBlock = bodyRes.toSuccessData()
+        }
+
+        val ifStmt = IfStmt(ifs, elseBlock)
+        return LiloResult.Success(data = ifStmt)
     }
 
     private fun parseBlockStmt(): LiloResult<BlockStmt> {

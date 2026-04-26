@@ -121,31 +121,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             val conditionRes = visit(expr = expr)
             if (conditionRes.isFailure()) return conditionRes.toFailure()
             val condition = conditionRes.toSuccessData()
-            val magicMethod = condition.getAttr(name = LiloMagicMethod.BOOL)
-
-            // If object has no __bool__, we will assume it has content and can eval to true
-            if (magicMethod == null) {
-                val evalStmt = visit(stmt = body)
-                if (evalStmt.isFailure()) return evalStmt.toFailure()
-                return LiloResult.Success(data = Unit)
-            }
-
-            // __bool__ must be callable
-            if (magicMethod !is LiloCallable) {
-                return runtimeException("`${expr}` object has no attribute '__bool__'")
-            }
-
-            // Call `obj.__bool__` and make sure result is boolean
-            val callable = magicMethod as LiloCallable
-            val boolResult = callable.invoke(interpreter = this, args = listOf())
-            if (boolResult.isFailure()) return boolResult.toFailure()
-            val condBool = boolResult.toSuccessData()
-            if (condBool !is LiloBool) {
-                return runtimeException("Expects bool from calling `__bool__`")
-            }
-
-            // Execute the body if `__bool__` returns true
-            if (condBool.value) {
+            val isTruthRes = isLiloObjectEvalToTrue(obj = condition)
+            if (isTruthRes.isFailure()) return isTruthRes.toFailure()
+            val isTruth = isTruthRes.toSuccessData()
+            if (isTruth) {
                 val evalStmt = visit(stmt = body)
                 if (evalStmt.isFailure()) return evalStmt.toFailure()
                 return LiloResult.Success(data = Unit)
@@ -219,9 +198,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {
         val conditionResult = visit(expr.condition)
         if (conditionResult.isFailure()) return conditionResult.toFailure()
-
         val condition = conditionResult.toSuccessData()
-        if (condition is LiloBool && condition.value) {
+        val isTruthRes = isLiloObjectEvalToTrue(obj = condition)
+        if (isTruthRes.isFailure()) return isTruthRes.toFailure()
+        val isTruth = isTruthRes.toSuccessData()
+        if (isTruth) {
             val thenValueResult = visit(expr.thenValue)
             if (thenValueResult.isFailure()) return thenValueResult.toFailure()
             return thenValueResult
@@ -402,6 +383,30 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitNoneExpr(expr: NoneExpr): LiloResult<LiloObject> {
         return runtimeObject(obj = LiloNone())
+    }
+
+    private fun isLiloObjectEvalToTrue(obj: LiloObject): LiloResult<Boolean> {
+        val magicMethod = obj.getAttr(name = LiloMagicMethod.BOOL)
+        // If object has no __bool__, we will assume it has content and can eval to true
+        if (magicMethod == null) {
+            return LiloResult.Success(data = true)
+        }
+
+        // __bool__ must be callable
+        if (magicMethod !is LiloCallable) {
+            return runtimeException("`${obj}` object has no attribute '__bool__'")
+        }
+
+        // Call `obj.__bool__` and make sure result is boolean
+        val callable = magicMethod as LiloCallable
+        val boolResult = callable.invoke(interpreter = this, args = listOf())
+        if (boolResult.isFailure()) return boolResult.toFailure()
+        val condBool = boolResult.toSuccessData()
+        if (condBool !is LiloBool) {
+            return runtimeException("Expects bool from calling `__bool__`")
+        }
+
+        return LiloResult.Success(data = condBool.value)
     }
 
     private fun runtimeObject(obj: LiloObject): LiloResult.Success<LiloObject> {

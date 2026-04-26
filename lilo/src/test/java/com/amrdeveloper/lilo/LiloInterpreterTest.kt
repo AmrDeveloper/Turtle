@@ -153,13 +153,23 @@ class LiloInterpreterTest {
             """
             a = (2 if (False) else 3) if (True) else 2
             print(a)
+            """,
             """
+            a = 1 if 1 else 2
+            print(a)
+            """,
+            """
+            a = 1 if 0 else 2
+            print(a)
+            """,
         )
 
         val expectedOutput = listOf(
             "1",
             "2",
             "3",
+            "1",
+            "2",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

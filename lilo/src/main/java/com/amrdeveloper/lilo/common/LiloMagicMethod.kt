@@ -12,6 +12,7 @@ object LiloMagicMethod {
     const val POS = "__pos__"
     const val NEG = "__neg__"
 
+    const val SET_ITEM = "__setitem__"
     const val GET_ITEM = "__getitem__"
 
     const val BOOL = "__bool__"

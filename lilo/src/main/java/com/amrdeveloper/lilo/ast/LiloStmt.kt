@@ -16,6 +16,6 @@ data class BlockStmt(val nodes: List<LiloStmt>) : LiloStmt
 
 data class ExprStmt(val expr: LiloExpr) : LiloStmt
 
-data class AssignStmt(val name: String, val value: LiloExpr) : LiloStmt
+data class AssignStmt(val lValue: LiloExpr, val rValue: LiloExpr) : LiloStmt
 
 data class ReturnStmt(val value: LiloExpr? = null) : LiloStmt

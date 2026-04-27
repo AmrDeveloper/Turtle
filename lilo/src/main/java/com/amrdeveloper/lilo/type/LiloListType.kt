@@ -13,7 +13,9 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
+    it.setAttr(name = LiloMagicMethod.SET_ITEM, value = ListSetItem)
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = ListGetItem)
+
     it.setAttr(name = LiloMagicMethod.LEN, value = ListLen)
 
     it.setAttr(name = "append", value = ListAppend)
@@ -32,16 +34,30 @@ private object ListAppend : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
+private object ListSetItem : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val index = args[1]
+        if (index !is LiloInt) return LiloResult.Failure(error = LiloException("List key must be int"))
+        val self = args[0] as LiloList
+        val value = args[2]
+        self.values[index.value] = value
+        return LiloResult.Success(data = LiloNone())
+    }
+}
+
+
 private object ListGetItem : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val lhs = args[0]
         val index = args[1]
         if (index !is LiloInt) return LiloResult.Failure(error = LiloException("List index must be int"))
-        val list = lhs as LiloList
-        val item = list.values[index.value]
+        val self = args[0] as LiloList
+        val item = self.values[index.value]
         return LiloResult.Success(data = item)
     }
 }

@@ -308,11 +308,11 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseAssignmentStmt(): LiloResult<LiloStmt> {
-        if (peekNext().kind == LiloTokenKind.EQ) {
-            val nameResult =
-                expectAndConsume(kind = LiloTokenKind.SYMBOL, "Expect symbol on right side of `=`")
-            if (nameResult.isFailure()) return nameResult.toFailure()
-            val name = nameResult.toSuccessData()
+        val lhsResult = parseExpr()
+        if (lhsResult.isFailure()) return lhsResult.toFailure()
+
+        if (isPeek(LiloTokenKind.EQ)) {
+            val lhs = lhsResult.toSuccessData()
 
             // Consume `=`
             advance()
@@ -320,12 +320,9 @@ class LiloParser(val tokens: List<LiloToken>) {
             val valueResult = parseExpr()
             if (valueResult.isFailure()) return valueResult.toFailure()
             val value = valueResult.toSuccessData()
-            return LiloResult.Success(data = AssignStmt(name.lexeme!!, value))
+            return LiloResult.Success(data = AssignStmt(lhs, value))
         }
-
-        val expr = parseExpr()
-        if (expr.isFailure()) return expr.toFailure()
-        return LiloResult.Success(data = ExprStmt(expr = expr.toSuccessData()))
+        return LiloResult.Success(data = ExprStmt(expr = lhsResult.toSuccessData()))
     }
 
     private fun parseExpr(): LiloResult<LiloExpr> {

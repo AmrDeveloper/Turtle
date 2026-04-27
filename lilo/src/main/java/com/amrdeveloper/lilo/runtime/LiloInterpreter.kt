@@ -158,11 +158,40 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {
-        val valueResult = visit(expr = stmt.value)
+        val lValue = stmt.lValue
+
+        val valueResult = visit(expr = stmt.rValue)
         if (valueResult.isFailure()) return valueResult.toFailure()
         val value = valueResult.toSuccessData()
-        environment.define(name = stmt.name, value = value)
-        return LiloResult.Success(data = Unit)
+
+        return when (lValue) {
+            is SymbolExpr -> {
+                environment.define(name = lValue.value.lexeme!!, value = value)
+                LiloResult.Success(data = Unit)
+            }
+
+            is GetItemExpr -> {
+                val objResult = visit(lValue.obj)
+                if (objResult.isFailure()) return objResult.toFailure()
+                val obj = objResult.toSuccessData()
+
+                val indexResult = visit(lValue.index)
+                if (indexResult.isFailure()) return indexResult.toFailure()
+                val index = indexResult.toSuccessData()
+
+                val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
+                if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
+                    return runtimeException("`${obj}` support item assignment")
+                }
+
+                val invokeResult =
+                    liloSetItemMethod.invoke(interpreter = this, args = listOf(obj, index, value))
+                if (invokeResult.isFailure()) return invokeResult.toFailure()
+                LiloResult.Success(data = Unit)
+            }
+
+            else -> runtimeException("Invalid `lvalue` for assign expr")
+        }
     }
 
     override fun visitReturnStmt(stmt: ReturnStmt): LiloResult<Unit> {

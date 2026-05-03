@@ -7,7 +7,7 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloMethodType
 import com.amrdeveloper.lilo.type.liloNoneType
 
-data class LiloNone(private val unit: Unit = Unit) : LiloObject(liloNoneType) {
+object LiloNone : LiloObject(liloNoneType) {
     init {
         setAttr(name = LiloMagicMethod.BOOL, value = NoneBool)
     }

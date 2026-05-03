@@ -30,7 +30,7 @@ private object ListAppend : LiloObject(liloMethodType), LiloCallable {
         val index = args[1]
         val list = self as LiloList
         list.values.add(index)
-        return LiloResult.Success(data = LiloNone())
+        return LiloResult.Success(data = LiloNone)
     }
 }
 
@@ -44,7 +44,7 @@ private object ListSetItem : LiloObject(liloFunctionType), LiloCallable {
         val self = args[0] as LiloList
         val value = args[2]
         self.values[index.value] = value
-        return LiloResult.Success(data = LiloNone())
+        return LiloResult.Success(data = LiloNone)
     }
 }
 

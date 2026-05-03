@@ -27,9 +27,9 @@ data class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
             }
         } catch (retSignal: LiloReturnSignal) {
             if (retSignal.value != null) return LiloResult.Success(data = retSignal.value)
-            return LiloResult.Success(data = LiloNone())
+            return LiloResult.Success(data = LiloNone)
         }
 
-        return LiloResult.Success(data = LiloNone())
+        return LiloResult.Success(data = LiloNone)
     }
 }

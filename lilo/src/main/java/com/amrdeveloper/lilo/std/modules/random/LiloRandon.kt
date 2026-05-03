@@ -38,6 +38,6 @@ object LiloShuffle : LiloObject(liloFunctionType), LiloCallable {
         }
         val list = args[0] as LiloList
         list.values.shuffle()
-        return LiloResult.Success(data = LiloNone())
+        return LiloResult.Success(data = LiloNone)
     }
 }

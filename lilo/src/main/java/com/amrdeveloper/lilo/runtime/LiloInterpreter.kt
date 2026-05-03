@@ -429,7 +429,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitNoneExpr(expr: NoneExpr): LiloResult<LiloObject> {
-        return runtimeObject(obj = LiloNone())
+        return runtimeObject(obj = LiloNone)
     }
 
     private fun isLiloObjectEvalToTrue(obj: LiloObject): LiloResult<Boolean> {

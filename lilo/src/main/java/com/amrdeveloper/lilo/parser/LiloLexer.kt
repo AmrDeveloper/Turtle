@@ -65,6 +65,26 @@ class LiloLexer(val source: String) {
                     }
                 }
 
+                '>' -> {
+                    advance()
+                    if (peek() == '=') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.GE))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.GT))
+                    }
+                }
+
+                '<' -> {
+                    advance()
+                    if (peek() == '=') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.LE))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.LT))
+                    }
+                }
+
                 '(', ')', '[', ']', '{', '}' -> {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }

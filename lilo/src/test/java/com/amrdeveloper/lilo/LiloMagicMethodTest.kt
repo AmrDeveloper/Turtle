@@ -51,19 +51,23 @@ class LiloMagicMethodTest {
     }
 
     @Test
-    fun `test __eq__ magic method`() {
+    fun `test comparisons magic method`() {
         val sourceCodes = mutableListOf(
-            """
-            print(1 == 1)
-            """,
-            """
-            print(1 != 1)
-            """,
+            "print(2 == 1)",
+            "print(2 != 1)",
+            "print(2 > 1)",
+            "print(2 >= 1)",
+            "print(2 < 1)",
+            "print(2 <= 1)",
         )
 
         val expectedOutput = listOf(
+            "False",
             "True",
-            "False"
+            "True",
+            "True",
+            "False",
+            "False",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

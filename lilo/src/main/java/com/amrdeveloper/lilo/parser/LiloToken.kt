@@ -37,6 +37,10 @@ enum class LiloTokenKind {
     EQ_EQ,
     BANG,
     BANG_EQ,
+    GT,
+    GE,
+    LT,
+    LE,
 
     SYMBOL,
     STR_LITERAL,
@@ -106,6 +110,13 @@ fun LiloTokenKind.isUnaryOperator() = this in listOf(
 fun LiloTokenKind.isEqualityOperator() = this in listOf(
     LiloTokenKind.EQ_EQ,
     LiloTokenKind.BANG_EQ,
+)
+
+fun LiloTokenKind.isComparisonOperator() = this in listOf(
+    LiloTokenKind.GT,
+    LiloTokenKind.GE,
+    LiloTokenKind.LT,
+    LiloTokenKind.LE,
 )
 
 fun LiloTokenKind.isEOF() = this == LiloTokenKind.END_OF_FILE

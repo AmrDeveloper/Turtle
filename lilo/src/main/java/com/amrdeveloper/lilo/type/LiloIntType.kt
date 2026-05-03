@@ -15,15 +15,22 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
 
     it.setAttr(name = LiloMagicMethod.INIT, value = IntInit)
 
+    // Binary
     it.setAttr(name = LiloMagicMethod.ADD, value = IntAdd)
     it.setAttr(name = LiloMagicMethod.SUB, value = IntSub)
     it.setAttr(name = LiloMagicMethod.MUL, value = IntMul)
     it.setAttr(name = LiloMagicMethod.DIV, value = IntDiv)
     it.setAttr(name = LiloMagicMethod.MOD, value = IntMod)
 
+    // Comparisons
     it.setAttr(name = LiloMagicMethod.EQ, value = IntEq)
-    it.setAttr(name = LiloMagicMethod.NOT_EQ, value = IntNotEq)
+    it.setAttr(name = LiloMagicMethod.NE, value = IntNotEq)
+    it.setAttr(name = LiloMagicMethod.GT, value = IntGT)
+    it.setAttr(name = LiloMagicMethod.GE, value = IntGE)
+    it.setAttr(name = LiloMagicMethod.LT, value = IntLT)
+    it.setAttr(name = LiloMagicMethod.LE, value = IntLE)
 
+    // Unary
     it.setAttr(name = LiloMagicMethod.POS, value = IntPos)
     it.setAttr(name = LiloMagicMethod.NEG, value = IntNeg)
 }
@@ -134,6 +141,62 @@ private object IntNotEq : LiloObject(liloFunctionType), LiloCallable {
         val rhs = args[1]
         if (lhs is LiloInt && rhs is LiloInt) {
             return LiloResult.Success(data = LiloBool(value = lhs.value != rhs.value))
+        }
+        return LiloResult.Success(data = LiloBool(value = true))
+    }
+}
+
+private object IntGT : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloBool(value = lhs.value > rhs.value))
+        }
+        return LiloResult.Success(data = LiloBool(value = true))
+    }
+}
+
+private object IntGE : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloBool(value = lhs.value >= rhs.value))
+        }
+        return LiloResult.Success(data = LiloBool(value = true))
+    }
+}
+
+private object IntLT : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloBool(value = lhs.value < rhs.value))
+        }
+        return LiloResult.Success(data = LiloBool(value = true))
+    }
+}
+
+private object IntLE : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloBool(value = lhs.value <= rhs.value))
         }
         return LiloResult.Success(data = LiloBool(value = true))
     }

@@ -12,7 +12,11 @@ object LiloMagicMethod {
 
     // Comparison expr
     const val EQ = "__eq__"
-    const val NOT_EQ = "__ne__"
+    const val NE = "__ne__"
+    const val GT = "__gt__"
+    const val GE = "__ge__"
+    const val LT = "__lt__"
+    const val LE = "__le__"
 
     // Unary expr
     const val POS = "__pos__"

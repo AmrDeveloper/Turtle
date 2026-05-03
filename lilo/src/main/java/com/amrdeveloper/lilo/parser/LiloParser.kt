@@ -365,17 +365,38 @@ class LiloParser(val tokens: List<LiloToken>) {
     private fun comparisonOpFromTokenKind(kind: LiloTokenKind): ComparisonOp {
         return when (kind) {
             LiloTokenKind.EQ_EQ -> ComparisonOp.EQ
-            LiloTokenKind.BANG_EQ -> ComparisonOp.NOT_EQ
+            LiloTokenKind.BANG_EQ -> ComparisonOp.NE
+            LiloTokenKind.GT -> ComparisonOp.GT
+            LiloTokenKind.GE -> ComparisonOp.GE
+            LiloTokenKind.LT -> ComparisonOp.LT
+            LiloTokenKind.LE -> ComparisonOp.LE
             else -> TODO(reason = "Unreachable ComparisonOp")
         }
     }
 
     private fun parseEqualityExpr(): LiloResult<LiloExpr> {
-        val lhsResult = parseAdditiveExpr()
+        val lhsResult = parseComparisonsExpr()
         if (lhsResult.isFailure()) return lhsResult.toFailure()
         var lhs = lhsResult.toSuccessData()
 
         while (!isAtEnd() && peek().kind.isEqualityOperator()) {
+            val op = advance()
+            val rhsResult = parseComparisonsExpr()
+            if (rhsResult.isFailure()) return rhsResult.toFailure()
+            val rhs = rhsResult.toSuccessData()
+            val binOp = comparisonOpFromTokenKind(op.kind)
+            lhs = ComparisonExpr(lhs = lhs, op = binOp, rhs = rhs)
+        }
+
+        return LiloResult.Success(data = lhs)
+    }
+
+    private fun parseComparisonsExpr(): LiloResult<LiloExpr> {
+        val lhsResult = parseAdditiveExpr()
+        if (lhsResult.isFailure()) return lhsResult.toFailure()
+        var lhs = lhsResult.toSuccessData()
+
+        while (!isAtEnd() && peek().kind.isComparisonOperator()) {
             val op = advance()
             val rhsResult = parseAdditiveExpr()
             if (rhsResult.isFailure()) return rhsResult.toFailure()

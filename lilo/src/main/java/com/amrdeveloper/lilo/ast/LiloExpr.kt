@@ -26,7 +26,11 @@ data class BinaryExpr(val lhs: LiloExpr, val op: BinaryOp, val rhs: LiloExpr) : 
 
 enum class ComparisonOp {
     EQ,
-    NOT_EQ
+    NE,
+    GT,
+    GE,
+    LT,
+    LE,
 }
 
 data class ComparisonExpr(val lhs: LiloExpr, val op: ComparisonOp, val rhs: LiloExpr) : LiloExpr

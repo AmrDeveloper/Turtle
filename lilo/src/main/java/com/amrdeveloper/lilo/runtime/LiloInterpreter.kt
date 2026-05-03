@@ -331,7 +331,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         val methodName = when (expr.op) {
             ComparisonOp.EQ -> LiloMagicMethod.EQ
-            ComparisonOp.NOT_EQ -> LiloMagicMethod.NOT_EQ
+            ComparisonOp.NE -> LiloMagicMethod.NE
+            ComparisonOp.GT -> LiloMagicMethod.GT
+            ComparisonOp.GE -> LiloMagicMethod.GE
+            ComparisonOp.LT -> LiloMagicMethod.LT
+            ComparisonOp.LE -> LiloMagicMethod.LE
         }
 
         val method = lhs.getAttr(methodName)

@@ -45,7 +45,27 @@ class LiloLexer(val source: String) {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 
-                '(', ')', '[', ']', '{', '}', '=' -> {
+                '=' -> {
+                    advance()
+                    if (peek() == '=') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.EQ_EQ))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.EQ))
+                    }
+                }
+
+                '!' -> {
+                    advance()
+                    if (peek() == '=') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.BANG_EQ))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.BANG))
+                    }
+                }
+
+                '(', ')', '[', ']', '{', '}' -> {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 
@@ -112,7 +132,7 @@ class LiloLexer(val source: String) {
         return LiloResult.Success(data = createToken(kind = numberKind, lexeme))
     }
 
-    private fun consumeStringLiteral() : LiloResult<LiloToken> {
+    private fun consumeStringLiteral(): LiloResult<LiloToken> {
         val start = advance()
         while (!isAtEnd() && peek() != start) advance()
         if (isAtEnd() || peek() != start) {
@@ -189,6 +209,8 @@ class LiloLexer(val source: String) {
     }
 
     private fun peek() = if (isAtEnd()) '\u0000' else source[currentPos]
+
+    private fun peekNext() = if (currentPos + 1 < source.length) '\u0000' else source[currentPos]
 
     private fun isAtEnd() = currentPos >= source.length
 }

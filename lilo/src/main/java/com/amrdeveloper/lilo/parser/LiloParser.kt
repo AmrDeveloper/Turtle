@@ -2,9 +2,12 @@ package com.amrdeveloper.lilo.parser
 
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryExpr
+import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
+import com.amrdeveloper.lilo.ast.ComparisonExpr
+import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
@@ -330,7 +333,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseIfExpr(): LiloResult<LiloExpr> {
-        val expr = parseAdditiveExpr()
+        val expr = parseEqualityExpr()
         if (expr.isFailure()) return expr.toFailure()
 
         if (isPeek(kind = LiloTokenKind.IF_KEYWORD)) {
@@ -359,6 +362,42 @@ class LiloParser(val tokens: List<LiloToken>) {
         return expr
     }
 
+    private fun comparisonOpFromTokenKind(kind: LiloTokenKind): ComparisonOp {
+        return when (kind) {
+            LiloTokenKind.EQ_EQ -> ComparisonOp.EQ
+            LiloTokenKind.BANG_EQ -> ComparisonOp.NOT_EQ
+            else -> TODO(reason = "Unreachable ComparisonOp")
+        }
+    }
+
+    private fun parseEqualityExpr(): LiloResult<LiloExpr> {
+        val lhsResult = parseAdditiveExpr()
+        if (lhsResult.isFailure()) return lhsResult.toFailure()
+        var lhs = lhsResult.toSuccessData()
+
+        while (!isAtEnd() && peek().kind.isEqualityOperator()) {
+            val op = advance()
+            val rhsResult = parseAdditiveExpr()
+            if (rhsResult.isFailure()) return rhsResult.toFailure()
+            val rhs = rhsResult.toSuccessData()
+            val binOp = comparisonOpFromTokenKind(op.kind)
+            lhs = ComparisonExpr(lhs = lhs, op = binOp, rhs = rhs)
+        }
+
+        return LiloResult.Success(data = lhs)
+    }
+
+    private fun binaryOpFromTokenKind(kind: LiloTokenKind): BinaryOp {
+        return when (kind) {
+            LiloTokenKind.PLUS -> BinaryOp.PLUS
+            LiloTokenKind.MINUS -> BinaryOp.MINUS
+            LiloTokenKind.STAR -> BinaryOp.MUL
+            LiloTokenKind.SLASH -> BinaryOp.DIV
+            LiloTokenKind.MODULO -> BinaryOp.MOD
+            else -> TODO(reason = "Unreachable BinaryOp")
+        }
+    }
+
     private fun parseAdditiveExpr(): LiloResult<LiloExpr> {
         val lhsResult = parseMultiplicativeExpr()
         if (lhsResult.isFailure()) return lhsResult.toFailure()
@@ -369,7 +408,8 @@ class LiloParser(val tokens: List<LiloToken>) {
             val rhsResult = parseMultiplicativeExpr()
             if (rhsResult.isFailure()) return rhsResult.toFailure()
             val rhs = rhsResult.toSuccessData()
-            lhs = BinaryExpr(lhs = lhs, op = op, rhs = rhs)
+            val binOp = binaryOpFromTokenKind(op.kind)
+            lhs = BinaryExpr(lhs = lhs, op = binOp, rhs = rhs)
         }
 
         return LiloResult.Success(data = lhs)
@@ -384,9 +424,9 @@ class LiloParser(val tokens: List<LiloToken>) {
             val op = advance()
             val rhsResult = parseUnaryExpr()
             if (rhsResult.isFailure()) return rhsResult.toFailure()
-
             val rhs = rhsResult.toSuccessData()
-            lhs = BinaryExpr(lhs = lhs, op = op, rhs = rhs)
+            val binOp = binaryOpFromTokenKind(op.kind)
+            lhs = BinaryExpr(lhs = lhs, op = binOp, rhs = rhs)
         }
 
         return LiloResult.Success(data = lhs)

@@ -14,7 +14,22 @@ data class GetItemExpr(val obj: LiloExpr, val index: LiloExpr) : LiloExpr
 
 data class IfExpr(val condition: LiloExpr, val thenValue: LiloExpr, val elseValue: LiloExpr) : LiloExpr
 
-data class BinaryExpr(val lhs: LiloExpr, val op: LiloToken, val rhs: LiloExpr) : LiloExpr
+enum class BinaryOp {
+    PLUS,
+    MINUS,
+    MUL,
+    DIV,
+    MOD
+}
+
+data class BinaryExpr(val lhs: LiloExpr, val op: BinaryOp, val rhs: LiloExpr) : LiloExpr
+
+enum class ComparisonOp {
+    EQ,
+    NOT_EQ
+}
+
+data class ComparisonExpr(val lhs: LiloExpr, val op: ComparisonOp, val rhs: LiloExpr) : LiloExpr
 
 data class UnaryExpr(val op: LiloToken, val operand: LiloExpr) : LiloExpr
 

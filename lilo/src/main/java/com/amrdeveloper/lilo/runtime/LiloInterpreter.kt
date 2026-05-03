@@ -2,9 +2,12 @@ package com.amrdeveloper.lilo.runtime
 
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryExpr
+import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.CallExpr
+import com.amrdeveloper.lilo.ast.ComparisonExpr
+import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
@@ -299,17 +302,37 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val lhs = lhsResult.toSuccessData()
         val rhs = rhsResult.toSuccessData()
 
-        val methodName = when (expr.op.kind) {
-            LiloTokenKind.PLUS -> LiloMagicMethod.ADD
-            LiloTokenKind.MINUS -> LiloMagicMethod.SUB
-            LiloTokenKind.STAR -> LiloMagicMethod.MUL
-            LiloTokenKind.SLASH -> LiloMagicMethod.DIV
-            LiloTokenKind.MODULO -> LiloMagicMethod.MOD
-            else -> null
+        val methodName = when (expr.op) {
+            BinaryOp.PLUS -> LiloMagicMethod.ADD
+            BinaryOp.MINUS -> LiloMagicMethod.SUB
+            BinaryOp.MUL -> LiloMagicMethod.MUL
+            BinaryOp.DIV -> LiloMagicMethod.DIV
+            BinaryOp.MOD -> LiloMagicMethod.MOD
         }
 
-        if (methodName == null)
-            return runtimeException("Op `${expr.op.kind.name}` is unsupported between ${lhs.type} & ${rhs.type}")
+        val method = lhs.getAttr(methodName)
+            ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
+
+        if (method !is LiloCallable)
+            return runtimeException("Op `${lhs.type}` has no $methodName attribute")
+
+        return method.invoke(interpreter = this, args = listOf(lhs, rhs))
+    }
+
+    override fun visitComparisonExpr(expr: ComparisonExpr): LiloResult<LiloObject> {
+        val lhsResult = visit(expr.lhs)
+        if (lhsResult.isFailure()) return lhsResult.toFailure()
+
+        val rhsResult = visit(expr.rhs)
+        if (rhsResult.isFailure()) return rhsResult.toFailure()
+
+        val lhs = lhsResult.toSuccessData()
+        val rhs = rhsResult.toSuccessData()
+
+        val methodName = when (expr.op) {
+            ComparisonOp.EQ -> LiloMagicMethod.EQ
+            ComparisonOp.NOT_EQ -> LiloMagicMethod.NOT_EQ
+        }
 
         val method = lhs.getAttr(methodName)
             ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")

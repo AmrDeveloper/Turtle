@@ -34,6 +34,9 @@ enum class LiloTokenKind {
     SEMICOLON,
 
     EQ,
+    EQ_EQ,
+    BANG,
+    BANG_EQ,
 
     SYMBOL,
     STR_LITERAL,
@@ -78,8 +81,6 @@ fun getLiloOneCharTokenMap() = mapOf(
     '{' to LiloTokenKind.L_BRACE,
     '}' to LiloTokenKind.R_BRACE,
 
-    '=' to LiloTokenKind.EQ,
-
     '.' to LiloTokenKind.DOT,
     ',' to LiloTokenKind.COMMA,
     ':' to LiloTokenKind.COLON,
@@ -100,6 +101,11 @@ fun LiloTokenKind.isFactorOperator() = this in listOf(
 fun LiloTokenKind.isUnaryOperator() = this in listOf(
     LiloTokenKind.PLUS,
     LiloTokenKind.MINUS,
+)
+
+fun LiloTokenKind.isEqualityOperator() = this in listOf(
+    LiloTokenKind.EQ_EQ,
+    LiloTokenKind.BANG_EQ,
 )
 
 fun LiloTokenKind.isEOF() = this == LiloTokenKind.END_OF_FILE

@@ -21,6 +21,9 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     it.setAttr(name = LiloMagicMethod.DIV, value = IntDiv)
     it.setAttr(name = LiloMagicMethod.MOD, value = IntMod)
 
+    it.setAttr(name = LiloMagicMethod.EQ, value = IntEq)
+    it.setAttr(name = LiloMagicMethod.NOT_EQ, value = IntNotEq)
+
     it.setAttr(name = LiloMagicMethod.POS, value = IntPos)
     it.setAttr(name = LiloMagicMethod.NEG, value = IntNeg)
 }
@@ -105,6 +108,34 @@ private object IntMod : LiloObject(liloFunctionType), LiloCallable {
             return LiloResult.Success(data = LiloInt(value = lhs.value % rhs.value))
         }
         return LiloResult.Failure(error = LiloException("Op `%` is unsupported between lhs & rhs"))
+    }
+}
+
+private object IntEq : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloBool(value = lhs.value == rhs.value))
+        }
+        return LiloResult.Success(data = LiloBool(value = false))
+    }
+}
+
+private object IntNotEq : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloBool(value = lhs.value != rhs.value))
+        }
+        return LiloResult.Success(data = LiloBool(value = true))
     }
 }
 

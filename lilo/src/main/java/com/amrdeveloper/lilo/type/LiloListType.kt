@@ -19,6 +19,7 @@ val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJE
     it.setAttr(name = LiloMagicMethod.LEN, value = ListLen)
 
     it.setAttr(name = "append", value = ListAppend)
+    it.setAttr(name = "extend", value = ListExtend)
 }
 
 private object ListAppend : LiloObject(liloMethodType), LiloCallable {
@@ -30,6 +31,20 @@ private object ListAppend : LiloObject(liloMethodType), LiloCallable {
         val index = args[1]
         val list = self as LiloList
         list.values.add(index)
+        return LiloResult.Success(data = LiloNone)
+    }
+}
+
+private object ListExtend : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val self = args[0]
+        val other = args[1]
+        val list = self as LiloList
+        if (other !is LiloList) return LiloResult.Failure(error = LiloException("invalid parameter for `list.extend`"))
+        list.values.addAll(other.values)
         return LiloResult.Success(data = LiloNone)
     }
 }

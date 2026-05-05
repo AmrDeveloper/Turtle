@@ -18,3 +18,10 @@ fun <T> LiloResult<T>.isSuccess(): Boolean {
 fun <T> LiloResult<T>.isFailure(): Boolean {
     return this is LiloResult.Failure<*>
 }
+
+inline fun <T> LiloResult<T>.valueOr(onFailure: (LiloResult.Failure<*>) -> Nothing): T {
+    return when (this) {
+        is LiloResult.Success -> this.data
+        is LiloResult.Failure<*> -> onFailure(this)
+    }
+}

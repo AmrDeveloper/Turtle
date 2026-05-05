@@ -37,6 +37,7 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.toSuccessData
+import com.amrdeveloper.lilo.common.valueOr
 import com.amrdeveloper.lilo.machine.LiloAbstractMachine
 import com.amrdeveloper.lilo.`object`.LiloBool
 import com.amrdeveloper.lilo.`object`.LiloComplex
@@ -75,8 +76,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitProgram(program: LiloProgram): LiloResult<Unit> {
         val nodes = program.nodes
         for (node in nodes) {
-            val result = visit(stmt = node)
-            if (result.isFailure()) return result.toFailure()
+            visit(stmt = node).valueOr { return it.toFailure() }
         }
         return LiloResult.Success(data = Unit)
     }
@@ -123,23 +123,17 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitIfStmt(stmt: IfStmt): LiloResult<Unit> {
         for ((expr, body) in stmt.ifs) {
-            val conditionRes = visit(expr = expr)
-            if (conditionRes.isFailure()) return conditionRes.toFailure()
-            val condition = conditionRes.toSuccessData()
-            val isTruthRes = isLiloObjectEvalToTrue(obj = condition)
-            if (isTruthRes.isFailure()) return isTruthRes.toFailure()
-            val isTruth = isTruthRes.toSuccessData()
+            val condition = visit(expr = expr).valueOr { return it.toFailure() }
+            val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
             if (isTruth) {
-                val evalStmt = visit(stmt = body)
-                if (evalStmt.isFailure()) return evalStmt.toFailure()
+                visit(stmt = body).valueOr { return it.toFailure() }
                 return LiloResult.Success(data = Unit)
             }
         }
 
         // Execute the else block if it exists
         if (stmt.elseBlock != null) {
-            val evalStmt = visit(stmt = stmt.elseBlock)
-            if (evalStmt.isFailure()) return evalStmt.toFailure()
+            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
             return LiloResult.Success(data = Unit)
         }
 
@@ -148,25 +142,19 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitBlockStmt(stmt: BlockStmt): LiloResult<Unit> {
         for (node in stmt.nodes) {
-            val result = visit(stmt = node)
-            if (result.isFailure()) return result.toFailure()
+            visit(stmt = node).valueOr { return it.toFailure() }
         }
         return LiloResult.Success(data = Unit)
     }
 
     override fun visitExprStmt(stmt: ExprStmt): LiloResult<Unit> {
-        val result = visit(stmt.expr)
-        if (result.isFailure()) return result.toFailure()
+        visit(stmt.expr).valueOr { return it.toFailure() }
         return LiloResult.Success(data = Unit)
     }
 
     override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {
         val lValue = stmt.lValue
-
-        val valueResult = visit(expr = stmt.rValue)
-        if (valueResult.isFailure()) return valueResult.toFailure()
-        val value = valueResult.toSuccessData()
-
+        val value = visit(expr = stmt.rValue).valueOr { return it.toFailure() }
         return when (lValue) {
             is SymbolExpr -> {
                 environment.define(name = lValue.value.lexeme!!, value = value)
@@ -174,13 +162,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             }
 
             is GetItemExpr -> {
-                val objResult = visit(lValue.obj)
-                if (objResult.isFailure()) return objResult.toFailure()
-                val obj = objResult.toSuccessData()
-
-                val indexResult = visit(lValue.index)
-                if (indexResult.isFailure()) return indexResult.toFailure()
-                val index = indexResult.toSuccessData()
+                val obj = visit(expr = lValue.obj).valueOr { return it.toFailure() }
+                val index = visit(expr = lValue.index).valueOr { return it.toFailure() }
 
                 val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
                 if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
@@ -199,9 +182,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitReturnStmt(stmt: ReturnStmt): LiloResult<Unit> {
         if (stmt.value != null) {
-            val valueResult = visit(expr = stmt.value)
-            if (valueResult.isFailure()) return valueResult.toFailure()
-            val value = valueResult.toSuccessData()
+            val value = visit(expr = stmt.value).valueOr { return it.toFailure() }
             throw LiloReturnSignal(value = value)
         }
         throw LiloReturnSignal()
@@ -215,9 +196,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitGetExpr(expr: GetExpr): LiloResult<LiloObject> {
-        val objResult = visit(expr.obj)
-        if (objResult.isFailure()) return objResult.toFailure()
-        val liloObj = objResult.toSuccessData()
+        val liloObj = visit(expr.obj).valueOr { return it.toFailure() }
         val attribute = expr.name.value.lexeme!!
         val liloAttribute = liloObj.getAttr(name = attribute)
         if (liloAttribute != null) {
@@ -230,44 +209,32 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {
-        val conditionResult = visit(expr.condition)
-        if (conditionResult.isFailure()) return conditionResult.toFailure()
-        val condition = conditionResult.toSuccessData()
-        val isTruthRes = isLiloObjectEvalToTrue(obj = condition)
-        if (isTruthRes.isFailure()) return isTruthRes.toFailure()
-        val isTruth = isTruthRes.toSuccessData()
+        val condition = visit(expr.condition).valueOr { return it.toFailure() }
+        val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
         if (isTruth) {
             val thenValueResult = visit(expr.thenValue)
             if (thenValueResult.isFailure()) return thenValueResult.toFailure()
             return thenValueResult
         }
-
         val elseValueResult = visit(expr.elseValue)
         if (elseValueResult.isFailure()) return elseValueResult.toFailure()
         return elseValueResult
     }
 
     override fun visitGetItemExpr(expr: GetItemExpr): LiloResult<LiloObject> {
-        val objResult = visit(expr.obj)
-        if (objResult.isFailure()) return objResult.toFailure()
-
-        val indexResult = visit(expr.index)
-        if (indexResult.isFailure()) return indexResult.toFailure()
-
-        val liloObj = objResult.toSuccessData()
-        val index = indexResult.toSuccessData()
+        val liloObj = visit(expr.obj).valueOr { return it.toFailure() }
+        val slice = visit(expr.index).valueOr { return it.toFailure() }
 
         val liloGetItemMethod = liloObj.getAttr(name = LiloMagicMethod.GET_ITEM)
         if (liloGetItemMethod == null || liloGetItemMethod !is LiloCallable) {
             return runtimeException("`${liloObj}` object is not subscriptable")
         }
 
-        return liloGetItemMethod.invoke(interpreter = this, args = listOf(liloObj, index))
+        return liloGetItemMethod.invoke(interpreter = this, args = listOf(liloObj, slice))
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<LiloObject> {
-        val calleeResult = visit(expr.callee)
-        if (calleeResult.isFailure()) return calleeResult
+        val callee = visit(expr.callee).valueOr { return it.toFailure() }
 
         val args = ArrayList<LiloObject>(expr.args.size)
         for (arg in expr.args) {
@@ -278,7 +245,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         }
 
         // Call `__init__` if the callee is LiloType
-        val callee = calleeResult.toSuccessData()
         if (callee is LiloType) {
             val initFunction = callee.getAttr(name = LiloMagicMethod.INIT)
             if (initFunction == null || initFunction !is LiloCallable) {
@@ -293,14 +259,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitBinaryExpr(expr: BinaryExpr): LiloResult<LiloObject> {
-        val lhsResult = visit(expr.lhs)
-        if (lhsResult.isFailure()) return lhsResult.toFailure()
-
-        val rhsResult = visit(expr.rhs)
-        if (rhsResult.isFailure()) return rhsResult.toFailure()
-
-        val lhs = lhsResult.toSuccessData()
-        val rhs = rhsResult.toSuccessData()
+        val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
+        val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
 
         val methodName = when (expr.op) {
             BinaryOp.PLUS -> LiloMagicMethod.ADD
@@ -320,14 +280,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitComparisonExpr(expr: ComparisonExpr): LiloResult<LiloObject> {
-        val lhsResult = visit(expr.lhs)
-        if (lhsResult.isFailure()) return lhsResult.toFailure()
-
-        val rhsResult = visit(expr.rhs)
-        if (rhsResult.isFailure()) return rhsResult.toFailure()
-
-        val lhs = lhsResult.toSuccessData()
-        val rhs = rhsResult.toSuccessData()
+        val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
+        val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
 
         val methodName = when (expr.op) {
             ComparisonOp.EQ -> LiloMagicMethod.EQ
@@ -348,9 +302,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitUnaryExpr(expr: UnaryExpr): LiloResult<LiloObject> {
-        val operandResult = visit(expr.operand)
-        if (operandResult.isFailure()) return operandResult
-        val operand = operandResult.toSuccessData()
+        val operand = visit(expr.operand).valueOr { return it.toFailure() }
 
         val methodName = when (expr.op.kind) {
             LiloTokenKind.PLUS -> LiloMagicMethod.POS
@@ -377,9 +329,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitListExpr(expr: ListExpr): LiloResult<LiloObject> {
         val list = ArrayList<LiloObject>(expr.values.size)
         for (value in expr.values) {
-            val elementResult = visit(expr = value)
-            if (elementResult.isFailure()) return elementResult
-            val element = elementResult.toSuccessData()
+            val element = visit(expr = value).valueOr { return it.toFailure() }
             list.add(element)
         }
         return runtimeObject(obj = LiloList(values = list))
@@ -388,9 +338,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitSetExpr(expr: SetExpr): LiloResult<LiloObject> {
         val set = mutableSetOf<LiloObject>()
         for (value in expr.values) {
-            val elementResult = visit(expr = value)
-            if (elementResult.isFailure()) return elementResult
-            val element = elementResult.toSuccessData()
+            val element = visit(expr = value).valueOr { return it.toFailure() }
             set.add(element)
         }
         return runtimeObject(obj = LiloSet(values = set))
@@ -399,14 +347,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitDictExpr(expr: DictExpr): LiloResult<LiloObject> {
         val map = mutableMapOf<LiloObject, LiloObject>()
         for ((key, value) in expr.values) {
-            val keyResult = visit(expr = key)
-            if (keyResult.isFailure()) return keyResult
-            val key = keyResult.toSuccessData()
-
-            val valueResult = visit(expr = value)
-            if (valueResult.isFailure()) return valueResult
-            val value = valueResult.toSuccessData()
-
+            val key = visit(expr = key).valueOr { return it.toFailure() }
+            val value = visit(expr = value).valueOr { return it.toFailure() }
             map[key] = value
         }
         return runtimeObject(obj = LiloDict(values = map))
@@ -415,9 +357,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitTupleExpr(expr: TupleExpr): LiloResult<LiloObject> {
         val list = ArrayList<LiloObject>(expr.values.size)
         for (value in expr.values) {
-            val elementResult = visit(expr = value)
-            if (elementResult.isFailure()) return elementResult
-            val element = elementResult.toSuccessData()
+            val element = visit(expr = value).valueOr { return it.toFailure() }
             list.add(element)
         }
         return runtimeObject(obj = LiloTuple(values = list))
@@ -473,9 +413,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         // Call `obj.__bool__` and make sure result is boolean
         val callable = magicMethod as LiloCallable
-        val boolResult = callable.invoke(interpreter = this, args = listOf(obj))
-        if (boolResult.isFailure()) return boolResult.toFailure()
-        val condBool = boolResult.toSuccessData()
+        val condBool = callable.invoke(interpreter = this, args = listOf(obj))
+            .valueOr { return it.toFailure() }
         if (condBool !is LiloBool) {
             return runtimeException("Expects bool from calling `__bool__`")
         }

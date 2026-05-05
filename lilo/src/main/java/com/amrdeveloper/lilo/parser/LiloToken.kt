@@ -10,6 +10,8 @@ enum class LiloTokenKind {
     ELIF_KEYWORD,
     ELSE_KEYWORD,
     LAMBDA_KEYWORD,
+    GLOBAL_KEYWORD,
+    NON_LOCAL_KEYWORD,
 
     TRUE_KEYWORD,
     FALSE_KEYWORD,
@@ -65,6 +67,9 @@ fun getLiloKeywordsMap() = mapOf(
     "elif" to LiloTokenKind.ELIF_KEYWORD,
     "else" to LiloTokenKind.ELSE_KEYWORD,
     "lambda" to LiloTokenKind.LAMBDA_KEYWORD,
+
+    "global" to LiloTokenKind.GLOBAL_KEYWORD,
+    "nonlocal" to LiloTokenKind.NON_LOCAL_KEYWORD,
 
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,

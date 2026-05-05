@@ -16,6 +16,7 @@ import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.GetItemExpr
+import com.amrdeveloper.lilo.ast.GlobalStmt
 import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.IfStmt
@@ -25,6 +26,7 @@ import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
+import com.amrdeveloper.lilo.ast.NonLocalStmt
 import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
@@ -119,6 +121,16 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val function = LiloFunction(params = stmt.params, body = stmt.body)
         environment.define(name = stmt.name, value = function)
         return LiloResult.Success(data = Unit)
+    }
+
+    override fun visitGlobalStmt(stmt: GlobalStmt): LiloResult<Unit> {
+        // TODO: Global Statement Not yet implemented
+        return runtimeException("Global statement Not yet implemented")
+    }
+
+    override fun visitNonLocalStmt(stmt: NonLocalStmt): LiloResult<Unit> {
+        // TODO: NonLocal Statement Not yet implemented
+        return runtimeException("NonLocal statement Not yet implemented")
     }
 
     override fun visitIfStmt(stmt: IfStmt): LiloResult<Unit> {

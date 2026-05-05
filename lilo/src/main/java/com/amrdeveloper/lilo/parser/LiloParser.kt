@@ -16,6 +16,7 @@ import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.ast.GetExpr
 import com.amrdeveloper.lilo.ast.GetItemExpr
+import com.amrdeveloper.lilo.ast.GlobalStmt
 import com.amrdeveloper.lilo.ast.GroupExpr
 import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.IfStmt
@@ -26,6 +27,7 @@ import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.ast.ListExpr
+import com.amrdeveloper.lilo.ast.NonLocalStmt
 import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
@@ -56,6 +58,8 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.FROM_KEYWORD -> parseFromImportStmt()
             LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
             LiloTokenKind.DEF_KEYWORD -> parseFunctionStmt()
+            LiloTokenKind.GLOBAL_KEYWORD -> parseGlobalStmt()
+            LiloTokenKind.NON_LOCAL_KEYWORD -> parseNonLocalStmt()
             LiloTokenKind.IF_KEYWORD -> parseIfStmt()
             LiloTokenKind.L_BRACE -> parseBlockStmt()
             LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
@@ -203,12 +207,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             nodes.add(parameter.lexeme!!)
 
-            if (isPeek(kind = LiloTokenKind.COMMA)) {
-                advance()
-                continue
-            }
-
-            break
+            consumeCommaOr { break }
         }
 
         expectAndConsume(
@@ -219,6 +218,40 @@ class LiloParser(val tokens: List<LiloToken>) {
         val block = parseBlockStmt().valueOr { return it.toFailure() }
         val functionStmt = FunctionStmt(name = name.lexeme!!, params = nodes, body = block.nodes)
         return LiloResult.Success(data = functionStmt)
+    }
+
+    private fun parseGlobalStmt(): LiloResult<GlobalStmt> {
+        // Advance `global` keyword
+        advance()
+
+        val names = mutableListOf<String>()
+        while (!isAtEnd()) {
+            val name = expectAndConsume(
+                kind = LiloTokenKind.SYMBOL,
+                message = "Expect `Name` after global"
+            ).valueOr { return it.toFailure() }.lexeme!!
+            names.add(name)
+
+            consumeCommaOr { break }
+        }
+        return LiloResult.Success(data = GlobalStmt(names))
+    }
+
+    private fun parseNonLocalStmt(): LiloResult<NonLocalStmt> {
+        // Advance `nonlocal` keyword
+        advance()
+
+        val names = mutableListOf<String>()
+        while (!isAtEnd()) {
+            val name = expectAndConsume(
+                kind = LiloTokenKind.SYMBOL,
+                message = "Expect `Name` after nonlocal"
+            ).valueOr { return it.toFailure() }.lexeme!!
+            names.add(name)
+
+            consumeCommaOr { break }
+        }
+        return LiloResult.Success(data = NonLocalStmt(names))
     }
 
     private fun parseIfStmt(): LiloResult<IfStmt> {
@@ -422,12 +455,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                     val expr = parseExpr().valueOr { return it.toFailure() }
                     args.add(expr)
 
-                    if (isPeek(kind = LiloTokenKind.COMMA)) {
-                        advance()
-                        continue
-                    }
-
-                    break
+                    consumeCommaOr { break }
                 }
 
                 run {
@@ -535,12 +563,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             val expr = parseExpr().valueOr { return it.toFailure() }
             list.add(expr)
 
-            if (isPeek(kind = LiloTokenKind.COMMA)) {
-                advance()
-                continue
-            }
-
-            break
+            consumeCommaOr { break }
         }
 
         run {
@@ -563,13 +586,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             val expr = parseExpr().valueOr { return it.toFailure() }
             values.add(expr)
 
-            if (isPeek(kind = LiloTokenKind.COMMA)) {
-                hasComma = true
-                advance()
-                continue
-            }
-
-            break
+            hasComma = consumeCommaOr { break }
         }
 
         expectAndConsume(
@@ -594,12 +611,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             ).valueOr { return it.toFailure() }
             parameters.add(parameter.lexeme!!)
 
-            if (isPeek(kind = LiloTokenKind.COMMA)) {
-                advance()
-                continue
-            } else {
-                break
-            }
+            consumeCommaOr { break }
         }
 
         expectAndConsume(
@@ -643,11 +655,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             // In case it's not dictionary, register it as set value
             if (isDictionary.not()) setList.add(key)
 
-            if (isPeek(kind = LiloTokenKind.COMMA)) {
-                advance()
-                continue
-            }
-            break
+            consumeCommaOr { break }
         }
 
         run {
@@ -684,6 +692,14 @@ class LiloParser(val tokens: List<LiloToken>) {
 
     private fun consumeOptional(kind: LiloTokenKind): LiloToken? =
         peek().takeIf { it.kind == kind }?.also { advance() }
+
+    private inline fun consumeCommaOr(or: () -> Nothing): Boolean {
+        if (isPeek(kind = LiloTokenKind.COMMA)) {
+            advance()
+            return true
+        }
+        or()
+    }
 
     private fun peek(): LiloToken {
         return tokens[currentPos]

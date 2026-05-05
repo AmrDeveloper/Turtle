@@ -9,6 +9,10 @@ data class ImportStmt(val modules : List<Pair<String, String?>>) : LiloStmt
 
 data class FunctionStmt(val name: String, val params: List<String>, val body: List<LiloStmt>) : LiloStmt
 
+data class GlobalStmt(val names: List<String>) : LiloStmt
+
+data class NonLocalStmt(val names: List<String>) : LiloStmt
+
 data class IfStmt(val ifs: List<Pair<LiloExpr, LiloStmt>>, val elseBlock: LiloStmt? = null) :
     LiloStmt
 

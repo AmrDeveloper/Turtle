@@ -2,9 +2,11 @@ package com.amrdeveloper.lilo.runtime
 
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.type.liloBoolType
+import com.amrdeveloper.lilo.type.liloDictType
 import com.amrdeveloper.lilo.type.liloFloatType
 import com.amrdeveloper.lilo.type.liloIntType
 import com.amrdeveloper.lilo.type.liloListType
+import com.amrdeveloper.lilo.type.liloSetType
 import com.amrdeveloper.lilo.type.liloStrType
 import com.amrdeveloper.lilo.type.liloTupleType
 
@@ -19,6 +21,8 @@ class LiloEnvironment(val enclosing: LiloEnvironment?) {
         values["str"] = liloStrType
         values["tuple"] = liloTupleType
         values["list"] = liloListType
+        values["set"] = liloSetType
+        values["dict"] = liloDictType
     }
 
     fun define(name: String, value: LiloObject) {

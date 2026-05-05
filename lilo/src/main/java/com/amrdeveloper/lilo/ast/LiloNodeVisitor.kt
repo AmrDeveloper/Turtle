@@ -8,6 +8,7 @@ interface LiloStmtVisitor<T> {
         is GlobalStmt -> visitGlobalStmt(stmt)
         is NonLocalStmt -> visitNonLocalStmt(stmt)
         is IfStmt -> visitIfStmt(stmt)
+        is WhileStmt -> visitWhileStmt(stmt)
         is BlockStmt -> visitBlockStmt(stmt)
         is ExprStmt -> visitExprStmt(stmt)
         is AssignStmt -> visitAssignStmt(stmt)
@@ -20,6 +21,7 @@ interface LiloStmtVisitor<T> {
     fun visitGlobalStmt(stmt: GlobalStmt): T
     fun visitNonLocalStmt(stmt: NonLocalStmt): T
     fun visitIfStmt(stmt: IfStmt): T
+    fun visitWhileStmt(stmt: WhileStmt): T
     fun visitBlockStmt(stmt: BlockStmt): T
     fun visitExprStmt(stmt: ExprStmt): T
     fun visitAssignStmt(stmt: AssignStmt): T

@@ -13,6 +13,9 @@ data class GlobalStmt(val names: List<String>) : LiloStmt
 
 data class NonLocalStmt(val names: List<String>) : LiloStmt
 
+data class WhileStmt(val condition: LiloExpr, val body: LiloStmt, val elseBlock: LiloStmt?) :
+    LiloStmt
+
 data class IfStmt(val ifs: List<Pair<LiloExpr, LiloStmt>>, val elseBlock: LiloStmt? = null) :
     LiloStmt
 

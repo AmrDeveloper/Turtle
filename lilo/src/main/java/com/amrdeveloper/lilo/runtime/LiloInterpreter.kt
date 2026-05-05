@@ -34,6 +34,7 @@ import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.SymbolExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryExpr
+import com.amrdeveloper.lilo.ast.WhileStmt
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
@@ -148,6 +149,25 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
             return LiloResult.Success(data = Unit)
         }
+
+        return LiloResult.Success(data = Unit)
+    }
+
+    override fun visitWhileStmt(stmt: WhileStmt): LiloResult<Unit> {
+        val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
+        var isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+        if (!isTruth && stmt.elseBlock != null) {
+            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
+            return LiloResult.Success(data = Unit)
+        }
+
+        do {
+            visit(stmt = stmt.body).valueOr { return it.toFailure() }
+
+            // Execute the condition for the next run
+            val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
+            isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+        } while (isTruth)
 
         return LiloResult.Success(data = Unit)
     }

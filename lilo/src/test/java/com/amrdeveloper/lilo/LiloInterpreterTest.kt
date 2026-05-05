@@ -378,10 +378,20 @@ class LiloInterpreterTest {
                 x = x - 1
             }
             """,
+            """
+            x = 5
+            while (x > 5) {
+                print(x)
+                x = x - 1
+            } else {
+                print(0)
+            }
+            """,
         )
 
         val expectedOutput = listOf(
             "54321",
+            "0",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

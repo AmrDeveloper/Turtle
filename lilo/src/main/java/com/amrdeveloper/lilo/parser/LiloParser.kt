@@ -331,7 +331,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             return LiloResult.Success(data = ReturnStmt())
         }
 
-        val returnValue = parseExpr().valueOr { return it.toFailure() }
+        val returnValue = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
         consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = ReturnStmt(value = returnValue))
     }

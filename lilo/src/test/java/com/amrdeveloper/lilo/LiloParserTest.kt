@@ -48,6 +48,46 @@ class LiloParserTest {
     }
 
     @Test
+    fun `test function decl statement`() {
+        val sourceCodes = listOf(
+            """
+            def foo() {
+               return
+            }
+            """,
+            """
+            def foo() {
+               return 1;
+            }
+            """,
+            """
+            def foo() {
+               return 1
+            }
+            """,
+            """
+            def foo() {
+              return 1, 2  
+            }
+            """
+        )
+
+        for (sourceCode in sourceCodes) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+        }
+    }
+
+    @Test
     fun `test parse dot expression`() {
         val sourceCodes = listOf(
             "a.b",

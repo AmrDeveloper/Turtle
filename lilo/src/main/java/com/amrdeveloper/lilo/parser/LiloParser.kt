@@ -87,11 +87,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             message = "Expect `import` keyword `from module`"
         ).valueOr { return it.toFailure() }
 
-        val hasOpenParentheses = isPeek(kind = LiloTokenKind.LPAR)
-        if (hasOpenParentheses) {
-            // Advance `(`
-            advance()
-        }
+        val hasOpenParentheses = match(kind = LiloTokenKind.LPAR)
 
         // from <module> import *
         if (isPeek(kind = LiloTokenKind.STAR)) {
@@ -112,10 +108,6 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         val importedSymbols = mutableListOf<Pair<String, String?>>()
         do {
-            if (isPeek(kind = LiloTokenKind.COMMA)) {
-                advance()
-            }
-
             // Parse module name
             val name =
                 expectAndConsume(
@@ -124,10 +116,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                 ).valueOr { return it.toFailure() }
 
             var alias: String? = null
-            if (isPeek(kind = LiloTokenKind.AS_KEYWORD)) {
-                // Advance 'as' keyword
-                advance()
-
+            if (match(kind = LiloTokenKind.AS_KEYWORD)) {
                 // Consume alias name
                 alias =
                     expectAndConsume(
@@ -137,7 +126,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             }
 
             importedSymbols.add(Pair(name.lexeme!!, alias))
-        } while (isPeek(kind = LiloTokenKind.COMMA))
+        } while (match(kind = LiloTokenKind.COMMA))
 
         if (hasOpenParentheses) {
             expectAndConsume(
@@ -158,10 +147,6 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         val modules = mutableListOf<Pair<String, String?>>()
         do {
-            if (isPeek(kind = LiloTokenKind.COMMA)) {
-                advance()
-            }
-
             // Parse module name
             val name = expectAndConsume(
                 kind = LiloTokenKind.SYMBOL,
@@ -169,20 +154,16 @@ class LiloParser(val tokens: List<LiloToken>) {
             ).valueOr { return it.toFailure() }
 
             var alias: String? = null
-            if (isPeek(kind = LiloTokenKind.AS_KEYWORD)) {
-                // Advance 'as' keyword
-                advance()
-
+            if (match(kind = LiloTokenKind.AS_KEYWORD)) {
                 // Consume alias name
                 alias = expectAndConsume(
                     kind = LiloTokenKind.SYMBOL,
                     message = "Expect symbol after `as`"
-                )
-                    .valueOr { return it.toFailure() }.lexeme
+                ).valueOr { return it.toFailure() }.lexeme
             }
 
             modules.add(Pair(name.lexeme!!, alias))
-        } while (isPeek(kind = LiloTokenKind.COMMA))
+        } while (match(kind = LiloTokenKind.COMMA))
 
         consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = ImportStmt(modules))
@@ -309,12 +290,10 @@ class LiloParser(val tokens: List<LiloToken>) {
             nodes.add(stmt)
         }
 
-        run {
-            expectAndConsume(
-                kind = LiloTokenKind.R_BRACE,
-                message = "expected ']' at end of block"
-            ).valueOr { return it.toFailure() }
-        }
+        expectAndConsume(
+            kind = LiloTokenKind.R_BRACE,
+            message = "expected ']' at end of block"
+        ).valueOr { return it.toFailure() }
 
         return LiloResult.Success(data = BlockStmt(nodes = nodes))
     }
@@ -468,7 +447,6 @@ class LiloParser(val tokens: List<LiloToken>) {
 
     private fun parseUnaryExpr(): LiloResult<LiloExpr> {
         if (peek().kind.isUnaryOperator()) {
-            // Advance unary operator
             val op = advance()
             val expr = parseUnaryExpr().valueOr { return it.toFailure() }
             return LiloResult.Success(data = UnaryExpr(op = op, operand = expr))
@@ -490,12 +468,10 @@ class LiloParser(val tokens: List<LiloToken>) {
                     consumeCommaOr { break }
                 }
 
-                run {
-                    expectAndConsume(
-                        kind = LiloTokenKind.RPAR,
-                        message = "expected ')' at end of call"
-                    ).valueOr { return it.toFailure() }
-                }
+                expectAndConsume(
+                    kind = LiloTokenKind.RPAR,
+                    message = "expected ')' at end of call"
+                ).valueOr { return it.toFailure() }
 
                 expr = CallExpr(callee = expr, args = args)
                 continue
@@ -533,42 +509,34 @@ class LiloParser(val tokens: List<LiloToken>) {
         val token = peek()
         return when (token.kind) {
             LiloTokenKind.SYMBOL -> {
-                advance()
-                LiloResult.Success(data = SymbolExpr(value = token))
+                LiloResult.Success(data = SymbolExpr(value = advance()))
             }
 
             LiloTokenKind.STR_LITERAL -> {
-                advance()
-                LiloResult.Success(data = StrExpr(value = token))
+                LiloResult.Success(data = StrExpr(value = advance()))
             }
 
             LiloTokenKind.INT_LITERAL -> {
-                advance()
-                LiloResult.Success(data = IntExpr(value = token))
+                LiloResult.Success(data = IntExpr(value = advance()))
             }
 
             LiloTokenKind.FLOAT_LITERAL -> {
-                advance()
-                LiloResult.Success(data = FloatExpr(value = token))
+                LiloResult.Success(data = FloatExpr(value = advance()))
             }
 
             LiloTokenKind.COMPLEX_LITERAL -> {
-                advance()
-                LiloResult.Success(data = ComplexExpr(value = token))
+                LiloResult.Success(data = ComplexExpr(value = advance()))
             }
 
             LiloTokenKind.TRUE_KEYWORD, LiloTokenKind.FALSE_KEYWORD -> {
-                advance()
-                LiloResult.Success(data = BoolExpr(value = token))
+                LiloResult.Success(data = BoolExpr(value = advance()))
             }
 
             LiloTokenKind.NONE_KEYWORD -> {
-                advance()
-                LiloResult.Success(data = NoneExpr(value = token))
+                LiloResult.Success(data = NoneExpr(value = advance()))
             }
 
             LiloTokenKind.LAMBDA_KEYWORD -> parseLambdaExpr()
-
             LiloTokenKind.L_BRACE -> parseSetOrDictionaryExpr()
             LiloTokenKind.L_BRACKET -> parseListExpr()
             LiloTokenKind.LPAR -> parseGroupOrTupleExpr()
@@ -592,12 +560,10 @@ class LiloParser(val tokens: List<LiloToken>) {
             consumeCommaOr { break }
         }
 
-        run {
-            expectAndConsume(
-                kind = LiloTokenKind.R_BRACKET,
-                message = "expected ']' at end of list"
-            ).valueOr { return it.toFailure() }
-        }
+        expectAndConsume(
+            kind = LiloTokenKind.R_BRACKET,
+            message = "expected ']' at end of list"
+        ).valueOr { return it.toFailure() }
 
         return LiloResult.Success(data = ListExpr(values = list))
     }
@@ -682,12 +648,10 @@ class LiloParser(val tokens: List<LiloToken>) {
             consumeCommaOr { break }
         }
 
-        run {
-            expectAndConsume(
-                kind = LiloTokenKind.R_BRACE,
-                message = "expected '}' at end of set or dict"
-            ).valueOr { return it.toFailure() }
-        }
+        expectAndConsume(
+            kind = LiloTokenKind.R_BRACE,
+            message = "expected '}' at end of set or dict"
+        ).valueOr { return it.toFailure() }
 
         return if (isDictionary) LiloResult.Success(data = DictExpr(values = dictPairs))
         else LiloResult.Success(data = SetExpr(values = setList))
@@ -715,8 +679,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         peek().takeIf { it.kind == kind }?.also { advance() }
 
     private inline fun consumeCommaOr(or: () -> Nothing): Boolean {
-        if (isPeek(kind = LiloTokenKind.COMMA)) {
-            advance()
+        if (match(kind = LiloTokenKind.COMMA)) {
             return true
         }
         or()

@@ -165,7 +165,10 @@ class LiloParserTest {
     fun `test subscript list`() {
         val sourceCodes = listOf(
             "list[1]",
-            "list[1][2]"
+            "list[1][2]",
+            "list[1, 2]",
+            "list[1, 2, 3]",
+            "kernal[blocks, threads]"
         )
 
         for (sourceCode in sourceCodes) {

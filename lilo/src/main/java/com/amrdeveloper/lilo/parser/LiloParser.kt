@@ -360,6 +360,25 @@ class LiloParser(val tokens: List<LiloToken>) {
         return parseIfExpr()
     }
 
+    // | expr (',' expr )+ [',']
+    // | expr
+    private fun parseCommaSeparatedExpr() : LiloResult<LiloExpr> {
+        val elements = mutableListOf<LiloExpr>()
+        val expr = parseExpr().valueOr { return it.toFailure() }
+        elements.add(expr)
+
+        while (match(kind = LiloTokenKind.COMMA)) {
+            val expr = parseExpr().valueOr { return it.toFailure() }
+            elements.add(expr)
+        }
+
+        return if (elements.size == 1) {
+            LiloResult.Success(data = elements[0])
+        } else {
+            LiloResult.Success(data = TupleExpr(values = elements))
+        }
+    }
+
     private fun parseIfExpr(): LiloResult<LiloExpr> {
         val expr = parseEqualityExpr()
 
@@ -483,7 +502,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             }
 
             if (match(kind = LiloTokenKind.L_BRACKET)) {
-                val slice = parseExpr().valueOr { return it.toFailure() }
+                val slice = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
 
                 expectAndConsume(
                     kind = LiloTokenKind.R_BRACKET,

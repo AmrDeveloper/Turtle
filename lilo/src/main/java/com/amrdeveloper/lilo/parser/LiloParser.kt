@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.parser
 
+import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
@@ -65,6 +66,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.WHILE_KEYWORD -> parseWhileStmt()
             LiloTokenKind.L_BRACE -> parseBlockStmt()
             LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
+            LiloTokenKind.ASSERT_KEYWORD -> parseAssertStmt()
             else -> parseAssignmentStmt()
         }
     }
@@ -332,6 +334,17 @@ class LiloParser(val tokens: List<LiloToken>) {
         val returnValue = parseExpr().valueOr { return it.toFailure() }
         consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = ReturnStmt(value = returnValue))
+    }
+
+    private fun parseAssertStmt(): LiloResult<AssertStmt> {
+        // Advance 'assert' keyword
+        advance()
+
+        val test = parseExpr().valueOr { return it.toFailure() }
+        var msg: LiloExpr? = null
+        if (match(kind = LiloTokenKind.COMMA)) msg = parseExpr().valueOr { return it.toFailure() }
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        return LiloResult.Success(data = AssertStmt(test, msg))
     }
 
     private fun parseAssignmentStmt(): LiloResult<LiloStmt> {

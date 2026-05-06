@@ -15,6 +15,8 @@ enum class LiloTokenKind {
     GLOBAL_KEYWORD,
     NON_LOCAL_KEYWORD,
 
+    ASSERT_KEYWORD,
+
     TRUE_KEYWORD,
     FALSE_KEYWORD,
     NONE_KEYWORD,
@@ -73,6 +75,8 @@ fun getLiloKeywordsMap() = mapOf(
 
     "global" to LiloTokenKind.GLOBAL_KEYWORD,
     "nonlocal" to LiloTokenKind.NON_LOCAL_KEYWORD,
+
+    "assert" to LiloTokenKind.ASSERT_KEYWORD,
 
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,

@@ -26,3 +26,5 @@ data class ExprStmt(val expr: LiloExpr) : LiloStmt
 data class AssignStmt(val lValue: LiloExpr, val rValue: LiloExpr) : LiloStmt
 
 data class ReturnStmt(val value: LiloExpr? = null) : LiloStmt
+
+data class AssertStmt(val test: LiloExpr, val msg: LiloExpr?) : LiloStmt

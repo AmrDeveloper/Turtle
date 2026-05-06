@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.runtime
 
+import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
@@ -218,6 +219,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             throw LiloReturnSignal(value = value)
         }
         throw LiloReturnSignal()
+    }
+
+    override fun visitAssertStmt(stmt: AssertStmt): LiloResult<Unit> {
+        // TODO: Assert Statement Not yet implemented
+        return runtimeException("Assert statement Not yet implemented")
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {

@@ -85,7 +85,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return LiloResult.Success(data = Unit)
     }
 
-    private fun resolveNestedModules(names : List<String>, alias : String?, shouldDefine : Boolean = false) : LiloResult<LiloObject> {
+    private fun resolveNestedModules(
+        names : List<String>,
+        alias : String? = null,
+        shouldDefine : Boolean = false
+    ) : LiloResult<LiloObject> {
         var liloModule = environment.get(names[0])
             ?: return runtimeException("No module named `${names[0]}`")
         if (liloModule !is LiloModule) return runtimeException("`${names[0]}` is not module")
@@ -107,14 +111,12 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitFromImportStmt(stmt: FromImportStmt): LiloResult<Unit> {
-        val liloStdModule =
-            environment.get(stmt.module)
-                ?: return runtimeException("No module named `$stmt.module`")
-        if (liloStdModule !is LiloModule) return runtimeException("`${stmt.module}` is not module")
+        val module = resolveNestedModules(names = stmt.module, shouldDefine = false)
+            .valueOr { return it.toFailure() }
 
         if (stmt.symbols != null) {
             for ((symbolName, alias) in stmt.symbols) {
-                val symbol = liloStdModule.getAttr(symbolName)
+                val symbol = module.getAttr(symbolName)
                     ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
                 environment.define(name = alias ?: symbolName, value = symbol)
             }
@@ -122,7 +124,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         }
 
         // From <module> import *
-        for ((name, value) in liloStdModule.dict) {
+        for ((name, value) in module.dict) {
             environment.define(name = name, value = value)
         }
 

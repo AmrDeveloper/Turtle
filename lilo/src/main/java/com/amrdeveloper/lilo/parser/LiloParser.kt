@@ -90,10 +90,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         advance()
 
         // Consume module name
-        val moduleName = expectAndConsume(
-            kind = LiloTokenKind.SYMBOL,
-            message = "Expect module name after `from`"
-        ).valueOr { return it.toFailure() }
+        val moduleName = parseDotConnectedNames().valueOr { return it.toFailure() }
 
         // Consume `import` keyword
         expectAndConsume(
@@ -116,7 +113,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             advance()
 
             consumeOptional(kind = LiloTokenKind.SEMICOLON)
-            val fromImportStmt = FromImportStmt(module = moduleName.lexeme!!)
+            val fromImportStmt = FromImportStmt(module = moduleName)
             return LiloResult.Success(data = fromImportStmt)
         }
 
@@ -151,7 +148,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         consumeOptional(kind = LiloTokenKind.SEMICOLON)
 
-        val fromImportStmt = FromImportStmt(module = moduleName.lexeme!!, symbols = importedSymbols)
+        val fromImportStmt = FromImportStmt(module = moduleName, symbols = importedSymbols)
         return LiloResult.Success(data = fromImportStmt)
     }
 

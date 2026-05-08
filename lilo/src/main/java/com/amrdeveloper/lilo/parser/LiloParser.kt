@@ -30,6 +30,7 @@ import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NonLocalStmt
 import com.amrdeveloper.lilo.ast.NoneExpr
+import com.amrdeveloper.lilo.ast.PassStmt
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
@@ -67,6 +68,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.L_BRACE -> parseBlockStmt()
             LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
             LiloTokenKind.ASSERT_KEYWORD -> parseAssertStmt()
+            LiloTokenKind.PASS_KEYWORD -> parsePassStmt()
             else -> parseAssignmentStmt()
         }
     }
@@ -332,6 +334,12 @@ class LiloParser(val tokens: List<LiloToken>) {
         if (match(kind = LiloTokenKind.COMMA)) msg = parseExpr().valueOr { return it.toFailure() }
         consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = AssertStmt(test, msg))
+    }
+
+    private fun parsePassStmt() : LiloResult<PassStmt> {
+        // Advance 'pass' keyword
+        advance()
+        return LiloResult.Success(data = PassStmt())
     }
 
     private fun parseAssignmentStmt(): LiloResult<LiloStmt> {

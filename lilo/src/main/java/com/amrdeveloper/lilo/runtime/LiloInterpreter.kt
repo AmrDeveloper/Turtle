@@ -29,6 +29,7 @@ import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NonLocalStmt
 import com.amrdeveloper.lilo.ast.NoneExpr
+import com.amrdeveloper.lilo.ast.PassStmt
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
@@ -244,6 +245,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitAssertStmt(stmt: AssertStmt): LiloResult<Unit> {
         // TODO: Assert Statement Not yet implemented
         return runtimeException("Assert statement Not yet implemented")
+    }
+
+    override fun visitPassStmt(stmt : PassStmt) : LiloResult<Unit> {
+        return LiloResult.Success(data = Unit)
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {

@@ -1,6 +1,8 @@
 package com.amrdeveloper.lilo.runtime
 
 import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.`object`.liloBaseExceptionType
+import com.amrdeveloper.lilo.`object`.liloStopIteratorType
 import com.amrdeveloper.lilo.type.liloBoolType
 import com.amrdeveloper.lilo.type.liloDictType
 import com.amrdeveloper.lilo.type.liloFloatType
@@ -23,6 +25,9 @@ class LiloEnvironment(val enclosing: LiloEnvironment?) {
         values["list"] = liloListType
         values["set"] = liloSetType
         values["dict"] = liloDictType
+
+        values["BaseException"] = liloBaseExceptionType
+        values["StopIterator"] = liloStopIteratorType
     }
 
     fun define(name: String, value: LiloObject) {

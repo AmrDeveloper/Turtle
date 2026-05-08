@@ -7,7 +7,7 @@ import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
-class LiloType(
+data class LiloType(
     val name: String,
     val bases: List<LiloType> = mutableListOf()
 ) : LiloObject() {
@@ -36,6 +36,15 @@ class LiloType(
         return false
     }
 
+    fun isSubclass(parent : LiloType) : Boolean {
+        if (this == parent) return true
+        for (base in bases) {
+            if (base.isSubclass(parent))
+                return true
+        }
+        return false
+    }
+
     override fun toString(): String = "<class '$name'>"
 }
 
@@ -48,7 +57,7 @@ object LiloBaseType {
         LILO_OBJECT_TYPE.type = LILO_TYPE_TYPE
         LILO_TYPE_TYPE.type = LILO_TYPE_TYPE
 
-        LILO_OBJECT_TYPE.setAttr(LiloMagicMethod.STR, ObjectStr)
+        LILO_OBJECT_TYPE.setAttr(name = LiloMagicMethod.STR, value = ObjectStr)
     }
 }
 

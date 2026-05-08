@@ -7,7 +7,7 @@ import com.amrdeveloper.lilo.`object`.LiloFloat
 import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloException
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
@@ -44,7 +44,7 @@ private object IntInit : LiloObject(liloFunctionType), LiloCallable {
         if (argument is LiloBool) return LiloResult.Success(data = LiloInt(value = if (argument.value) 1 else 0))
         if (argument is LiloInt) return LiloResult.Success(data = argument)
         if (argument is LiloFloat) return LiloResult.Success(data = LiloInt(value = argument.value.toInt()))
-        return LiloResult.Failure(error = LiloException("Op `__init__` is unsupported with argument ${argument.type}"))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `__init__` is unsupported with argument ${argument.type}"))
     }
 }
 
@@ -58,7 +58,7 @@ private object IntAdd : LiloObject(liloFunctionType), LiloCallable {
         if (lhs is LiloInt && rhs is LiloInt) {
             return LiloResult.Success(data = LiloInt(value = lhs.value + rhs.value))
         }
-        return LiloResult.Failure(error = LiloException("Op `+` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `+` is unsupported between lhs & rhs"))
     }
 }
 
@@ -72,7 +72,7 @@ private object IntSub : LiloObject(liloFunctionType), LiloCallable {
         if (lhs is LiloInt && rhs is LiloInt) {
             return LiloResult.Success(data = LiloInt(value = lhs.value - rhs.value))
         }
-        return LiloResult.Failure(error = LiloException("Op `-` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `-` is unsupported between lhs & rhs"))
     }
 }
 
@@ -86,7 +86,7 @@ private object IntMul : LiloObject(liloFunctionType), LiloCallable {
         if (lhs is LiloInt && rhs is LiloInt) {
             return LiloResult.Success(data = LiloInt(value = lhs.value * rhs.value))
         }
-        return LiloResult.Failure(error = LiloException("Op `*` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `*` is unsupported between lhs & rhs"))
     }
 }
 
@@ -100,7 +100,7 @@ private object IntDiv : LiloObject(liloFunctionType), LiloCallable {
         if (lhs is LiloInt && rhs is LiloInt) {
             return LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
         }
-        return LiloResult.Failure(error = LiloException("Op `/` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
     }
 }
 
@@ -114,7 +114,7 @@ private object IntMod : LiloObject(liloFunctionType), LiloCallable {
         if (lhs is LiloInt && rhs is LiloInt) {
             return LiloResult.Success(data = LiloInt(value = lhs.value % rhs.value))
         }
-        return LiloResult.Failure(error = LiloException("Op `%` is unsupported between lhs & rhs"))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `%` is unsupported between lhs & rhs"))
     }
 }
 
@@ -211,7 +211,7 @@ private object IntPos : LiloObject(liloFunctionType), LiloCallable {
         if (operand is LiloInt) {
             return LiloResult.Success(data = operand)
         }
-        return LiloResult.Failure(error = LiloException("descriptor '__pos__' requires a 'int' object but received a '${operand.type}'"))
+        return LiloResult.Failure(error = LiloExceptionMessage("descriptor '__pos__' requires a 'int' object but received a '${operand.type}'"))
     }
 }
 
@@ -224,6 +224,6 @@ private object IntNeg : LiloObject(liloFunctionType), LiloCallable {
         if (operand is LiloInt) {
             return LiloResult.Success(data = LiloInt(value = -operand.value))
         }
-        return LiloResult.Failure(error = LiloException("descriptor '__neg__' requires a 'int' object but received a '${operand.type}'"))
+        return LiloResult.Failure(error = LiloExceptionMessage("descriptor '__neg__' requires a 'int' object but received a '${operand.type}'"))
     }
 }

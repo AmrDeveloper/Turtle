@@ -10,7 +10,7 @@ import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloException
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloMethodType
 import kotlin.math.cos
@@ -56,7 +56,7 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || args[1] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloException("`turtle.forward` expect 1 floats as distance"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.forward` expect 1 floats as distance"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -86,7 +86,7 @@ private object TurtleLeft : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || args[1] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloException("`turtle.left` expect 1 floats as degree"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.left` expect 1 floats as degree"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -104,7 +104,7 @@ private object TurtleRight : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || args[1] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloException("`turtle.right` expect 1 floats as degree"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.right` expect 1 floats as degree"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -122,7 +122,7 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || args[1] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloException("`turtle.circle` expect 1 floats as radius"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.circle` expect 1 floats as radius"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -252,7 +252,7 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 3 || args[1] !is LiloFloat || args[2] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloException("`turtle.goto` expect 2 floats as x and y"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect 2 floats as x and y"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen

@@ -33,6 +33,7 @@ import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NonLocalStmt
 import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.PassStmt
+import com.amrdeveloper.lilo.ast.RaiseStmt
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
@@ -70,6 +71,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.IF_KEYWORD -> parseIfStmt()
             LiloTokenKind.WHILE_KEYWORD -> parseWhileStmt()
 
+            LiloTokenKind.RAISE_KEYWORD -> parseRaiseStmt()
             LiloTokenKind.ASSERT_KEYWORD -> parseAssertStmt()
 
             LiloTokenKind.BREAK_KEYWORD -> parseBreakStmt()
@@ -332,6 +334,20 @@ class LiloParser(val tokens: List<LiloToken>) {
         val returnValue = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
         consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = ReturnStmt(value = returnValue))
+    }
+
+    // | 'raise' expression 'from' expression
+    // | 'raise' expression
+    private fun parseRaiseStmt(): LiloResult<RaiseStmt> {
+        // Advance 'raise' keyword
+        advance()
+        val exc = parseExpr().valueOr { return it.toFailure() }
+        var cause : LiloExpr? = null
+        if (match(kind = LiloTokenKind.FROM_KEYWORD)) {
+            cause = parseExpr().valueOr { return it.toFailure() }
+        }
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        return LiloResult.Success(data = RaiseStmt(exc, cause))
     }
 
     private fun parseAssertStmt(): LiloResult<AssertStmt> {

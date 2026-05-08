@@ -32,6 +32,7 @@ import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NonLocalStmt
 import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.PassStmt
+import com.amrdeveloper.lilo.ast.RaiseStmt
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
@@ -60,6 +61,7 @@ import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloSet
 import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.`object`.LiloTuple
+import com.amrdeveloper.lilo.`object`.liloBaseExceptionType
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
@@ -77,7 +79,12 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
-        return visitProgram(program)
+        try {
+            visitProgram(program).valueOr { return it.toFailure() }
+        } catch (e : LiloRaise) {
+            return LiloResult.Failure(error = LiloExceptionMessage(e.toString()))
+        }
+        return LiloResult.Success(data = Unit)
     }
 
     override fun visitProgram(program: LiloProgram): LiloResult<Unit> {
@@ -234,6 +241,34 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
             else -> runtimeException("Invalid `lvalue` for assign expr")
         }
+    }
+
+    override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<Unit> {
+        val exc = visit(expr = stmt.exc).valueOr { return it.toFailure() }
+        val type = exc as? LiloType ?: exc.type
+        if (type?.isSubclass(parent = liloBaseExceptionType) == false) {
+            return runtimeException("exceptions must derive from BaseException")
+        }
+
+        var cause : LiloObject? = null
+        stmt.cause?.let {
+            cause = visit(expr = stmt.cause).valueOr { return it.toFailure() }
+            val isCauseType = cause is LiloType
+            val causeType = cause as? LiloType ?: cause.type
+            if (causeType?.isSubclass(parent = liloBaseExceptionType) == false) {
+                return runtimeException("exceptions cause must derive from BaseException")
+            }
+
+            if (isCauseType) cause = LiloObject(type = cause)
+        }
+
+        var exception = exc
+        if (exc is LiloType) exception = LiloObject(type = exc)
+        if (cause != null) {
+            exception.setAttr(name = "cause", value = cause)
+        }
+
+        throw LiloRaise(exception = exception)
     }
 
     override fun visitReturnStmt(stmt: ReturnStmt): LiloResult<Unit> {
@@ -501,7 +536,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return LiloResult.Success(data = obj)
     }
 
-    private fun runtimeException(message: String): LiloResult.Failure<LiloException> {
-        return LiloResult.Failure(error = LiloException(message))
+    private fun runtimeException(message: String): LiloResult.Failure<LiloExceptionMessage> {
+        return LiloResult.Failure(error = LiloExceptionMessage(message))
     }
 }

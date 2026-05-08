@@ -14,7 +14,7 @@ import com.amrdeveloper.lilo.machine.host.LiloHost
 import com.amrdeveloper.lilo.machine.screen.LiloScreen
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
-import com.amrdeveloper.lilo.runtime.LiloException
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.terminal.TerminalLine
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +67,7 @@ class HomeViewModel : ViewModel() {
             val interpreter = LiloInterpreter(liloMachine = liloMachine)
             val result = interpreter.evaluate(programResult.toSuccessData())
             if (result.isFailure()) {
-                val lexerError = result.toFailureError<LiloException>()
+                val lexerError = result.toFailureError<LiloExceptionMessage>()
                 val errorMessage = "Exception: ${lexerError.message}"
                 terminalOutput.add(TerminalLine.Error(text = errorMessage))
                 return@launch

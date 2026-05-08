@@ -8,7 +8,7 @@ import com.amrdeveloper.lilo.common.toFailureError
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
-import com.amrdeveloper.lilo.runtime.LiloException
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.utils.LiloMockMachine
 import org.junit.Assert.assertTrue
@@ -48,7 +48,7 @@ class LiloBuiltinTest {
             val interpreter = LiloInterpreter(liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloExceptionMessage>>().error.message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
             assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
@@ -86,7 +86,7 @@ class LiloBuiltinTest {
             val interpreter = LiloInterpreter(liloMachine = liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloException>>().error.message)
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloExceptionMessage>>().error.message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
             assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])

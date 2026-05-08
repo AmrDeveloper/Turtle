@@ -2,7 +2,7 @@ package com.amrdeveloper.lilo.`object`
 
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloException
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloMethodType
 
@@ -12,7 +12,7 @@ data class LiloMethod(val self: LiloObject, val method: LiloObject) :
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (method !is LiloCallable) return LiloResult.Failure(error = LiloException("Method is not callable"))
+        if (method !is LiloCallable) return LiloResult.Failure(error = LiloExceptionMessage("Method is not callable"))
         val fullArgs = listOf(self) + args
         return method.invoke(interpreter, fullArgs)
     }

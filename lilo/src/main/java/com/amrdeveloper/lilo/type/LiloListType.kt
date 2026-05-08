@@ -7,7 +7,7 @@ import com.amrdeveloper.lilo.`object`.LiloList
 import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloException
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
@@ -43,7 +43,7 @@ private object ListExtend : LiloObject(liloMethodType), LiloCallable {
         val self = args[0]
         val other = args[1]
         val list = self as LiloList
-        if (other !is LiloList) return LiloResult.Failure(error = LiloException("invalid parameter for `list.extend`"))
+        if (other !is LiloList) return LiloResult.Failure(error = LiloExceptionMessage("invalid parameter for `list.extend`"))
         list.values.addAll(other.values)
         return LiloResult.Success(data = LiloNone)
     }
@@ -55,7 +55,7 @@ private object ListSetItem : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val index = args[1]
-        if (index !is LiloInt) return LiloResult.Failure(error = LiloException("List key must be int"))
+        if (index !is LiloInt) return LiloResult.Failure(error = LiloExceptionMessage("List key must be int"))
         val self = args[0] as LiloList
         val value = args[2]
         self.values[index.value] = value
@@ -70,7 +70,7 @@ private object ListGetItem : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val index = args[1]
-        if (index !is LiloInt) return LiloResult.Failure(error = LiloException("List index must be int"))
+        if (index !is LiloInt) return LiloResult.Failure(error = LiloExceptionMessage("List index must be int"))
         val self = args[0] as LiloList
         val item = self.values[index.value]
         return LiloResult.Success(data = item)
@@ -83,7 +83,7 @@ private object ListLen : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val self = args[0]
-        if (self !is LiloList) return LiloResult.Failure(error = LiloException("Expected type to be List"))
+        if (self !is LiloList) return LiloResult.Failure(error = LiloExceptionMessage("Expected type to be List"))
         return LiloResult.Success(data = LiloInt(value = self.values.size))
     }
 }

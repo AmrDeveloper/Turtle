@@ -300,9 +300,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {
-        val lambdaName = "Function"
         val function = LiloFunction(params = expr.params, body = listOf(expr.body))
-        environment.define(name = lambdaName, value = function)
         return LiloResult.Success(data = function)
     }
 

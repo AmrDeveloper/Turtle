@@ -8,6 +8,8 @@ import com.amrdeveloper.lilo.type.LiloBaseType
 import com.amrdeveloper.lilo.type.LiloType
 import com.amrdeveloper.lilo.type.liloFunctionType
 
+const val EXCEPTION_CAUSE_FIELD = "__cause__"
+
 val liloBaseExceptionType =
     LiloType(name = "BaseException", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE

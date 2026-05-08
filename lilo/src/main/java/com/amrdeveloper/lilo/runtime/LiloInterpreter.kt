@@ -47,6 +47,7 @@ import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.common.valueOr
 import com.amrdeveloper.lilo.machine.LiloAbstractMachine
+import com.amrdeveloper.lilo.`object`.EXCEPTION_CAUSE_FIELD
 import com.amrdeveloper.lilo.`object`.LiloBool
 import com.amrdeveloper.lilo.`object`.LiloComplex
 import com.amrdeveloper.lilo.`object`.LiloDict
@@ -265,7 +266,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         var exception = exc
         if (exc is LiloType) exception = LiloObject(type = exc)
         if (cause != null) {
-            exception.setAttr(name = "cause", value = cause)
+            exception.setAttr(name = EXCEPTION_CAUSE_FIELD, value = cause)
         }
 
         throw LiloRaise(exception = exception)

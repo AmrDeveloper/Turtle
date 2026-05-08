@@ -6,10 +6,12 @@ import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
+import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ComparisonExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
+import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
@@ -245,6 +247,16 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitAssertStmt(stmt: AssertStmt): LiloResult<Unit> {
         // TODO: Assert Statement Not yet implemented
         return runtimeException("Assert statement Not yet implemented")
+    }
+
+    override fun visitBreakStmt(stmt: BreakStmt): LiloResult<Unit> {
+        // TODO: Break Statement Not yet implemented
+        return runtimeException("Break statement Not yet implemented")
+    }
+
+    override fun visitContinueStmt(stmt: ContinueStmt): LiloResult<Unit> {
+        // TODO: Continue Statement Not yet implemented
+        return runtimeException("Continue statement Not yet implemented")
     }
 
     override fun visitPassStmt(stmt : PassStmt) : LiloResult<Unit> {

@@ -26,4 +26,8 @@ data class ReturnStmt(val value: LiloExpr? = null) : LiloStmt
 
 data class AssertStmt(val test: LiloExpr, val msg: LiloExpr?) : LiloStmt
 
+class BreakStmt : LiloStmt
+
+class ContinueStmt : LiloStmt
+
 class PassStmt : LiloStmt

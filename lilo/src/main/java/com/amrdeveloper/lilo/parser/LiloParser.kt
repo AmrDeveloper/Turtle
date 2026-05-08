@@ -6,10 +6,12 @@ import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
+import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ComparisonExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
+import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
@@ -60,15 +62,22 @@ class LiloParser(val tokens: List<LiloToken>) {
         return when (peek().kind) {
             LiloTokenKind.FROM_KEYWORD -> parseFromImportStmt()
             LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
+
             LiloTokenKind.DEF_KEYWORD -> parseFunctionStmt()
+
             LiloTokenKind.GLOBAL_KEYWORD -> parseGlobalStmt()
             LiloTokenKind.NON_LOCAL_KEYWORD -> parseNonLocalStmt()
             LiloTokenKind.IF_KEYWORD -> parseIfStmt()
             LiloTokenKind.WHILE_KEYWORD -> parseWhileStmt()
-            LiloTokenKind.L_BRACE -> parseBlockStmt()
-            LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
+
             LiloTokenKind.ASSERT_KEYWORD -> parseAssertStmt()
+
+            LiloTokenKind.BREAK_KEYWORD -> parseBreakStmt()
+            LiloTokenKind.CONTINUE_KEYWORD -> parseContinueStmt()
             LiloTokenKind.PASS_KEYWORD -> parsePassStmt()
+            LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
+
+            LiloTokenKind.L_BRACE -> parseBlockStmt()
             else -> parseAssignmentStmt()
         }
     }
@@ -336,9 +345,24 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = AssertStmt(test, msg))
     }
 
+    private fun parseBreakStmt() : LiloResult<BreakStmt> {
+        // Advance 'break' keyword
+        advance()
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        return LiloResult.Success(data = BreakStmt())
+    }
+
+    private fun parseContinueStmt() : LiloResult<ContinueStmt> {
+        // Advance 'Continue' keyword
+        advance()
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        return LiloResult.Success(data = ContinueStmt())
+    }
+
     private fun parsePassStmt() : LiloResult<PassStmt> {
         // Advance 'pass' keyword
         advance()
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = PassStmt())
     }
 

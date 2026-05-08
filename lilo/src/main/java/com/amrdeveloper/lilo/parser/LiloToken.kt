@@ -17,6 +17,8 @@ enum class LiloTokenKind {
 
     ASSERT_KEYWORD,
 
+    BREAK_KEYWORD,
+    CONTINUE_KEYWORD,
     PASS_KEYWORD,
 
     TRUE_KEYWORD,
@@ -78,6 +80,8 @@ fun getLiloKeywordsMap() = mapOf(
     "global" to LiloTokenKind.GLOBAL_KEYWORD,
     "nonlocal" to LiloTokenKind.NON_LOCAL_KEYWORD,
 
+    "break" to LiloTokenKind.BREAK_KEYWORD,
+    "continue" to LiloTokenKind.CONTINUE_KEYWORD,
     "pass" to LiloTokenKind.PASS_KEYWORD,
 
     "assert" to LiloTokenKind.ASSERT_KEYWORD,

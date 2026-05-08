@@ -85,6 +85,27 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return LiloResult.Success(data = Unit)
     }
 
+    private fun resolveNestedModules(names : List<String>, alias : String?, shouldDefine : Boolean = false) : LiloResult<LiloObject> {
+        var liloModule = environment.get(names[0])
+            ?: return runtimeException("No module named `${names[0]}`")
+        if (liloModule !is LiloModule) return runtimeException("`${names[0]}` is not module")
+        if (shouldDefine && (names.size == 1 || alias == null)) {
+            environment.define(name = alias ?: names[0], value = liloModule)
+        }
+
+        for (name in names.drop(n = 1)) {
+            liloModule = liloModule.getAttr(name)
+                ?: return runtimeException("No module named `${name}` inside ${names[0]}")
+            if (liloModule !is LiloModule) return runtimeException("`${name}` is not module")
+        }
+
+        if (shouldDefine && names.size > 1 && alias != null) {
+            environment.define(name = alias, value = liloModule)
+        }
+
+        return LiloResult.Success(data = liloModule)
+    }
+
     override fun visitFromImportStmt(stmt: FromImportStmt): LiloResult<Unit> {
         val liloStdModule =
             environment.get(stmt.module)
@@ -109,12 +130,9 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitImportStmt(stmt: ImportStmt): LiloResult<Unit> {
-        for ((moduleName, alias) in stmt.modules) {
-            val liloStdModule =
-                environment.get(moduleName)
-                    ?: return runtimeException("No module named `$moduleName`")
-            if (liloStdModule !is LiloModule) return runtimeException("`$moduleName` is not module")
-            environment.define(name = alias ?: moduleName, value = liloStdModule)
+        for ((moduleNames, alias) in stmt.modules) {
+            resolveNestedModules(moduleNames, alias, shouldDefine = true)
+                .valueOr { return it.toFailure() }
         }
         return LiloResult.Success(data = Unit)
     }

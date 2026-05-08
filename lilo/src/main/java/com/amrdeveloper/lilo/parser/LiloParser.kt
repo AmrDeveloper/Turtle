@@ -71,6 +71,20 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
     }
 
+    private fun parseDotConnectedNames(): LiloResult<List<String>> {
+        val names = mutableListOf<String>()
+
+        do {
+            val name = expectAndConsume(
+                kind = LiloTokenKind.SYMBOL,
+                message = "Expect module name"
+            ).valueOr { return it.toFailure() }
+            names.add(name.lexeme!!)
+        } while (match(kind = LiloTokenKind.DOT))
+
+        return LiloResult.Success(data = names)
+    }
+
     private fun parseFromImportStmt(): LiloResult<FromImportStmt> {
         // Advance 'from' keyword
         advance()
@@ -145,13 +159,10 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'import' keyword
         advance()
 
-        val modules = mutableListOf<Pair<String, String?>>()
+        val modules = mutableListOf<Pair<List<String>, String?>>()
         do {
-            // Parse module name
-            val name = expectAndConsume(
-                kind = LiloTokenKind.SYMBOL,
-                message = "Expect module name"
-            ).valueOr { return it.toFailure() }
+            // Parse module names
+            val names = parseDotConnectedNames().valueOr { return it.toFailure() }
 
             var alias: String? = null
             if (match(kind = LiloTokenKind.AS_KEYWORD)) {
@@ -162,7 +173,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                 ).valueOr { return it.toFailure() }.lexeme
             }
 
-            modules.add(Pair(name.lexeme!!, alias))
+            modules.add(Pair(names, alias))
         } while (match(kind = LiloTokenKind.COMMA))
 
         consumeOptional(kind = LiloTokenKind.SEMICOLON)

@@ -66,6 +66,7 @@ import com.amrdeveloper.lilo.`object`.liloAssertionErrorType
 import com.amrdeveloper.lilo.`object`.liloBaseExceptionType
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.runtime.signal.LiloBreakSignal
+import com.amrdeveloper.lilo.runtime.signal.LiloContinueSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.type.LiloType
@@ -197,16 +198,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         try {
             do {
-                visit(stmt = stmt.body).valueOr { return it.toFailure() }
+                try { visit(stmt = stmt.body).valueOr { return it.toFailure() } }
+                catch (_ : LiloContinueSignal) { }
 
                 // Execute the condition for the next run
                 val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
                 isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
             } while (isTruth)
-        } catch (_ : LiloBreakSignal) {
-            return LiloResult.Success(data = Unit)
-        }
-
+        } catch (_ : LiloBreakSignal) { return LiloResult.Success(data = Unit) }
         return LiloResult.Success(data = Unit)
     }
 
@@ -304,8 +303,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitContinueStmt(stmt: ContinueStmt): LiloResult<Unit> {
-        // TODO: Continue Statement Not yet implemented
-        return runtimeException("Continue statement Not yet implemented")
+        throw LiloContinueSignal()
     }
 
     override fun visitPassStmt(stmt : PassStmt) : LiloResult<Unit> {

@@ -24,7 +24,17 @@ private object BaseExceptionInit : LiloObject(liloFunctionType), LiloCallable {
     ): LiloResult<LiloObject> = LiloResult.Success(data = LiloObject(liloBaseExceptionType))
 }
 
+val liloExceptionType =
+    LiloType(name = "Exception", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
+val liloAssertionErrorType =
+    LiloType(name = "AssertionError", bases = listOf(liloExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
 val liloStopIteratorType =
-    LiloType(name = "StopIterator", bases = listOf(liloBaseExceptionType)).also {
+    LiloType(name = "StopIterator", bases = listOf(liloExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }

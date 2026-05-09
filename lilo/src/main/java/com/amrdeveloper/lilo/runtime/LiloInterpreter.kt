@@ -62,6 +62,7 @@ import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloSet
 import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.`object`.LiloTuple
+import com.amrdeveloper.lilo.`object`.liloAssertionErrorType
 import com.amrdeveloper.lilo.`object`.liloBaseExceptionType
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
@@ -281,8 +282,16 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitAssertStmt(stmt: AssertStmt): LiloResult<Unit> {
-        // TODO: Assert Statement Not yet implemented
-        return runtimeException("Assert statement Not yet implemented")
+        val condition = visit(expr = stmt.test).valueOr { return it.toFailure() }
+        val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+
+        if (isTruth) return LiloResult.Success(data = Unit)
+        val exception = LiloObject(type = liloAssertionErrorType)
+        if (stmt.msg != null) {
+            // TODO: Assert with message Not yet implemented
+            return runtimeException("Assert message Not yet implemented")
+        }
+        throw LiloRaise(exception = exception)
     }
 
     override fun visitBreakStmt(stmt: BreakStmt): LiloResult<Unit> {

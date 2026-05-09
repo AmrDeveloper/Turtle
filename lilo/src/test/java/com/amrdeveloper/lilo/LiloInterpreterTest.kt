@@ -380,6 +380,13 @@ class LiloInterpreterTest {
             """,
             """
             x = 5
+            while (x > 0) {
+                print(x)
+                break
+            }
+            """,
+            """
+            x = 5
             while (x > 5) {
                 print(x)
                 x = x - 1
@@ -391,6 +398,7 @@ class LiloInterpreterTest {
 
         val expectedOutput = listOf(
             "54321",
+            "5",
             "0",
         )
 

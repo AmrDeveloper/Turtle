@@ -65,6 +65,7 @@ import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.`object`.liloAssertionErrorType
 import com.amrdeveloper.lilo.`object`.liloBaseExceptionType
 import com.amrdeveloper.lilo.parser.LiloTokenKind
+import com.amrdeveloper.lilo.runtime.signal.LiloBreakSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.type.LiloType
@@ -194,13 +195,17 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             return LiloResult.Success(data = Unit)
         }
 
-        do {
-            visit(stmt = stmt.body).valueOr { return it.toFailure() }
+        try {
+            do {
+                visit(stmt = stmt.body).valueOr { return it.toFailure() }
 
-            // Execute the condition for the next run
-            val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
-            isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
-        } while (isTruth)
+                // Execute the condition for the next run
+                val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
+                isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+            } while (isTruth)
+        } catch (_ : LiloBreakSignal) {
+            return LiloResult.Success(data = Unit)
+        }
 
         return LiloResult.Success(data = Unit)
     }
@@ -295,8 +300,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitBreakStmt(stmt: BreakStmt): LiloResult<Unit> {
-        // TODO: Break Statement Not yet implemented
-        return runtimeException("Break statement Not yet implemented")
+        throw LiloBreakSignal()
     }
 
     override fun visitContinueStmt(stmt: ContinueStmt): LiloResult<Unit> {

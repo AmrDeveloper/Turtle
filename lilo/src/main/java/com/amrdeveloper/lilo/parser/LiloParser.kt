@@ -15,6 +15,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
+import com.amrdeveloper.lilo.ast.ForStmt
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.ast.GetExpr
@@ -69,6 +70,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.GLOBAL_KEYWORD -> parseGlobalStmt()
             LiloTokenKind.NON_LOCAL_KEYWORD -> parseNonLocalStmt()
             LiloTokenKind.IF_KEYWORD -> parseIfStmt()
+            LiloTokenKind.FOR_KEYWORD -> parseForStmt()
             LiloTokenKind.WHILE_KEYWORD -> parseWhileStmt()
 
             LiloTokenKind.RAISE_KEYWORD -> parseRaiseStmt()
@@ -284,6 +286,30 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
 
         return LiloResult.Success(data = IfStmt(ifs, elseBlock))
+    }
+
+    // | 'for' star_targets 'in' ~ star_expressions ':' block [else_block]
+    private fun parseForStmt() : LiloResult<ForStmt> {
+        // Advance 'for' keyword
+        advance()
+
+        // TODO: Support mutliple targets
+        val target = parseExpr().valueOr { return it.toFailure() }
+
+        expectAndConsume(
+            kind = LiloTokenKind.IN_KEYWORD,
+            message = "Expect `in` after for target"
+        ).valueOr { return it.toFailure() }
+
+        val iter = parseExpr().valueOr { return it.toFailure() }
+        val body = parseStmt().valueOr { return it.toFailure() }
+
+        var elseBlock: LiloStmt? = null
+        if (match(kind = LiloTokenKind.ELSE_KEYWORD)) {
+            elseBlock = parseStmt().valueOr { return it.toFailure() }
+        }
+
+        return LiloResult.Success(data = ForStmt(target, iter, body, elseBlock))
     }
 
     private fun parseWhileStmt(): LiloResult<WhileStmt> {

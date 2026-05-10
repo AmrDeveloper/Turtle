@@ -15,6 +15,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
+import com.amrdeveloper.lilo.ast.ForStmt
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.ast.GetExpr
@@ -188,6 +189,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return LiloResult.Success(data = Unit)
     }
 
+    override fun visitForStmt(stmt: ForStmt): LiloResult<Unit> {
+        // TODO: For Statement Not yet implemented
+        return runtimeException("For statement Not yet implemented")
+    }
+
     override fun visitWhileStmt(stmt: WhileStmt): LiloResult<Unit> {
         val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
         var isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
@@ -325,7 +331,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             else liloAttribute
             return runtimeObject(obj = methodOrAttribute)
         }
-        return runtimeException("Invalid `.`` expression on lhs")
+        return runtimeException("Invalid `.` expression on lhs")
     }
 
     override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {

@@ -14,7 +14,7 @@ object LiloGPUMaxThreadsPerBlock : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val gpu = interpreter.liloMachine.getGPU()
-        if (gpu == null) return LiloResult.Failure(error = RuntimeException("No GPU found"))
+            ?: return LiloResult.Failure(error = RuntimeException("No GPU found"))
         val maxThreadsPerBlock = gpu.getGPUDevice().getLimits().maxComputeInvocationsPerWorkgroup
         return LiloResult.Success(data = LiloInt(value = maxThreadsPerBlock))
     }
@@ -26,7 +26,7 @@ object LiloGPUMaxThreadsDim : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val gpu = interpreter.liloMachine.getGPU()
-        if (gpu == null) return LiloResult.Failure(error = RuntimeException("No GPU found"))
+            ?: return LiloResult.Failure(error = RuntimeException("No GPU found"))
         val gpuLimits = gpu.getGPUDevice().getLimits()
         val maxThreadsDimX = gpuLimits.maxComputeWorkgroupSizeX
         val maxThreadsDimY = gpuLimits.maxComputeWorkgroupSizeY
@@ -47,7 +47,7 @@ object LiloGPUWrapSize : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val gpu = interpreter.liloMachine.getGPU()
-        if (gpu == null) return LiloResult.Failure(error = RuntimeException("No GPU found"))
+            ?: return LiloResult.Failure(error = RuntimeException("No GPU found"))
         val wrapSize = gpu.getGPUDevice().getAdapterInfo().subgroupMaxSize
         return LiloResult.Success(data = LiloInt(value = wrapSize))
     }

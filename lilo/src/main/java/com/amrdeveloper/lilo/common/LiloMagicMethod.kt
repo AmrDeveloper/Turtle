@@ -27,6 +27,8 @@ object LiloMagicMethod {
 
     const val BOOL = "__bool__"
 
+    const val CALL = "__call__"
+
     const val LEN = "__len__"
     const val STR = "__str__"
 }

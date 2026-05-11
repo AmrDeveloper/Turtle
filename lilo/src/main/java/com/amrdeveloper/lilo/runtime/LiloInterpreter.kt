@@ -379,6 +379,12 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             return initFunction.invoke(interpreter = this, args = args)
         }
 
+        // Call `__call__` if the callee is LiloObject
+        val callFunction = callee.getAttr(name = LiloMagicMethod.CALL)
+        if (callFunction != null && callFunction is LiloCallable) {
+            return callFunction.invoke(interpreter = this, args = args)
+        }
+
         // In case of function call
         if (callee is LiloCallable) return callee.invoke(interpreter = this, args)
         return runtimeException("`$callee` is not callable")

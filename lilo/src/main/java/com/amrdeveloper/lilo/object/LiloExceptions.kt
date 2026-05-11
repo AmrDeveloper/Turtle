@@ -25,7 +25,7 @@ private object BaseExceptionInit : LiloObject(liloFunctionType), LiloCallable {
 }
 
 val liloExceptionType =
-    LiloType(name = "Exception", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
+    LiloType(name = "Exception", bases = listOf(liloBaseExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 

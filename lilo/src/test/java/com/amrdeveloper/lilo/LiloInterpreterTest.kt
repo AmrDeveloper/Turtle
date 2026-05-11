@@ -440,12 +440,14 @@ class LiloInterpreterTest {
     fun `test evaluate raise stmt`() {
         val sourceCodes = mutableListOf(
             "raise BaseException",
+            "raise Exception",
             "raise StopIterator",
             "raise BaseException from StopIterator",
         )
 
         val expectedOutput = listOf(
             "raise BaseException",
+            "raise Exception",
             "raise StopIterator",
             "raise BaseException from StopIterator",
         )

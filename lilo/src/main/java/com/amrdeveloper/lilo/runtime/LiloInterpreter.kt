@@ -81,7 +81,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
 
-    val globals = LiloEnvironment(enclosing = null).also {
+    val globals = LiloEnvironment().also {
         registerLiloAutoImportedModule(environment = it)
         registerLiloStandardLibrary(environment = it)
     }
@@ -177,17 +177,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             val condition = visit(expr = expr).valueOr { return it.toFailure() }
             val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
             if (isTruth) {
-                val previous = this.environment
-                this.environment = LiloEnvironment(enclosing = environment)
-                visit(stmt = body).valueOr { return it.toFailure() }
-                this.environment = previous
+                visitInNewScope { visit(stmt = body).valueOr { return it.toFailure() } }
                 return LiloResult.Success(data = Unit)
             }
         }
 
         // Execute the else block if it exists
         if (stmt.elseBlock != null) {
-            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
+            visitInNewScope { visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() } }
             return LiloResult.Success(data = Unit)
         }
 
@@ -203,13 +200,17 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
         var isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
         if (!isTruth && stmt.elseBlock != null) {
-            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
+            visitInNewScope {
+                visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
+            }
             return LiloResult.Success(data = Unit)
         }
 
         try {
             do {
-                try { visit(stmt = stmt.body).valueOr { return it.toFailure() } }
+                try {
+                    visitInNewScope { visit(stmt = stmt.body).valueOr { return it.toFailure() } }
+                }
                 catch (_ : LiloContinueSignal) { }
 
                 // Execute the condition for the next run
@@ -221,8 +222,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitBlockStmt(stmt: BlockStmt): LiloResult<Unit> {
-        for (node in stmt.nodes) {
-            visit(stmt = node).valueOr { return it.toFailure() }
+        visitInNewScope {
+            for (node in stmt.nodes) {
+                visit(stmt = node).valueOr { return it.toFailure() }
+            }
         }
         return LiloResult.Success(data = Unit)
     }
@@ -534,6 +537,13 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitNoneExpr(expr: NoneExpr): LiloResult<LiloObject> {
         return runtimeObject(obj = LiloNone)
+    }
+
+    inline private fun visitInNewScope(function: () -> Unit) {
+        this.environment = LiloEnvironment(enclosing = environment)
+        val previous = this.environment
+        function()
+        this.environment = previous
     }
 
     private fun isLiloObjectEvalToTrue(obj: LiloObject): LiloResult<Boolean> {

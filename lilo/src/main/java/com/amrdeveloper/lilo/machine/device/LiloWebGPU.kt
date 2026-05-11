@@ -14,9 +14,10 @@ class LiloWebGPU : LiloAbstractGPU {
         device = webGpu.device
     }
 
-    override suspend fun runKernal(kernal: LiloKernal): Any {
-        return kernal.run(webGpu)
-    }
+    override suspend fun launchKernal(
+        kernal: LiloKernal,
+        config: LiloKernalConfig
+    ) = kernal.run(webGpu, config)
 
     override fun deinitWebGPU() {
         if (!::webGpu.isInitialized) return

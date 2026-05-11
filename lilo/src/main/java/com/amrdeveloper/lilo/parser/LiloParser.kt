@@ -293,7 +293,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'for' keyword
         advance()
 
-        // TODO: Support mutliple targets
+        // TODO: Support multiple targets
         val target = parseExpr().valueOr { return it.toFailure() }
 
         expectAndConsume(
@@ -412,8 +412,10 @@ class LiloParser(val tokens: List<LiloToken>) {
         val lhs = parseExpr().valueOr { return it.toFailure() }
         if (match(kind = LiloTokenKind.EQ)) {
             val value = parseExpr().valueOr { return it.toFailure() }
+            consumeOptional(kind = LiloTokenKind.SEMICOLON)
             return LiloResult.Success(data = AssignStmt(lValue = lhs, rValue = value))
         }
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = ExprStmt(expr = lhs))
     }
 

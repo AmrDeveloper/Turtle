@@ -69,9 +69,11 @@ import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.runtime.signal.LiloBreakSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloContinueSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
+import com.amrdeveloper.lilo.std.registerLiloAutoImportedModule
 import com.amrdeveloper.lilo.std.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.type.LiloType
 import com.amrdeveloper.lilo.type.liloMethodType
+import kotlin.collections.set
 
 class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     LiloTreeVisitor<LiloResult<Unit>, LiloResult<LiloObject>> {
@@ -79,16 +81,16 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
 
-    val environment = LiloEnvironment(enclosing = null).also {
+    val globals = LiloEnvironment(enclosing = null).also {
+        registerLiloAutoImportedModule(environment = it)
         registerLiloStandardLibrary(environment = it)
     }
 
+    var environment = globals
+
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
-        try {
-            visitProgram(program).valueOr { return it.toFailure() }
-        } catch (e : LiloRaise) {
-            return LiloResult.Failure(error = LiloExceptionMessage(e.toString()))
-        }
+        try { visitProgram(program).valueOr { return it.toFailure() } }
+        catch (e : LiloRaise) { return LiloResult.Failure(error = LiloExceptionMessage(e.toString())) }
         return LiloResult.Success(data = Unit)
     }
 
@@ -175,7 +177,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             val condition = visit(expr = expr).valueOr { return it.toFailure() }
             val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
             if (isTruth) {
+                val previous = this.environment
+                this.environment = LiloEnvironment(enclosing = environment)
                 visit(stmt = body).valueOr { return it.toFailure() }
+                this.environment = previous
                 return LiloResult.Success(data = Unit)
             }
         }

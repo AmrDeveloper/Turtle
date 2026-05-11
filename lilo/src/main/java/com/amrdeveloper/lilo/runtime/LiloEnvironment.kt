@@ -39,14 +39,8 @@ class LiloEnvironment(val enclosing: LiloEnvironment?) {
     }
 
     fun get(name: String): LiloObject? {
-        if (values.containsKey(name)) {
-            return values[name]
-        }
-
-        if (enclosing != null) {
-            return enclosing.get(name)
-        }
-
+        if (values.containsKey(name)) return values[name]
+        if (enclosing != null) return enclosing.get(name)
         return null
     }
 
@@ -56,10 +50,7 @@ class LiloEnvironment(val enclosing: LiloEnvironment?) {
             return true
         }
 
-        if (enclosing != null) {
-            return enclosing.assign(name, value)
-        }
-
+        if (enclosing != null) return enclosing.assign(name, value)
         return false
     }
 

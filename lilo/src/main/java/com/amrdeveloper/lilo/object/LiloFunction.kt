@@ -17,7 +17,7 @@ data class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         for ((index, arg) in args.withIndex()) {
-            interpreter.environment.define(name = params[index], value = arg)
+            interpreter.environment.set(name = params[index], value = arg)
         }
 
         try {

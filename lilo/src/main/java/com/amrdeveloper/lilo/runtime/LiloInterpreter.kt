@@ -111,7 +111,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             ?: return runtimeException("No module named `${names[0]}`")
         if (liloModule !is LiloModule) return runtimeException("`${names[0]}` is not module")
         if (shouldDefine && (names.size == 1 || alias == null)) {
-            environment.define(name = alias ?: names[0], value = liloModule)
+            environment.set(name = alias ?: names[0], value = liloModule)
         }
 
         for (name in names.drop(n = 1)) {
@@ -121,7 +121,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         }
 
         if (shouldDefine && names.size > 1 && alias != null) {
-            environment.define(name = alias, value = liloModule)
+            environment.set(name = alias, value = liloModule)
         }
 
         return LiloResult.Success(data = liloModule)
@@ -135,14 +135,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             for ((symbolName, alias) in stmt.symbols) {
                 val symbol = module.getAttr(symbolName)
                     ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
-                environment.define(name = alias ?: symbolName, value = symbol)
+                environment.set(name = alias ?: symbolName, value = symbol)
             }
             return LiloResult.Success(data = Unit)
         }
 
         // From <module> import *
         for ((name, value) in module.dict) {
-            environment.define(name = name, value = value)
+            environment.set(name = name, value = value)
         }
 
         return LiloResult.Success(data = Unit)
@@ -158,7 +158,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitFunctionStmt(stmt: FunctionStmt): LiloResult<Unit> {
         val function = LiloFunction(params = stmt.params, body = stmt.body)
-        environment.define(name = stmt.name, value = function)
+        environment.set(name = stmt.name, value = function)
         return LiloResult.Success(data = Unit)
     }
 
@@ -200,16 +200,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
         var isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
         if (!isTruth && stmt.elseBlock != null) {
-            visitInNewScope {
-                visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
-            }
+            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
             return LiloResult.Success(data = Unit)
         }
 
         try {
             do {
                 try {
-                    visitInNewScope { visit(stmt = stmt.body).valueOr { return it.toFailure() } }
+                    visit(stmt = stmt.body).valueOr { return it.toFailure() }
                 }
                 catch (_ : LiloContinueSignal) { }
 
@@ -240,7 +238,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val value = visit(expr = stmt.rValue).valueOr { return it.toFailure() }
         return when (lValue) {
             is SymbolExpr -> {
-                environment.define(name = lValue.value.lexeme!!, value = value)
+                environment.set(name = lValue.value.lexeme!!, value = value)
                 LiloResult.Success(data = Unit)
             }
 

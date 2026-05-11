@@ -6,7 +6,7 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
 
     val values = mutableMapOf<String, LiloObject>()
 
-    fun define(name: String, value: LiloObject) {
+    fun set(name: String, value: LiloObject) {
         values[name] = value
     }
 
@@ -15,15 +15,4 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
         if (enclosing != null) return enclosing.get(name)
         return null
     }
-
-    fun assign(name: String, value: LiloObject): Boolean {
-        if (values.containsKey(name)) {
-            values[name] = value
-            return true
-        }
-
-        if (enclosing != null) return enclosing.assign(name, value)
-        return false
-    }
-
 }

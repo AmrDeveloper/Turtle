@@ -474,4 +474,57 @@ class LiloInterpreterTest {
             assertTrue(message == expectedOutput[index])
         }
     }
+
+    @Test
+    fun `test evaluate globals stmt`() {
+        val sourceCodes = mutableListOf(
+            """
+            x = 5
+            def foo() {
+              global x
+              x = 10
+            }
+            foo()
+            print(x)
+            """,
+            """
+            x = 5
+            def foo() {
+              x = 10
+            }
+            foo()
+            print(x)
+            """,
+        )
+
+        val expectedOutput = listOf(
+            "10",
+            "5",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloHostTest = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloHostTest)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloExceptionMessage>().message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assertTrue(liloHostTest.getHost().buffer.toString() == expectedOutput[index])
+        }
+    }
+
 }

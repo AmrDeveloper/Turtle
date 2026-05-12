@@ -28,44 +28,40 @@ import com.amrdeveloper.lilo.type.liloSetType
 import com.amrdeveloper.lilo.type.liloStrType
 import com.amrdeveloper.lilo.type.liloTupleType
 
-fun registerLiloAutoImportedModule(environment: LiloEnvironment) {
-    environment.apply {
-        // Builtin types
-        values["bool"] = liloBoolType
-        values["int"] = liloIntType
-        values["float"] = liloFloatType
-        values["str"] = liloStrType
-        values["tuple"] = liloTupleType
-        values["list"] = liloListType
-        values["set"] = liloSetType
-        values["dict"] = liloDictType
+fun registerLiloAutoImportedModule() {
+    // Builtin types
+    LiloEnvironment.builtins["bool"] = liloBoolType
+    LiloEnvironment.builtins["int"] = liloIntType
+    LiloEnvironment.builtins["float"] = liloFloatType
+    LiloEnvironment.builtins["str"] = liloStrType
+    LiloEnvironment.builtins["tuple"] = liloTupleType
+    LiloEnvironment.builtins["list"] = liloListType
+    LiloEnvironment.builtins["set"] = liloSetType
+    LiloEnvironment.builtins["dict"] = liloDictType
 
-        // Builtin exception types
-        values["BaseException"]  = liloBaseExceptionType
-        values["Exception"]      = liloExceptionType
-        values["AssertionError"] = liloAssertionErrorType
-        values["StopIterator"]   = liloStopIteratorType
-    }
+    // Builtin exception types
+    LiloEnvironment.builtins["BaseException"]  = liloBaseExceptionType
+    LiloEnvironment.builtins["Exception"]      = liloExceptionType
+    LiloEnvironment.builtins["AssertionError"] = liloAssertionErrorType
+    LiloEnvironment.builtins["StopIterator"]   = liloStopIteratorType
 }
 
-fun registerLiloStandardLibrary(environment: LiloEnvironment) {
-    environment.apply {
-        // Register Stdlib modules
-        environment.values["random"] = liloRandomModule
-        environment.values["math"] = liloMathModule
-        environment.values["gpu"] = liloGPUModule
-        environment.values["time"] = liloTimeModule
-        environment.values["turtle"] = liloTurtleModule
+fun registerLiloStandardLibrary() {
+    // Register Stdlib modules
+    LiloEnvironment.builtins["random"] = liloRandomModule
+    LiloEnvironment.builtins["math"] = liloMathModule
+    LiloEnvironment.builtins["gpu"] = liloGPUModule
+    LiloEnvironment.builtins["time"] = liloTimeModule
+    LiloEnvironment.builtins["turtle"] = liloTurtleModule
 
-        // Register Stdlib functions
-        environment.values["print"] = LiloPrintFunction
-        environment.values["len"] = LiloLenFunction
-        environment.values["type"] = LiloTypeFunction
-        environment.values["id"] = LiloIdFunction
-        environment.values["hasattr"] = LiloHasAttrFunction
-        environment.values["bin"] = LiloBinFunction
-        environment.values["oct"] = LiloOctFunction
-        environment.values["hex"] = LiloHexFunction
-        environment.values["range"] = LiloRangeFunction
-    }
+    // Register Stdlib functions
+    LiloEnvironment.builtins["print"] = LiloPrintFunction
+    LiloEnvironment.builtins["len"] = LiloLenFunction
+    LiloEnvironment.builtins["type"] = LiloTypeFunction
+    LiloEnvironment.builtins["id"] = LiloIdFunction
+    LiloEnvironment.builtins["hasattr"] = LiloHasAttrFunction
+    LiloEnvironment.builtins["bin"] = LiloBinFunction
+    LiloEnvironment.builtins["oct"] = LiloOctFunction
+    LiloEnvironment.builtins["hex"] = LiloHexFunction
+    LiloEnvironment.builtins["range"] = LiloRangeFunction
 }

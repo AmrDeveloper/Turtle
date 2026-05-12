@@ -82,8 +82,9 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     private val FALSE = LiloBool(value = false)
 
     val globals = LiloEnvironment().also {
-        registerLiloAutoImportedModule(environment = it)
-        registerLiloStandardLibrary(environment = it)
+        // Register builtins
+        registerLiloAutoImportedModule()
+        registerLiloStandardLibrary()
     }
 
     var environment = globals
@@ -107,7 +108,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         alias : String? = null,
         shouldDefine : Boolean = false
     ) : LiloResult<LiloObject> {
-        var liloModule = environment.get(names[0])
+        var liloModule = LiloEnvironment.builtins.get(names[0])
             ?: return runtimeException("No module named `${names[0]}`")
         if (liloModule !is LiloModule) return runtimeException("`${names[0]}` is not module")
         if (shouldDefine && (names.size == 1 || alias == null)) {
@@ -163,8 +164,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitGlobalStmt(stmt: GlobalStmt): LiloResult<Unit> {
-        // TODO: Global Statement Not yet implemented
-        return runtimeException("Global statement Not yet implemented")
+        for (name in stmt.names) environment.markGlobal(name)
+        return LiloResult.Success(data = Unit)
     }
 
     override fun visitNonLocalStmt(stmt: NonLocalStmt): LiloResult<Unit> {
@@ -498,10 +499,12 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloObject> {
-        val symbolName = expr.value.lexeme!!
-        val value = environment.get(symbolName)
+        val name = expr.value.lexeme!!
+        val value = environment.get(name)
         if (value != null) return runtimeObject(obj = value)
-        return runtimeException("Undefined variable `${expr.value.lexeme}`")
+        val builtin = LiloEnvironment.builtins[name]
+        if (builtin != null) return runtimeObject(obj = builtin)
+        return runtimeException("Name '${name}' is not defined")
     }
 
     override fun visitStrExpr(expr: StrExpr): LiloResult<LiloObject> {
@@ -531,13 +534,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitNoneExpr(expr: NoneExpr): LiloResult<LiloObject> {
         return runtimeObject(obj = LiloNone)
-    }
-
-    inline private fun visitInNewScope(function: () -> Unit) {
-        this.environment = LiloEnvironment(enclosing = environment)
-        val previous = this.environment
-        function()
-        this.environment = previous
     }
 
     private fun isLiloObjectEvalToTrue(obj: LiloObject): LiloResult<Boolean> {

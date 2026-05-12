@@ -242,6 +242,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             consumeCommaOr { break }
         }
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = GlobalStmt(names))
     }
 
@@ -259,6 +260,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             consumeCommaOr { break }
         }
+        consumeOptional(kind = LiloTokenKind.SEMICOLON)
         return LiloResult.Success(data = NonLocalStmt(names))
     }
 

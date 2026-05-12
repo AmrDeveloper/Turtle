@@ -15,4 +15,9 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
         if (enclosing != null) return enclosing.get(name)
         return null
     }
+
+    fun defineNonLocal(name : String) {
+        val value = get(name)!!
+        set(name, value)
+    }
 }

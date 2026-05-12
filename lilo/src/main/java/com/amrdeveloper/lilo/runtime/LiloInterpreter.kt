@@ -177,14 +177,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             val condition = visit(expr = expr).valueOr { return it.toFailure() }
             val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
             if (isTruth) {
-                visitInNewScope { visit(stmt = body).valueOr { return it.toFailure() } }
+                visit(stmt = body).valueOr { return it.toFailure() }
                 return LiloResult.Success(data = Unit)
             }
         }
 
         // Execute the else block if it exists
         if (stmt.elseBlock != null) {
-            visitInNewScope { visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() } }
+            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
             return LiloResult.Success(data = Unit)
         }
 
@@ -220,11 +220,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitBlockStmt(stmt: BlockStmt): LiloResult<Unit> {
-        visitInNewScope {
-            for (node in stmt.nodes) {
-                visit(stmt = node).valueOr { return it.toFailure() }
-            }
-        }
+        for (node in stmt.nodes) { visit(stmt = node).valueOr { return it.toFailure() } }
         return LiloResult.Success(data = Unit)
     }
 

@@ -1,23 +1,29 @@
 package com.amrdeveloper.editor.constant
 
 val keywords = listOf(
-    "import",
     "from",
+    "import",
     "as",
     "def",
     "return",
-    "lambda",
-    "class",
-    "self",
     "if",
     "else",
     "elif",
-    "for",
+    "lambda",
     "white",
-    "try",
-    "except",
-    "finally",
-    "with",
+    "for",
+    "in",
+
+    "global",
+    "nonlocal",
+
+    "raise",
+    "assert",
+
+    "break",
+    "continue",
+    "pass",
+
     "None",
     "True",
     "False"

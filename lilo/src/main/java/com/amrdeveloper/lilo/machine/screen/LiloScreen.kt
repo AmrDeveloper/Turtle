@@ -21,7 +21,7 @@ class LiloScreen(
 
     override fun getPointers(): MutableList<LiloPointer> = turtles
 
-    fun updateScreen() {
-        update()
+    fun clearScreen() {
+        turtles.clear()
     }
 }

@@ -42,6 +42,8 @@ class HomeViewModel : ViewModel() {
     }
 
     fun runLiloCode(source: String) {
+        liloScreen.clearScreen()
+
         terminalOutput.add(TerminalLine.Start(text = "liloc main.lilo"))
         viewModelScope.launch(context = Dispatchers.IO) {
             val lexer = LiloLexer(source)

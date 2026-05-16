@@ -21,6 +21,9 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
     init {
         // Draw shapes
         setAttr(name = "forward", value = TurtleForward)
+        setAttr(name = "bf", value = TurtleForward)
+        setAttr(name = "backward", value = TurtleBackword)
+        setAttr(name = "bk", value = TurtleBackword)
         setAttr(name = "left", value = TurtleLeft)
         setAttr(name = "right", value = TurtleRight)
         setAttr(name = "circle", value = TurtleCircle)
@@ -76,6 +79,37 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
 
         pointer.x = dstX
         pointer.y = dstY
+        return LiloResult.Success(data = LiloNone)
+    }
+}
+
+private object TurtleBackword : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2 || args[1] !is LiloFloat) {
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.backward` expect 1 floats as distance"))
+        }
+
+        val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+        val self = args[0] as LiloTurtle
+        val distance = (args[1] as LiloFloat).value
+        val pointer = screen.getPointerAt(idx = self.id)!!
+
+        val radius = Math.toRadians(pointer.degree.toDouble())
+        val dstX = pointer.x - (distance * cos(x = radius)).toFloat()
+        val dstY = pointer.y - (distance * sin(x = radius)).toFloat()
+
+        if (pointer.penDown) {
+            pointer.path.lineTo(x = dstX, y = dstY)
+        } else {
+            pointer.path.moveTo(x = dstX, y = dstY)
+        }
+
+        pointer.x = dstX
+        pointer.y = dstY
+
         return LiloResult.Success(data = LiloNone)
     }
 }

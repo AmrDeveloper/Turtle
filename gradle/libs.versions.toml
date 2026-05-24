@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.21"
-androidGradlePlugin = "9.2.0"
+androidGradlePlugin = "9.2.1"
 compileSdk = "37"
 minSdk = "24"
 
@@ -11,7 +11,7 @@ coreKtx = "1.18.0"
 activityCompose = "1.13.0"
 material = "1.14.0"
 material3 = "1.4.0"
-composeBom = "2026.05.00"
+composeBom = "2026.05.01"
 lifecycle = "2.10.0"
 
 junit = "4.13.2"

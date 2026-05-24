@@ -2,9 +2,8 @@ package com.amrdeveloper.lilo.parser
 
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
-import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
-import com.amrdeveloper.lilo.common.toSuccessData
+import com.amrdeveloper.lilo.common.valueOr
 
 class LiloLexer(val source: String) {
 
@@ -26,19 +25,13 @@ class LiloLexer(val source: String) {
 
             when (val c = peek()) {
                 in 'a'..'z', in 'A'..'Z', '_' -> {
-                    val tokenOrErr = consumeSymbolOrKeyword()
-                    if (tokenOrErr.isFailure()) {
-                        return tokenOrErr.toFailure()
-                    }
-                    tokens.add(tokenOrErr.toSuccessData())
+                    val token = consumeSymbolOrKeyword().valueOr { return it.toFailure() }
+                    tokens.add(token)
                 }
 
                 in '0'..'9' -> {
-                    val tokenOrErr = consumeNumber()
-                    if (tokenOrErr.isFailure()) {
-                        return tokenOrErr.toFailure()
-                    }
-                    tokens.add(tokenOrErr.toSuccessData())
+                    val token = consumeNumber().valueOr { return it.toFailure() }
+                    tokens.add(token)
                 }
 
                 '+', '-', '*', '/', '%' -> {
@@ -94,11 +87,8 @@ class LiloLexer(val source: String) {
                 }
 
                 '\'', '"' -> {
-                    val stringTokenOrErr = consumeStringLiteral()
-                    if (stringTokenOrErr.isFailure()) {
-                        return stringTokenOrErr.toFailure()
-                    }
-                    tokens.add(stringTokenOrErr.toSuccessData())
+                    val stringToken = consumeStringLiteral().valueOr { return it.toFailure() }
+                    tokens.add(stringToken)
                 }
 
                 else -> {

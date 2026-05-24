@@ -44,16 +44,24 @@ import com.amrdeveloper.lilo.ast.UnaryExpr
 import com.amrdeveloper.lilo.ast.WhileStmt
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.valueOr
 
+/// Parser for the Lilo Programming Language
+///
+/// Reference:
+///   - https://docs.python.org/3.15/reference/grammar.html
+///
 class LiloParser(val tokens: List<LiloToken>) {
 
     private var currentPos: Int = 0
 
+    // statements: statement+
     fun parse(): LiloResult<LiloProgram> {
         val nodes = mutableListOf<LiloStmt>()
         while (!isAtEnd()) {
+            match(kind = LiloTokenKind.NEW_LINE)
             val stmt = parseStmt().valueOr { return it.toFailure() }
             nodes.add(stmt)
         }
@@ -61,29 +69,56 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseStmt(): LiloResult<LiloStmt> {
+        return parseCompoundStmt()
+    }
+
+    // simple_stmt:
+    //    | function_def
+    //    | if_stmt
+    //    | for_stmt
+    //    | while_stmt
+    private fun parseCompoundStmt() : LiloResult<LiloStmt> {
         return when (peek().kind) {
-            LiloTokenKind.FROM_KEYWORD -> parseFromImportStmt()
-            LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
-
-            LiloTokenKind.DEF_KEYWORD -> parseFunctionStmt()
-
-            LiloTokenKind.GLOBAL_KEYWORD -> parseGlobalStmt()
-            LiloTokenKind.NON_LOCAL_KEYWORD -> parseNonLocalStmt()
+            LiloTokenKind.DEF_KEYWORD -> parseFunctionDefStmt()
             LiloTokenKind.IF_KEYWORD -> parseIfStmt()
             LiloTokenKind.FOR_KEYWORD -> parseForStmt()
             LiloTokenKind.WHILE_KEYWORD -> parseWhileStmt()
+            else -> parseSimpleStmt()
+        }
+    }
+
+    // simple_stmt:
+    //    | assignment
+    //    | import_stmt
+    //    | return_stmt
+    //    | raise_stmt
+    //    | pass_stmt
+    //    | yield_stmt
+    //    | assert_stmt
+    //    | break_stmt
+    //    | continue_stmt
+    //    | global_stmt
+    //    | nonlocal_stmt
+    private fun parseSimpleStmt() : LiloResult<LiloStmt> {
+        val simpleStmtRes =  when (peek().kind) {
+            LiloTokenKind.FROM_KEYWORD -> parseFromImportStmt()
+            LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
+            LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
+            LiloTokenKind.PASS_KEYWORD -> parsePassStmt()
 
             LiloTokenKind.RAISE_KEYWORD -> parseRaiseStmt()
             LiloTokenKind.ASSERT_KEYWORD -> parseAssertStmt()
 
             LiloTokenKind.BREAK_KEYWORD -> parseBreakStmt()
             LiloTokenKind.CONTINUE_KEYWORD -> parseContinueStmt()
-            LiloTokenKind.PASS_KEYWORD -> parsePassStmt()
-            LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
 
-            LiloTokenKind.L_BRACE -> parseBlockStmt()
+            LiloTokenKind.GLOBAL_KEYWORD -> parseGlobalStmt()
+            LiloTokenKind.NON_LOCAL_KEYWORD -> parseNonLocalStmt()
             else -> parseAssignmentStmt()
         }
+        if (simpleStmtRes.isFailure()) return simpleStmtRes
+        consumeSemiOrNewline()
+        return simpleStmtRes
     }
 
     private fun parseDotConnectedNames(): LiloResult<List<String>> {
@@ -91,7 +126,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         do {
             val name = expectAndConsume(
-                kind = LiloTokenKind.SYMBOL,
+                kind = LiloTokenKind.NAME,
                 message = "Expect module name"
             ).valueOr { return it.toFailure() }
             names.add(name.lexeme!!)
@@ -113,7 +148,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             message = "Expect `import` keyword `from module`"
         ).valueOr { return it.toFailure() }
 
-        val hasOpenParentheses = match(kind = LiloTokenKind.LPAR)
+        val hasOpenParentheses = match(kind = LiloTokenKind.L_PAR)
 
         // from <module> import *
         if (isPeek(kind = LiloTokenKind.STAR)) {
@@ -127,7 +162,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             // Advance `*`
             advance()
 
-            consumeOptional(kind = LiloTokenKind.SEMICOLON)
+            consumeOptionalSemi()
             val fromImportStmt = FromImportStmt(module = moduleName)
             return LiloResult.Success(data = fromImportStmt)
         }
@@ -137,7 +172,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             // Parse module name
             val name =
                 expectAndConsume(
-                    kind = LiloTokenKind.SYMBOL,
+                    kind = LiloTokenKind.NAME,
                     message = "Expect symbol name after 'import'"
                 ).valueOr { return it.toFailure() }
 
@@ -146,7 +181,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                 // Consume alias name
                 alias =
                     expectAndConsume(
-                        kind = LiloTokenKind.SYMBOL,
+                        kind = LiloTokenKind.NAME,
                         message = "Expect symbol after `as`"
                     ).valueOr { return it.toFailure() }.lexeme
             }
@@ -156,12 +191,12 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         if (hasOpenParentheses) {
             expectAndConsume(
-                kind = LiloTokenKind.RPAR,
+                kind = LiloTokenKind.R_PAR,
                 message = "Expect `)` after imported symbols"
             ).valueOr { return it.toFailure() }
         }
 
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
 
         val fromImportStmt = FromImportStmt(module = moduleName, symbols = importedSymbols)
         return LiloResult.Success(data = fromImportStmt)
@@ -180,7 +215,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             if (match(kind = LiloTokenKind.AS_KEYWORD)) {
                 // Consume alias name
                 alias = expectAndConsume(
-                    kind = LiloTokenKind.SYMBOL,
+                    kind = LiloTokenKind.NAME,
                     message = "Expect symbol after `as`"
                 ).valueOr { return it.toFailure() }.lexeme
             }
@@ -188,43 +223,46 @@ class LiloParser(val tokens: List<LiloToken>) {
             modules.add(Pair(names, alias))
         } while (match(kind = LiloTokenKind.COMMA))
 
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = ImportStmt(modules))
     }
 
-    private fun parseFunctionStmt(): LiloResult<FunctionStmt> {
+    private fun parseFunctionDefStmt(): LiloResult<FunctionStmt> {
         // Advance 'def' keyword
         advance()
 
         val name = expectAndConsume(
-            kind = LiloTokenKind.SYMBOL,
+            kind = LiloTokenKind.NAME,
             message = "Expect function name"
         ).valueOr { return it.toFailure() }
 
         expectAndConsume(
-            kind = LiloTokenKind.LPAR,
+            kind = LiloTokenKind.L_PAR,
             message = "Expect `(` after function name"
         ).valueOr { return it.toFailure() }
 
         val nodes = mutableListOf<String>()
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.RPAR).not()) {
+        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_PAR).not()) {
             val parameter = expectAndConsume(
-                kind = LiloTokenKind.SYMBOL,
+                kind = LiloTokenKind.NAME,
                 message = "Expect parameter name"
             ).valueOr { return it.toFailure() }
-
             nodes.add(parameter.lexeme!!)
 
-            consumeCommaOr { break }
+            consumeCommaOr { break@loop }
         }
 
         expectAndConsume(
-            kind = LiloTokenKind.RPAR,
+            kind = LiloTokenKind.R_PAR,
             message = "Expect `)` after parameters"
         ).valueOr { return it.toFailure() }
 
+        consumeOr(kind = LiloTokenKind.COLON) {
+            return createDiagnostic(peek().loc, message = "Expected `:` after function parameters")
+        }
+
         val block = parseBlockStmt().valueOr { return it.toFailure() }
-        val functionStmt = FunctionStmt(name = name.lexeme!!, params = nodes, body = block.nodes)
+        val functionStmt = FunctionStmt(name = name.lexeme!!, params = nodes, body = block)
         return LiloResult.Success(data = functionStmt)
     }
 
@@ -233,16 +271,16 @@ class LiloParser(val tokens: List<LiloToken>) {
         advance()
 
         val names = mutableListOf<String>()
-        while (!isAtEnd()) {
+        loop@ while (!isAtEnd()) {
             val name = expectAndConsume(
-                kind = LiloTokenKind.SYMBOL,
+                kind = LiloTokenKind.NAME,
                 message = "Expect `Name` after global"
             ).valueOr { return it.toFailure() }.lexeme!!
             names.add(name)
 
-            consumeCommaOr { break }
+            consumeCommaOr { break@loop }
         }
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = GlobalStmt(names))
     }
 
@@ -251,25 +289,36 @@ class LiloParser(val tokens: List<LiloToken>) {
         advance()
 
         val names = mutableListOf<String>()
-        while (!isAtEnd()) {
+        loop@ while (!isAtEnd()) {
             val name = expectAndConsume(
-                kind = LiloTokenKind.SYMBOL,
+                kind = LiloTokenKind.NAME,
                 message = "Expect `Name` after nonlocal"
             ).valueOr { return it.toFailure() }.lexeme!!
             names.add(name)
 
-            consumeCommaOr { break }
+            consumeCommaOr { break@loop }
         }
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = NonLocalStmt(names))
     }
 
+    // if_stmt:
+    //    | 'if' named_expression ':' block elif_stmt
+    //    | 'if' named_expression ':' block [else_block]
+    // elif_stmt:
+    //    | 'elif' named_expression ':' block elif_stmt
+    //    | 'elif' named_expression ':' block [else_block]
+    //  else_block:
+    //    | 'else' ':' block
     private fun parseIfStmt(): LiloResult<IfStmt> {
         // Advance 'if' keyword
         advance()
 
         val condition = parseExpr().valueOr { return it.toFailure() }
-        val body = parseStmt().valueOr { return it.toFailure() }
+        consumeOr(kind = LiloTokenKind.COLON) {
+            return createDiagnostic(peek().loc, message = "Expected `:` after if condition")
+        }
+        val body = parseBlockStmt().valueOr { return it.toFailure() }
 
         val ifs = mutableListOf<Pair<LiloExpr, LiloStmt>>()
         ifs.add(condition to body)
@@ -277,14 +326,21 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Parse zero or multiples else if statements
         while (match(kind = LiloTokenKind.ELIF_KEYWORD)) {
             val elifCondition = parseExpr().valueOr { return it.toFailure() }
-            val elifBody = parseStmt().valueOr { return it.toFailure() }
+            consumeOr(kind = LiloTokenKind.COLON) {
+                return createDiagnostic(peek().loc, message = "Expected `:` after elif condition")
+            }
+
+            val elifBody = parseBlockStmt().valueOr { return it.toFailure() }
             ifs.add(elifCondition to elifBody)
         }
 
         // Parse `else` body
         var elseBlock: LiloStmt? = null
         if (match(kind = LiloTokenKind.ELSE_KEYWORD)) {
-            elseBlock = parseStmt().valueOr { return it.toFailure() }
+            consumeOr(kind = LiloTokenKind.COLON) {
+                return createDiagnostic(peek().loc, message = "Expected `:` after else")
+            }
+            elseBlock = parseBlockStmt().valueOr { return it.toFailure() }
         }
 
         return LiloResult.Success(data = IfStmt(ifs, elseBlock))
@@ -304,46 +360,75 @@ class LiloParser(val tokens: List<LiloToken>) {
         ).valueOr { return it.toFailure() }
 
         val iter = parseExpr().valueOr { return it.toFailure() }
-        val body = parseStmt().valueOr { return it.toFailure() }
+        consumeOr(kind = LiloTokenKind.COLON) {
+            return createDiagnostic(peek().loc, message = "Expected `:` after for iter")
+        }
+
+        val body = parseBlockStmt().valueOr { return it.toFailure() }
 
         var elseBlock: LiloStmt? = null
         if (match(kind = LiloTokenKind.ELSE_KEYWORD)) {
-            elseBlock = parseStmt().valueOr { return it.toFailure() }
+            consumeOr(kind = LiloTokenKind.COLON) {
+                return createDiagnostic(peek().loc, message = "Expected `:` after for-else")
+            }
+            elseBlock = parseBlockStmt().valueOr { return it.toFailure() }
         }
 
         return LiloResult.Success(data = ForStmt(target, iter, body, elseBlock))
     }
 
+    // while_stmt:
+    //    | 'while' named_expression ':' block [else_block]
     private fun parseWhileStmt(): LiloResult<WhileStmt> {
         // Advance 'while' keyword
         advance()
 
         val condition = parseExpr().valueOr { return it.toFailure() }
-        val body = parseStmt().valueOr { return it.toFailure() }
+
+        consumeOr(kind = LiloTokenKind.COLON) {
+            return createDiagnostic(peek().loc, message = "Expected `:` after while condition")
+        }
+
+        val body = parseBlockStmt().valueOr { return it.toFailure() }
 
         var elseBlock: LiloStmt? = null
         if (match(kind = LiloTokenKind.ELSE_KEYWORD)) {
-            elseBlock = parseStmt().valueOr { return it.toFailure() }
+            consumeOr(kind = LiloTokenKind.COLON) {
+                return createDiagnostic(peek().loc, message = "Expected `:` after function parameters")
+            }
+
+            elseBlock = parseBlockStmt().valueOr { return it.toFailure() }
         }
 
         return LiloResult.Success(data = WhileStmt(condition, body, elseBlock))
     }
 
-    private fun parseBlockStmt(): LiloResult<BlockStmt> {
-        // Advance '{'
-        advance()
+    // block:
+    //    | NEWLINE INDENT statements DEDENT
+    //    | simple_stmts
+    private fun parseBlockStmt(): LiloResult<LiloStmt> {
+        // simple_stmts
+        if (match(kind = LiloTokenKind.NEW_LINE).not()) {
+            return parseSimpleStmt()
+        }
+
+        expectAndConsume(
+            kind = LiloTokenKind.INDENT,
+            message = "expected 'indent' before block"
+        ).valueOr { return it.toFailure() }
 
         val nodes = mutableListOf<LiloStmt>()
-        while (!isAtEnd() && peek().kind != LiloTokenKind.R_BRACE) {
+        while (!isAtEnd() && peek().kind != LiloTokenKind.DEDENT) {
             val stmt = parseStmt().valueOr { return it.toFailure() }
             nodes.add(stmt)
         }
 
-        expectAndConsume(
-            kind = LiloTokenKind.R_BRACE,
-            message = "expected ']' at end of block"
-        ).valueOr { return it.toFailure() }
+        if (!isPeek(kind = LiloTokenKind.DEDENT) && !isPeek(kind = LiloTokenKind.END_MARKER)) {
+            return createDiagnostic(peek().loc, message = "expected 'DEDENT' at end of block")
+        }
 
+        // Consume `DEDENT` or `END_MARKER`
+        advance()
         return LiloResult.Success(data = BlockStmt(nodes = nodes))
     }
 
@@ -351,7 +436,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'return' keyword
         advance()
 
-        if (match(kind = LiloTokenKind.SEMICOLON)) {
+        if (match(kind = LiloTokenKind.SEMI)) {
             return LiloResult.Success(data = ReturnStmt())
         }
 
@@ -360,7 +445,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
 
         val returnValue = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = ReturnStmt(value = returnValue))
     }
 
@@ -374,7 +459,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         if (match(kind = LiloTokenKind.FROM_KEYWORD)) {
             cause = parseExpr().valueOr { return it.toFailure() }
         }
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = RaiseStmt(exc, cause))
     }
 
@@ -385,28 +470,28 @@ class LiloParser(val tokens: List<LiloToken>) {
         val test = parseExpr().valueOr { return it.toFailure() }
         var msg: LiloExpr? = null
         if (match(kind = LiloTokenKind.COMMA)) msg = parseExpr().valueOr { return it.toFailure() }
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = AssertStmt(test, msg))
     }
 
     private fun parseBreakStmt() : LiloResult<BreakStmt> {
         // Advance 'break' keyword
         advance()
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = BreakStmt())
     }
 
     private fun parseContinueStmt() : LiloResult<ContinueStmt> {
         // Advance 'Continue' keyword
         advance()
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = ContinueStmt())
     }
 
     private fun parsePassStmt() : LiloResult<PassStmt> {
         // Advance 'pass' keyword
         advance()
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = PassStmt())
     }
 
@@ -414,10 +499,10 @@ class LiloParser(val tokens: List<LiloToken>) {
         val lhs = parseExpr().valueOr { return it.toFailure() }
         if (match(kind = LiloTokenKind.EQ)) {
             val value = parseExpr().valueOr { return it.toFailure() }
-            consumeOptional(kind = LiloTokenKind.SEMICOLON)
+            consumeOptionalSemi()
             return LiloResult.Success(data = AssignStmt(lValue = lhs, rValue = value))
         }
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
         return LiloResult.Success(data = ExprStmt(expr = lhs))
     }
 
@@ -504,7 +589,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.MINUS -> BinaryOp.MINUS
             LiloTokenKind.STAR -> BinaryOp.MUL
             LiloTokenKind.SLASH -> BinaryOp.DIV
-            LiloTokenKind.MODULO -> BinaryOp.MOD
+            LiloTokenKind.PERCENT -> BinaryOp.MOD
             else -> TODO(reason = "Unreachable BinaryOp")
         }
     }
@@ -545,17 +630,17 @@ class LiloParser(val tokens: List<LiloToken>) {
         var expr = parsePrimaryExpr().valueOr { return it.toFailure() }
 
         while (true) {
-            if (match(kind = LiloTokenKind.LPAR)) {
+            if (match(kind = LiloTokenKind.L_PAR)) {
                 val args = mutableListOf<LiloExpr>()
-                while (!isAtEnd() && isPeek(LiloTokenKind.RPAR).not()) {
+                loop@ while (!isAtEnd() && isPeek(LiloTokenKind.R_PAR).not()) {
                     val expr = parseExpr().valueOr { return it.toFailure() }
                     args.add(expr)
 
-                    consumeCommaOr { break }
+                    consumeCommaOr { break@loop }
                 }
 
                 expectAndConsume(
-                    kind = LiloTokenKind.RPAR,
+                    kind = LiloTokenKind.R_PAR,
                     message = "expected ')' at end of call"
                 ).valueOr { return it.toFailure() }
 
@@ -563,11 +648,11 @@ class LiloParser(val tokens: List<LiloToken>) {
                 continue
             }
 
-            if (match(kind = LiloTokenKind.L_BRACKET)) {
+            if (match(kind = LiloTokenKind.L_SQB)) {
                 val slice = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
 
                 expectAndConsume(
-                    kind = LiloTokenKind.R_BRACKET,
+                    kind = LiloTokenKind.R_SQB,
                     message = "expected ']' after index value"
                 ).valueOr { return it.toFailure() }
 
@@ -576,12 +661,12 @@ class LiloParser(val tokens: List<LiloToken>) {
             }
 
             if (match(kind = LiloTokenKind.DOT)) {
-                val callSymbol = expectAndConsume(
-                    kind = LiloTokenKind.SYMBOL,
+                val callNAME = expectAndConsume(
+                    kind = LiloTokenKind.NAME,
                     message = "expected symbol after `.` operator"
                 ).valueOr { return it.toFailure() }
 
-                expr = GetExpr(obj = expr, name = SymbolExpr(value = callSymbol))
+                expr = GetExpr(obj = expr, name = SymbolExpr(value = callNAME))
                 continue
             }
 
@@ -594,11 +679,11 @@ class LiloParser(val tokens: List<LiloToken>) {
     private fun parsePrimaryExpr(): LiloResult<LiloExpr> {
         val token = peek()
         return when (token.kind) {
-            LiloTokenKind.SYMBOL -> {
+            LiloTokenKind.NAME -> {
                 LiloResult.Success(data = SymbolExpr(value = advance()))
             }
 
-            LiloTokenKind.STR_LITERAL -> {
+            LiloTokenKind.STRING -> {
                 LiloResult.Success(data = StrExpr(value = advance()))
             }
 
@@ -624,8 +709,8 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             LiloTokenKind.LAMBDA_KEYWORD -> parseLambdaExpr()
             LiloTokenKind.L_BRACE -> parseSetOrDictionaryExpr()
-            LiloTokenKind.L_BRACKET -> parseListExpr()
-            LiloTokenKind.LPAR -> parseGroupOrTupleExpr()
+            LiloTokenKind.L_SQB -> parseListExpr()
+            LiloTokenKind.L_PAR -> parseGroupOrTupleExpr()
 
             else -> createDiagnostic(
                 loc = token.loc,
@@ -639,15 +724,14 @@ class LiloParser(val tokens: List<LiloToken>) {
         advance()
 
         val list = mutableListOf<LiloExpr>()
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_BRACKET).not()) {
+        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_SQB).not()) {
             val expr = parseExpr().valueOr { return it.toFailure() }
             list.add(expr)
-
-            consumeCommaOr { break }
+            consumeCommaOr { break@loop }
         }
 
         expectAndConsume(
-            kind = LiloTokenKind.R_BRACKET,
+            kind = LiloTokenKind.R_SQB,
             message = "expected ']' at end of list"
         ).valueOr { return it.toFailure() }
 
@@ -660,15 +744,15 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         var hasComma = false
         val values = mutableListOf<LiloExpr>()
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.RPAR).not()) {
+        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_PAR).not()) {
             val expr = parseExpr().valueOr { return it.toFailure() }
             values.add(expr)
 
-            hasComma = consumeCommaOr { break }
+            hasComma = consumeCommaOr { break@loop }
         }
 
         expectAndConsume(
-            kind = LiloTokenKind.RPAR,
+            kind = LiloTokenKind.R_PAR,
             message = "expected ')' after group or tuple expr"
         ).valueOr { return it.toFailure() }
 
@@ -682,14 +766,14 @@ class LiloParser(val tokens: List<LiloToken>) {
         advance()
 
         val parameters = mutableListOf<String>()
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.COLON).not()) {
+        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.COLON).not()) {
             val parameter = expectAndConsume(
-                kind = LiloTokenKind.SYMBOL,
+                kind = LiloTokenKind.NAME,
                 message = "expected 'symbol' as lambda parameter name"
             ).valueOr { return it.toFailure() }
             parameters.add(parameter.lexeme!!)
 
-            consumeCommaOr { break }
+            consumeCommaOr { break@loop }
         }
 
         expectAndConsume(
@@ -699,7 +783,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         val body = parseExpr().valueOr { return it.toFailure() }
 
-        consumeOptional(kind = LiloTokenKind.SEMICOLON)
+        consumeOptionalSemi()
 
         val returnStmt = ReturnStmt(value = body)
         return LiloResult.Success(data = LambdaExpr(params = parameters, body = returnStmt))
@@ -713,7 +797,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         val setList = mutableListOf<LiloExpr>()
         val dictPairs = mutableListOf<Pair<LiloExpr, LiloExpr>>()
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_BRACE).not()) {
+        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_BRACE).not()) {
             val key = parseExpr().valueOr { return it.toFailure() }
 
             // Parse map key and value pairs
@@ -731,7 +815,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             // In case it's not dictionary, register it as set value
             if (isDictionary.not()) setList.add(key)
 
-            consumeCommaOr { break }
+            consumeCommaOr { break@loop }
         }
 
         expectAndConsume(
@@ -761,14 +845,25 @@ class LiloParser(val tokens: List<LiloToken>) {
         return previous()
     }
 
-    private fun consumeOptional(kind: LiloTokenKind): LiloToken? =
-        peek().takeIf { it.kind == kind }?.also { advance() }
+    private fun consumeOptionalSemi(): LiloToken? =
+        peek().takeIf { it.kind == LiloTokenKind.SEMI }?.also { advance() }
 
-    private inline fun consumeCommaOr(or: () -> Nothing): Boolean {
-        if (match(kind = LiloTokenKind.COMMA)) {
+    private inline fun consumeOr(kind: LiloTokenKind, or: () -> Nothing): Boolean {
+        if (match(kind = kind)) {
             return true
         }
         or()
+    }
+
+    private inline fun consumeCommaOr(or: () -> Nothing): Boolean {
+        return consumeOr(kind = LiloTokenKind.COMMA) { or() }
+    }
+
+    private fun consumeSemiOrNewline(): LiloResult<Unit> {
+        if (match(kind = LiloTokenKind.SEMI) || match(kind = LiloTokenKind.NEW_LINE)) {
+            return LiloResult.Success(data = Unit)
+        }
+        return LiloResult.Failure(error = LiloDiagnostic(peek().loc, "Expected `;` or `newline`"))
     }
 
     private fun match(kind: LiloTokenKind): Boolean {
@@ -779,15 +874,11 @@ class LiloParser(val tokens: List<LiloToken>) {
         return false
     }
 
-    private fun peek(): LiloToken {
-        return tokens[currentPos]
-    }
+    private fun peek(): LiloToken = tokens[currentPos]
 
     private fun isPeek(kind: LiloTokenKind) = peek().kind == kind
 
-    private fun previous(): LiloToken {
-        return tokens[currentPos - 1]
-    }
+    private fun previous(): LiloToken = tokens[currentPos - 1]
 
     private fun isAtEnd() = peek().kind.isEOF()
 }

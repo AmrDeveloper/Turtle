@@ -1,15 +1,9 @@
 package com.amrdeveloper.lilo.parser
 
-import com.amrdeveloper.lilo.common.LiloDiagnostic
-import com.amrdeveloper.lilo.common.LiloResult
-import com.amrdeveloper.lilo.common.isFailure
-import com.amrdeveloper.lilo.common.isSuccess
-import com.amrdeveloper.lilo.common.toFailureError
-import com.amrdeveloper.lilo.common.toSuccessData
-import org.junit.Assert
+import com.amrdeveloper.lilo.utils.isValidLiloSyntax
 import org.junit.Test
 
-class LiloParserTest {
+class LiloParserSimpleTest {
 
     @Test
     fun `test parse import statement`() {
@@ -28,31 +22,6 @@ class LiloParserTest {
             "from random import (random);",
             "from random import *",
             "from random import *;"
-        )
-
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
-    }
-
-    @Test
-    fun `test function decl statement`() {
-        val sourceCodes = listOf(
-            """
-            def foo() {
-               return
-            }
-            """, """
-            def foo() {
-               return 1;
-            }
-            """, """
-            def foo() {
-               return 1
-            }
-            """, """
-            def foo() {
-              return 1, 2  
-            }
-            """
         )
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
@@ -136,26 +105,6 @@ class LiloParserTest {
     }
 
     @Test
-    fun `test if statement`() {
-        val sourceCodes = listOf(
-            """
-            if (True) {}
-            """,
-            """
-            if (True) {}
-            else {}
-            """,
-            """
-            if (True) {}
-            elif (True) {}
-            else {}
-            """,
-        )
-
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
-    }
-
-    @Test
     fun `test global and nonlocal statements`() {
         val sourceCodes = listOf(
             "global a",
@@ -178,38 +127,4 @@ class LiloParserTest {
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
     }
-
-    @Test
-    fun `test for statement`() {
-        val sourceCodes = listOf(
-            """
-            for a in list {
-               print(a)
-            }
-            """, """
-            for a in list {
-               print(a)
-            } else {
-               print(b)
-            }
-            """
-        )
-
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
-    }
-}
-
-fun isValidLiloSyntax(sourceCode: String): Boolean {
-    val lexerResult = LiloLexer(source = sourceCode).tokenize()
-    if (lexerResult.isFailure()) {
-        println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
-        return false
-    }
-
-    val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
-    if (parseResult.isFailure()) {
-        println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
-        return false
-    }
-    return true
 }

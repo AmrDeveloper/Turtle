@@ -2,15 +2,15 @@ package com.amrdeveloper.lilo.`object`
 
 import com.amrdeveloper.lilo.ast.LiloStmt
 import com.amrdeveloper.lilo.common.LiloResult
-import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
+import com.amrdeveloper.lilo.common.valueOr
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloEnvironment
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.type.liloFunctionType
 
-data class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
+data class LiloFunction(val params: List<String>, val body: LiloStmt) :
     LiloObject(liloFunctionType), LiloCallable {
 
     override fun invoke(
@@ -25,12 +25,9 @@ data class LiloFunction(val params: List<String>, val body: List<LiloStmt>) :
         }
 
         try {
-            for (stmt in body) {
-                val result = interpreter.visit(stmt)
-                if (result.isFailure()) {
-                    interpreter.environment = previous
-                    return result.toFailure()
-                }
+            interpreter.visit(stmt = body).valueOr {
+                interpreter.environment = previous
+                return it.toFailure()
             }
         } catch (retSignal: LiloReturnSignal) {
             if (retSignal.value != null) {

@@ -9,7 +9,7 @@ data class ImportStmt(val modules : List<Pair<List<String>, String?>>) : LiloStm
 
 data class FunctionStmt(val name: String,
                         val params: List<String>,
-                        val body: List<LiloStmt>) : LiloStmt
+                        val body: LiloStmt) : LiloStmt
 
 data class GlobalStmt(val names: List<String>) : LiloStmt
 

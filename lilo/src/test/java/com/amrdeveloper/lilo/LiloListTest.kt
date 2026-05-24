@@ -23,13 +23,13 @@ class LiloListTest {
             v = []
             v.append(1)
             print(len(v))
-            """,
+            """.trimIndent(),
             """
             a = [1]
             b = [2]
             a.extend(b)
             print(len(a))
-            """,
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(

@@ -1,5 +1,7 @@
 package com.amrdeveloper.lilo.parser
 
+/// Representing the kind of Token in Lilo Programming Language.
+/// Inspired from `cpython/pycore_token.h`
 enum class LiloTokenKind {
     FROM_KEYWORD,
     IMPORT_KEYWORD,
@@ -28,23 +30,23 @@ enum class LiloTokenKind {
     FALSE_KEYWORD,
     NONE_KEYWORD,
 
-    PLUS,
-    MINUS,
-    STAR,
-    SLASH,
-    MODULO,
+    PLUS,                // +
+    MINUS,               // -
+    STAR,                // *
+    SLASH,               // /
+    PERCENT,             // %
 
-    LPAR,               // (
-    RPAR,               // )
-    L_BRACKET,          // [
-    R_BRACKET,          // ]
-    L_BRACE,            // {
-    R_BRACE,            // }
+    L_PAR,               // (
+    R_PAR,               // )
+    L_SQB,               // [
+    R_SQB,               // ]
+    L_BRACE,             // {
+    R_BRACE,             // }
 
-    DOT,
-    COMMA,
-    COLON,
-    SEMICOLON,
+    DOT,                 // .
+    COMMA,               // ,
+    COLON,               // :
+    SEMI,                // ;
 
     EQ,
     EQ_EQ,
@@ -55,13 +57,17 @@ enum class LiloTokenKind {
     LT,
     LE,
 
-    SYMBOL,
-    STR_LITERAL,
+    NAME,
+    STRING,
     INT_LITERAL,
     FLOAT_LITERAL,
     COMPLEX_LITERAL,
 
-    END_OF_FILE,
+    NEW_LINE,
+    INDENT,
+    DEDENT,
+
+    END_MARKER,
 }
 
 data class LiloLoc(val line: Int, val start: Int, val end: Int)
@@ -102,19 +108,19 @@ fun getLiloOneCharTokenMap() = mapOf(
     '-' to LiloTokenKind.MINUS,
     '*' to LiloTokenKind.STAR,
     '/' to LiloTokenKind.SLASH,
-    '%' to LiloTokenKind.MODULO,
+    '%' to LiloTokenKind.PERCENT,
 
-    '(' to LiloTokenKind.LPAR,
-    ')' to LiloTokenKind.RPAR,
-    '[' to LiloTokenKind.L_BRACKET,
-    ']' to LiloTokenKind.R_BRACKET,
+    '(' to LiloTokenKind.L_PAR,
+    ')' to LiloTokenKind.R_PAR,
+    '[' to LiloTokenKind.L_SQB,
+    ']' to LiloTokenKind.R_SQB,
     '{' to LiloTokenKind.L_BRACE,
     '}' to LiloTokenKind.R_BRACE,
 
     '.' to LiloTokenKind.DOT,
     ',' to LiloTokenKind.COMMA,
     ':' to LiloTokenKind.COLON,
-    ';' to LiloTokenKind.SEMICOLON,
+    ';' to LiloTokenKind.SEMI,
 )
 
 fun LiloTokenKind.isTermOperator() = this in listOf(
@@ -125,7 +131,7 @@ fun LiloTokenKind.isTermOperator() = this in listOf(
 fun LiloTokenKind.isFactorOperator() = this in listOf(
     LiloTokenKind.STAR,
     LiloTokenKind.SLASH,
-    LiloTokenKind.MODULO
+    LiloTokenKind.PERCENT
 )
 
 fun LiloTokenKind.isUnaryOperator() = this in listOf(
@@ -145,4 +151,4 @@ fun LiloTokenKind.isComparisonOperator() = this in listOf(
     LiloTokenKind.LE,
 )
 
-fun LiloTokenKind.isEOF() = this == LiloTokenKind.END_OF_FILE
+fun LiloTokenKind.isEOF() = this == LiloTokenKind.END_MARKER

@@ -4,6 +4,7 @@ import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.valueOr
+import java.util.Stack
 
 class LiloLexer(val source: String) {
 
@@ -14,10 +15,14 @@ class LiloLexer(val source: String) {
     private var columnEnd: Int = 0
     private var line: Int = 1
 
+    private val indentStack = Stack<Int>().apply { push(0) }
+
     fun tokenize(): LiloResult<List<LiloToken>> {
         val tokens: MutableList<LiloToken> = mutableListOf()
         while (!isAtEnd()) {
-            ignoreCommentsAndSpaces()
+            val indentTokens = consumeCommentsAndIndentations()
+            tokens.addAll(elements = indentTokens)
+
             if (isAtEnd()) break
 
             startPos = currentPos
@@ -97,7 +102,7 @@ class LiloLexer(val source: String) {
             }
         }
 
-        tokens.add(createToken(kind = LiloTokenKind.END_OF_FILE))
+        tokens.add(createToken(kind = LiloTokenKind.END_MARKER))
         return LiloResult.Success(data = tokens)
     }
 
@@ -105,7 +110,7 @@ class LiloLexer(val source: String) {
         while (!isAtEnd() && peek().isLetterOrDigitOrUnderscore()) advance()
         val lexeme = source.substring(startPos, currentPos)
         val tokenKind =
-            getLiloKeywordsMap().getOrDefault(key = lexeme, defaultValue = LiloTokenKind.SYMBOL)
+            getLiloKeywordsMap().getOrDefault(key = lexeme, defaultValue = LiloTokenKind.NAME)
         return LiloResult.Success(data = createToken(kind = tokenKind, lexeme))
     }
 
@@ -153,22 +158,55 @@ class LiloLexer(val source: String) {
         advance()
 
         val lexeme = source.substring(startPos + 1, currentPos - 1)
-        val str = createToken(kind = LiloTokenKind.STR_LITERAL, lexeme = lexeme)
+        val str = createToken(kind = LiloTokenKind.STRING, lexeme = lexeme)
         return LiloResult.Success(data = str)
     }
 
-    private fun ignoreCommentsAndSpaces() {
+    private fun consumeCommentsAndIndentations() : List<LiloToken> {
+        val indentTokens = mutableListOf<LiloToken>()
         while (!isAtEnd()) {
-            val c = peek()
+            var c = peek()
             when (c) {
-                ' ', '\n', '\t', '\r' -> {
+                '\n' -> {
+                    // Push new line token
+                    indentTokens.add(createToken(kind = LiloTokenKind.NEW_LINE))
+                    // Consume '\n'
+                    advance()
+
+                    // Calculate the indentation for the new line
+                    var indent = 0
+                    while (!isAtEnd() && peek() == ' ') {
+                        advance()
+                        indent += 1
+                    }
+
+                    // Compare the indentation with the top stack
+                    val currIndent = indentStack.peek() ?: 0
+
+                    // If current indentation is bigger that means entering a new scope
+                    if (indent > currIndent) {
+                        indentTokens.add(createToken(kind = LiloTokenKind.INDENT))
+                        indentStack.push(indent)
+                        continue
+                    }
+
+                    // If current indentation is smaller that means leaving the current scope
+                    if (indent < currIndent) {
+                        indentTokens.add(createToken(kind = LiloTokenKind.DEDENT))
+                        indentStack.pop()
+                        indentStack.push(indent)
+                        continue
+                    }
+
+                    continue
+                }
+                ' ', '\t', '\r' -> {
                     advance()
                     continue
                 }
-
                 '#' -> {
-                    while (!isAtEnd() && peek() != '\n') {
-                        advance()
+                    while (!isAtEnd() && c != '\n' && c != '\r') {
+                        c = advance()
                     }
                     continue
                 }
@@ -176,6 +214,7 @@ class LiloLexer(val source: String) {
                 else -> break
             }
         }
+        return indentTokens
     }
 
     private fun createToken(kind: LiloTokenKind): LiloToken {

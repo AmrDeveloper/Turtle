@@ -22,23 +22,19 @@ class LiloInterpreterTest {
             """
             import random
             a = random.random()
-            """,
-
+            """.trimIndent(),
             """
             import random as r
             a = r.random()
-            """,
+            """.trimIndent(),
             """
             from random import random
             a = random()
-            """,
+            """.trimIndent(),
             """
-            from random import (
-                random
-            )
-            
+            from random import (random)
             a = random()
-            """,
+            """.trimIndent(),
         )
 
         for (sourceCode in sourceCodes) {
@@ -69,12 +65,10 @@ class LiloInterpreterTest {
     fun `test evaluate call`() {
         val sourceCodes = mutableListOf(
             """
-            def foo(p) {
-                
-            }
-
+            def foo(p):
+                pass
             foo(10)
-            """,
+            """.trimIndent(),
             """
             import random
             a = random.random()
@@ -111,7 +105,7 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             """
             print(42)
-            """,
+            """.trimIndent(),
         )
 
         for (sourceCode in sourceCodes) {
@@ -145,23 +139,23 @@ class LiloInterpreterTest {
             """
             a = 1 if True else 2
             print(a)
-            """,
+            """.trimIndent(),
             """
             a = 1 if False else (2 if True else 3)
             print(a)  
-            """,
+            """.trimIndent(),
             """
             a = (2 if (False) else 3) if (True) else 2
             print(a)
-            """,
+            """.trimIndent(),
             """
             a = 1 if 1 else 2
             print(a)
-            """,
+            """.trimIndent(),
             """
             a = 1 if 0 else 2
             print(a)
-            """,
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
@@ -202,10 +196,10 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             """
             print(-10)
-            """,
+            """.trimIndent(),
             """
             print(+10)
-            """
+            """.trimIndent()
         )
 
         val expectedOutput = listOf(
@@ -244,11 +238,11 @@ class LiloInterpreterTest {
             """
             identity = lambda a : a
             print(identity(1))
-            """,
+            """.trimIndent(),
             """
             a = lambda a : a + 1
             print(a(1))
-            """,
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
@@ -285,52 +279,41 @@ class LiloInterpreterTest {
     fun `test evaluate if stmt`() {
         val sourceCodes = mutableListOf(
             """
-            if (True) {
+            if True:
                print(1)
-            }
-            """,
+            """.trimIndent(),
             """
-            if (False) {
+            if False:
                print(1)
-            }
-            """,
+            """.trimIndent(),
             """
-            if (False) {
+            if False:
                print(1)
-            }
-            elif (True) {
+            elif True:
                print(2)
-            }
-            """,
+            """.trimIndent(),
             """
-            if (False) {
+            if False:
                print(1)
-            }
-            else {
+            else:
                print(2)
-            }
-            """,
+            """.trimIndent(),
             """
-            if (False) {
+            if False:
                print(1)
-            }
-            elif (False) {
+            elif False:
                print(2)
-            }
-            else {
+            else:
                print(3)
-            }
-            """,
+            """.trimIndent(),
             """
-            if (2) {
+            if 2:
                print(1)
-            }
-            """,
+            """.trimIndent(),
             """
-            if (0) {
+            if 0:
                print(1)
-            }
-            """,
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
@@ -373,35 +356,31 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             """
             x = 5
-            while (x > 0) {
+            while x > 0:
                 print(x)
                 x = x - 1
-            }
-            """,
+            """.trimIndent(),
             """
             x = 5
-            while (x > 0) {
+            while x > 0:
                 print(x)
                 break
-            }
-            """,
+            """.trimIndent(),
             """
             x = 5
-            while (x > 0) {
+            while x > 0:
                 x = x - 1
                 continue
                 print(x)
-            }
-            """,
+            """.trimIndent(),
             """
             x = 5
-            while (x > 5) {
+            while x > 5:
                 print(x)
                 x = x - 1
-            } else {
+            else:
                 print(0)
-            }
-            """,
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
@@ -480,21 +459,19 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             """
             x = 5
-            def foo() {
+            def foo():
               global x
               x = 10
-            }
             foo()
             print(x)
-            """,
+            """.trimIndent(),
             """
             x = 5
-            def foo() {
+            def foo():
               x = 10
-            }
             foo()
             print(x)
-            """,
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(

@@ -108,7 +108,7 @@ private object IntDiv : LiloObject(liloFunctionType), LiloCallable {
         if (lhs is LiloInt && (rhs is LiloInt || rhs is LiloFloat)) {
             return when (rhs) {
                 is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value.toFloat() / rhs.value))
-                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
+                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.toFloat() / rhs.value))
                 else -> LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
             }
         }

@@ -15,6 +15,7 @@ import com.amrdeveloper.lilo.std.builtins.LiloOctFunction
 import com.amrdeveloper.lilo.std.builtins.LiloPrintFunction
 import com.amrdeveloper.lilo.std.builtins.LiloRangeFunction
 import com.amrdeveloper.lilo.std.builtins.LiloTypeFunction
+import com.amrdeveloper.lilo.std.modules.colorsys.liloColorSysModule
 import com.amrdeveloper.lilo.std.modules.gpu.liloGPUModule
 import com.amrdeveloper.lilo.std.modules.math.liloMathModule
 import com.amrdeveloper.lilo.std.modules.random.liloRandomModule
@@ -55,6 +56,7 @@ fun registerLiloStandardLibrary() {
     LiloEnvironment.builtins["gpu"] = liloGPUModule
     LiloEnvironment.builtins["time"] = liloTimeModule
     LiloEnvironment.builtins["turtle"] = liloTurtleModule
+    LiloEnvironment.builtins["colorsys"] = liloColorSysModule
 
     // Register Stdlib functions
     LiloEnvironment.builtins["print"] = LiloPrintFunction

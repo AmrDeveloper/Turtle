@@ -27,7 +27,9 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
         setAttr(name = "backward", value = TurtleBackword)
         setAttr(name = "bk", value = TurtleBackword)
         setAttr(name = "left", value = TurtleLeft)
+        setAttr(name = "lt", value = TurtleLeft)
         setAttr(name = "right", value = TurtleRight)
+        setAttr(name = "rt", value = TurtleRight)
         setAttr(name = "circle", value = TurtleCircle)
 
         // Pointer control

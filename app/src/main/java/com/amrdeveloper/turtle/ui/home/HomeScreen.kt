@@ -23,14 +23,10 @@ import com.amrdeveloper.turtle.ui.components.TurtleTab
 import com.amrdeveloper.turtle.ui.components.TurtleToolbar
 
 private val starterLiloCode = """
-    def foo() {
-      x = 10;
-      def toto() {
-        return x;
-      }
-      return toto()
-    }
-    print(foo());
+    def foo():
+      x = 10
+      return x
+    print(foo())
 """.trimIndent()
 
 private val turtleAppHomeTabs = listOf(

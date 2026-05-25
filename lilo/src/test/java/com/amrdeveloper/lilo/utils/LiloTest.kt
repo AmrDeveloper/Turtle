@@ -10,7 +10,7 @@ import com.amrdeveloper.lilo.parser.LiloParser
 fun isValidLiloTokens(sourceCode: String) : Boolean {
     val lexerResult = LiloLexer(source = sourceCode).tokenize()
     if (lexerResult.isFailure()) {
-        println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+        println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>())
         return false
     }
     return true

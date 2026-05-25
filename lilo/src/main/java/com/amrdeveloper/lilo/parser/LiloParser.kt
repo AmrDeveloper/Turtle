@@ -436,11 +436,10 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'return' keyword
         advance()
 
-        if (match(kind = LiloTokenKind.SEMI)) {
-            return LiloResult.Success(data = ReturnStmt())
-        }
-
-        if (isPeek(kind = LiloTokenKind.R_BRACE)) {
+        if (isPeek(kind = LiloTokenKind.SEMI)
+            || isPeek(kind = LiloTokenKind.NEW_LINE)
+            || isPeek(kind = LiloTokenKind.END_MARKER)) {
+            advance()
             return LiloResult.Success(data = ReturnStmt())
         }
 

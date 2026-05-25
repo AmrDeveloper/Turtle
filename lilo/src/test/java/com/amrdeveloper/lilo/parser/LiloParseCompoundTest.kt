@@ -14,6 +14,10 @@ class LiloParserCompoundTest {
             """
             def identity():
                return 1
+            """.trimIndent(),
+            """
+            def return_none():
+               return
             """.trimIndent()
         )
 

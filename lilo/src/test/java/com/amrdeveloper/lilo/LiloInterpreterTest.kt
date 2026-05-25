@@ -472,11 +472,19 @@ class LiloInterpreterTest {
             foo()
             print(x)
             """.trimIndent(),
+            """
+            def foo():
+              return 10
+            def foo2():
+              return foo()
+            print(foo2())
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
             "10",
             "5",
+            "10",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

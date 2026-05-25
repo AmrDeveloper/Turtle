@@ -20,6 +20,7 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
     }
 
     fun setGlobal(name: String, value : LiloObject) {
+        markGlobal(name)
         val globals = globalScope()
         globals.values[name] = value
     }

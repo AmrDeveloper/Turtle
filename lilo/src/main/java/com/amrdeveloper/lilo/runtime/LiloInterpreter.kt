@@ -160,7 +160,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitFunctionStmt(stmt: FunctionStmt): LiloResult<Unit> {
         val function = LiloFunction(params = stmt.params, body = stmt.body)
-        environment.set(name = stmt.name, value = function)
+        environment.setGlobal(name = stmt.name, value = function)
         return LiloResult.Success(data = Unit)
     }
 
@@ -340,7 +340,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             else liloAttribute
             return runtimeObject(obj = methodOrAttribute)
         }
-        return runtimeException("Invalid `.` expression on lhs")
+        return runtimeException("Invalid `.` expression on $liloObj.${attribute}")
     }
 
     override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {

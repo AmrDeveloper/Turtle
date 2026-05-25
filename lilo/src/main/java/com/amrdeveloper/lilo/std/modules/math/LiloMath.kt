@@ -2,6 +2,7 @@ package com.amrdeveloper.lilo.std.modules.math
 
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.`object`.LiloFloat
+import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloModule
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.runtime.LiloCallable
@@ -95,10 +96,15 @@ object LiloMathRadians : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val argument = args[0]
-        if (argument !is LiloFloat) {
-            return LiloResult.Failure(error = RuntimeException("`math.radians` expect `float` type but got `${argument.type.toString()}`"))
+        if ((argument !is LiloFloat) && argument !is LiloInt) {
+            return LiloResult.Failure(error = RuntimeException("`math.radians` expect `float` or `int` type but got `${argument.type.toString()}`"))
         }
-        val radians = (argument.value * PI / 180.0f).toFloat()
+
+        val radians = when {
+            argument is LiloInt -> (argument.value * PI / 180.0f).toFloat()
+            argument is LiloFloat -> (argument.value * PI / 180.0f).toFloat()
+            else -> 0.0f
+        }
         return LiloResult.Success(data = LiloFloat(value = radians))
     }
 }

@@ -2,10 +2,12 @@ package com.amrdeveloper.lilo.std.modules.turtle
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.machine.screen.LiloScreen
 import com.amrdeveloper.lilo.`object`.LiloBool
 import com.amrdeveloper.lilo.`object`.LiloFloat
+import com.amrdeveloper.lilo.`object`.LiloInt
 import com.amrdeveloper.lilo.`object`.LiloNone
 import com.amrdeveloper.lilo.`object`.LiloObject
 import com.amrdeveloper.lilo.`object`.LiloTuple
@@ -43,6 +45,7 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
         setAttr(name = "down", value = TurtlePenDown)
         setAttr(name = "pd", value = TurtlePenDown)
         setAttr(name = "isdown", value = TurtleIsDown)
+        setAttr(name = "pencolor", value = TurtlePenColor)
 
         setAttr(name = "goto", value = TurtleGoto)
 
@@ -305,5 +308,45 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
         pointer.y = y
 
         return LiloResult.Success(data = LiloNone)
+    }
+}
+
+private object TurtlePenColor : LiloObject(liloMethodType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        //  - pencolor((r, g, b))
+        //     Set pencolor to the RGB color represented by the tuple of
+        //     r, g, and b.  Each of r, g, and b must be in the range
+        //     0..colormode, where colormode is either 1.0 or 255
+        if (args.size == 2 && args[1] is LiloTuple) {
+            val rgb = args[1] as LiloTuple
+            if (rgb.values.size != 3) {
+                return LiloResult.Failure(error = LiloExceptionMessage("`turtle.pencolor` expects tuple of floats or ints as (r, g, b)"))
+            }
+
+            val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
+            val self = args[0] as LiloTurtle
+            val pointer = screen.getPointerAt(idx = self.id)!!
+
+            val r = rgb.values[0]
+            val g = rgb.values[1]
+            val b = rgb.values[2]
+
+            if ((r is LiloInt && g is LiloInt && b is LiloInt)) {
+                pointer.color = Color(r.value, g.value, b.value)
+                return LiloResult.Success(data = LiloNone)
+            }
+
+            if (r is LiloFloat && g is LiloFloat && b is LiloFloat) {
+                pointer.color = Color(r.value, g.value, b.value)
+                return LiloResult.Success(data = LiloNone)
+            }
+
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.pencolor` expects tuple of floats or ints as (r, g, b)"))
+        }
+
+        return LiloResult.Failure(error = LiloExceptionMessage("`turtle.pencolor` expects tuple of floats or ints as (r, g, b)"))
     }
 }

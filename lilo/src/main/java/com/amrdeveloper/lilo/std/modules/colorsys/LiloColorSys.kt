@@ -9,7 +9,7 @@ import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloFunctionType
-import kotlin.math.abs
+import kotlin.math.truncate
 
 private const val MODULE_NAME = "colorsys"
 
@@ -35,54 +35,52 @@ object LiloColorSysHSVToRGB : LiloObject(liloFunctionType), LiloCallable {
         val hArg = args[0]
         val sArg = args[1]
         val vArg = args[2]
-        if (hArg !is LiloFloat || sArg !is LiloFloat || vArg !is LiloFloat) {
+        if ((hArg !is LiloInt && hArg !is LiloFloat)
+            || (sArg !is LiloInt && sArg !is LiloFloat)
+            || (vArg !is LiloInt && vArg !is LiloFloat) ) {
             return LiloResult.Failure(error = RuntimeException("`hsv_to_rgb` expect 3 arguments (h, s, v) with float type"))
         }
 
-        val h = hArg.value
-        val s = sArg.value
-        val v = vArg.value
-
-        val h6 = h * 6f
-
-        val c = v * s
-        val x = c * (1 - abs(x = (h6 % 2f) - 1))
-        val m = v - c
-
-        var r = 0f
-        var g = 0f
-        var b = 0f
-
-        when {
-            h6 < 1 -> {
-                r = c
-                g = x
-            }
-            h6 < 2 -> {
-                r = x
-                g = c
-            }
-            h6 < 3 -> {
-                g = c
-                b = x
-            }
-            h6 < 4 -> {
-                g = x
-                b = c
-            }
-            h6 < 5 -> {
-                r = x
-                b = c
-            }
-            else -> {
-                r = c
-                b = x
-            }
+        val h = if (hArg is LiloInt) hArg.value.toFloat() else (hArg as LiloFloat).value
+        val s = if (sArg is LiloInt) sArg.value.toFloat() else (sArg as LiloFloat).value
+        val v = if (vArg is LiloInt) vArg.value.toFloat() else (vArg as LiloFloat).value
+        if (s == 0.0f) {
+            val rgb = listOf(LiloFloat(v), LiloFloat(v), LiloFloat(v))
+            return LiloResult.Success(data = LiloTuple(values = rgb))
         }
 
-        val red   = LiloInt(value = ((r + m) * 255).toInt())
-        val green = LiloInt(value =((g + m) * 255).toInt())
-        val blue  = LiloInt(value =((b + m) * 255).toInt())
-        return LiloResult.Success(data = LiloTuple(values = listOf(red, green, blue),))
+        var i = truncate((h * 6.0)).toInt()
+        val f = (h * 6.0) - i
+        val p = v * (1.0 - s).toFloat()
+        val q = v * (1.0 - s * f).toFloat()
+        val t = v * (1.0 - s * (1.0 - f)).toFloat()
+        i %= 6
+        when (i) {
+            0 -> {
+                val rgb = listOf(LiloFloat(v), LiloFloat(t), LiloFloat(p))
+                return LiloResult.Success(data = LiloTuple(values = rgb))
+            }
+            1 -> {
+                val rgb = listOf(LiloFloat(q), LiloFloat(v), LiloFloat(p))
+                return LiloResult.Success(data = LiloTuple(values = rgb))
+            }
+            2 -> {
+                val rgb = listOf(LiloFloat(p), LiloFloat(v), LiloFloat(t))
+                return LiloResult.Success(data = LiloTuple(values = rgb))
+            }
+            3 -> {
+                val rgb = listOf(LiloFloat(p), LiloFloat(q), LiloFloat(v))
+                return LiloResult.Success(data = LiloTuple(values = rgb))
+            }
+            4 -> {
+                val rgb = listOf(LiloFloat(t), LiloFloat(p), LiloFloat(v))
+                return LiloResult.Success(data = LiloTuple(values = rgb))
+            }
+            5 -> {
+                val rgb = listOf(LiloFloat(v), LiloFloat(p), LiloFloat(q))
+                return LiloResult.Success(data = LiloTuple(values = rgb))
+            }
+        }
+        return LiloResult.Failure(error = RuntimeException("`hsv_to_rgb` unexpected values"))
     }
 }

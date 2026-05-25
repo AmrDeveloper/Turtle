@@ -98,7 +98,7 @@ object LiloMathSqrt : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         val argument = args[0]
-        if ((argument !is LiloFloat) && argument !is LiloInt) {
+        if ((argument !is LiloFloat) && (argument !is LiloInt)) {
             return LiloResult.Failure(error = RuntimeException("`math.sqrt` expect `float` or `int` type but got `${argument.type.toString()}`"))
         }
 
@@ -122,7 +122,7 @@ object LiloMathRadians : LiloObject(liloFunctionType), LiloCallable {
         }
 
         val radians = when {
-            argument is LiloInt -> (argument.value * PI / 180.0f).toFloat()
+            argument is LiloInt -> ((argument.value * PI).toFloat() / 180.0f)
             argument is LiloFloat -> (argument.value * PI / 180.0f).toFloat()
             else -> 0.0f
         }

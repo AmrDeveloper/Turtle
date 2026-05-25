@@ -55,8 +55,12 @@ private object IntAdd : LiloObject(liloFunctionType), LiloCallable {
     ): LiloResult<LiloObject> {
         val lhs = args[0]
         val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value + rhs.value))
+        if (lhs is LiloInt && (rhs is LiloInt || rhs is LiloFloat)) {
+            return when {
+                rhs is LiloInt -> LiloResult.Success(data = LiloInt(value = lhs.value + rhs.value))
+                rhs is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value + rhs.value))
+                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `+` is unsupported between lhs & rhs"))
+            }
         }
         return LiloResult.Failure(error = LiloExceptionMessage("Op `+` is unsupported between lhs & rhs"))
     }
@@ -83,8 +87,12 @@ private object IntMul : LiloObject(liloFunctionType), LiloCallable {
     ): LiloResult<LiloObject> {
         val lhs = args[0]
         val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value * rhs.value))
+        if (lhs is LiloInt && (rhs is LiloInt || rhs is LiloFloat)) {
+            return when {
+                rhs is LiloInt -> LiloResult.Success(data = LiloInt(value = lhs.value * rhs.value))
+                rhs is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value * rhs.value))
+                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `*` is unsupported between lhs & rhs"))
+            }
         }
         return LiloResult.Failure(error = LiloExceptionMessage("Op `*` is unsupported between lhs & rhs"))
     }
@@ -97,8 +105,12 @@ private object IntDiv : LiloObject(liloFunctionType), LiloCallable {
     ): LiloResult<LiloObject> {
         val lhs = args[0]
         val rhs = args[1]
-        if (lhs is LiloInt && rhs is LiloInt) {
-            return LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
+        if (lhs is LiloInt && (rhs is LiloInt || rhs is LiloFloat)) {
+            return when {
+                rhs is LiloInt -> LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
+                rhs is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
+                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
+            }
         }
         return LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
     }

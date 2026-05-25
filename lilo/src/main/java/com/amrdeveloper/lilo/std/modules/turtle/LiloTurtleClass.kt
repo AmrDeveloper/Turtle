@@ -77,9 +77,9 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
         val dstY = pointer.y + (distance * sin(x = radius)).toFloat()
 
         if (pointer.penDown) {
-            pointer.path.lineTo(x = dstX, y = dstY)
+            pointer.path().lineTo(x = dstX, y = dstY)
         } else {
-            pointer.path.moveTo(x = dstX, y = dstY)
+            pointer.path().moveTo(x = dstX, y = dstY)
         }
 
         pointer.x = dstX
@@ -107,9 +107,9 @@ private object TurtleBackword : LiloObject(liloMethodType), LiloCallable {
         val dstY = pointer.y - (distance * sin(x = radius)).toFloat()
 
         if (pointer.penDown) {
-            pointer.path.lineTo(x = dstX, y = dstY)
+            pointer.path().lineTo(x = dstX, y = dstY)
         } else {
-            pointer.path.moveTo(x = dstX, y = dstY)
+            pointer.path().moveTo(x = dstX, y = dstY)
         }
 
         pointer.x = dstX
@@ -169,7 +169,7 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
         val radius = (args[1] as LiloFloat).value
         val pointer = screen.getPointerAt(idx = self.id)!!
         if (pointer.penDown) {
-            pointer.path.addOval(
+            pointer.path().addOval(
                 Rect(
                     center = Offset(x = pointer.x, y = pointer.y),
                     radius = radius
@@ -280,7 +280,7 @@ private object TurtleClear : LiloObject(liloMethodType), LiloCallable {
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
-        pointer.path.reset()
+        pointer.path().reset()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -301,9 +301,9 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
 
         val pointer = screen.getPointerAt(idx = self.id)!!
         if (pointer.penDown) {
-            pointer.path.relativeLineTo(dx = x, dy = y)
+            pointer.path().relativeLineTo(dx = x, dy = y)
         } else {
-            pointer.path.moveTo(x = x, y = y)
+            pointer.path().moveTo(x = x, y = y)
         }
 
         pointer.x = x
@@ -337,12 +337,12 @@ private object TurtlePenColor : LiloObject(liloMethodType), LiloCallable {
             val b = rgb.values[2]
 
             if ((r is LiloInt && g is LiloInt && b is LiloInt)) {
-                pointer.color = Color(r.value, g.value, b.value)
+                pointer.setColor(Color(r.value, g.value, b.value))
                 return LiloResult.Success(data = LiloNone)
             }
 
             if (r is LiloFloat && g is LiloFloat && b is LiloFloat) {
-                pointer.color = Color(r.value, g.value, b.value)
+                pointer.setColor(Color(r.value, g.value, b.value))
                 return LiloResult.Success(data = LiloNone)
             }
 

@@ -23,10 +23,15 @@ import com.amrdeveloper.turtle.ui.components.TurtleTab
 import com.amrdeveloper.turtle.ui.components.TurtleToolbar
 
 private val starterLiloCode = """
-    def foo():
-      x = 10
-      return x
-    print(foo())
+    import turtle
+    import colorsys
+    
+    t = turtle.Turtle()
+    t.goto(500.0, 500.0)
+    t.pencolor((255, 0, 0))
+    t.forward(100.0)
+    t.pencolor((0, 255, 0))
+    t.forward(50.0)
 """.trimIndent()
 
 private val turtleAppHomeTabs = listOf(

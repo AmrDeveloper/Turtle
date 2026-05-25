@@ -24,6 +24,7 @@ import com.amrdeveloper.turtle.R
 @Composable
 fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
     val screen = viewModel.getLiloMachine().getScreen() ?: return
+    val tick = value.longValue
 
     val logo = vectorToBitmap(id = R.drawable.ic_turtle_pointer)
 
@@ -39,16 +40,13 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
             .fillMaxSize()
             .onSizeChanged { canvasSize = it }) {
         for (pointer in screen.getPointers()) {
-            val turtlePath = pointer.path
-            if (pointer.visible && turtlePath.isEmpty) {
-                drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
-                continue
+            for (segment in pointer.pathSegments) {
+                drawPath(path = segment.path, color = segment.color, style = segment.pen)
             }
 
-            drawPath(path = turtlePath, color = pointer.color, style = pointer.pen)
-
+            val lastPathSegment = pointer.pathSegments.last().path
             val pathMeasure = PathMeasure()
-            pathMeasure.setPath(turtlePath, forceClosed = false)
+            pathMeasure.setPath(lastPathSegment, forceClosed = false)
 
             if (pathMeasure.length > 0) {
                 val lastPoint = pathMeasure.getPosition(distance = pathMeasure.length)

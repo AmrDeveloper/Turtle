@@ -20,7 +20,7 @@ class LiloLexer(val source: String) {
     fun tokenize(): LiloResult<List<LiloToken>> {
         val tokens: MutableList<LiloToken> = mutableListOf()
         while (!isAtEnd()) {
-            val indentTokens = consumeCommentsAndIndentations()
+            val indentTokens = consumeCommentsAndIndentations().valueOr { return it }
             tokens.addAll(elements = indentTokens)
 
             if (isAtEnd()) break
@@ -30,12 +30,12 @@ class LiloLexer(val source: String) {
 
             when (val c = peek()) {
                 in 'a'..'z', in 'A'..'Z', '_' -> {
-                    val token = consumeSymbolOrKeyword().valueOr { return it.toFailure() }
+                    val token = consumeSymbolOrKeyword().valueOr { return it }
                     tokens.add(token)
                 }
 
                 in '0'..'9' -> {
-                    val token = consumeNumber().valueOr { return it.toFailure() }
+                    val token = consumeNumber().valueOr { return it }
                     tokens.add(token)
                 }
 
@@ -92,7 +92,7 @@ class LiloLexer(val source: String) {
                 }
 
                 '\'', '"' -> {
-                    val stringToken = consumeStringLiteral().valueOr { return it.toFailure() }
+                    val stringToken = consumeStringLiteral().valueOr { return it }
                     tokens.add(stringToken)
                 }
 
@@ -162,7 +162,7 @@ class LiloLexer(val source: String) {
         return LiloResult.Success(data = str)
     }
 
-    private fun consumeCommentsAndIndentations() : List<LiloToken> {
+    private fun consumeCommentsAndIndentations() : LiloResult<List<LiloToken>> {
         val indentTokens = mutableListOf<LiloToken>()
         while (!isAtEnd()) {
             var c = peek()
@@ -194,7 +194,11 @@ class LiloLexer(val source: String) {
                     if (indent < currIndent) {
                         indentTokens.add(createToken(kind = LiloTokenKind.DEDENT))
                         indentStack.pop()
-                        indentStack.push(indent)
+                        val previousIndent = indentStack.peek()
+                        if (indent != previousIndent) {
+                            val diagnostic = createDiagnostic("Unindent amount does not match previous indent")
+                            return LiloResult.Failure(error = diagnostic)
+                        }
                         continue
                     }
 
@@ -214,7 +218,7 @@ class LiloLexer(val source: String) {
                 else -> break
             }
         }
-        return indentTokens
+        return LiloResult.Success(data = indentTokens)
     }
 
     private fun createToken(kind: LiloTokenKind): LiloToken {

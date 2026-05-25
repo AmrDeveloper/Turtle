@@ -1,13 +1,37 @@
 package com.amrdeveloper.lilo.lexer
 
-import com.amrdeveloper.lilo.common.LiloDiagnostic
-import com.amrdeveloper.lilo.common.isFailure
-import com.amrdeveloper.lilo.common.toFailureError
-import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.utils.isValidLiloTokens
 import org.junit.Test
 
 class LiloLexerTest {
+
+    @Test
+    fun `test consume correct indentation`() {
+        val sourceCodes = listOf(
+            """
+            while True:
+                while True:
+                    pass
+                print(1)
+            """
+        )
+
+        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
+    }
+
+    @Test
+    fun `test consume invalid indentation`() {
+        val sourceCodes = listOf(
+            """
+            while True:
+                while True:
+                    pass
+                 print(1)
+            """
+        )
+
+        sourceCodes.forEach { assert(!isValidLiloTokens(sourceCode = it)) }
+    }
 
     @Test
     fun `test consume comments`() {
@@ -19,9 +43,7 @@ class LiloLexerTest {
             """
         )
 
-        for (sourceCode in sourceCodes) {
-            assert(isValidLiloTokens(sourceCode))
-        }
+        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
     }
 
 }

@@ -1,6 +1,7 @@
 package com.amrdeveloper.editor
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,6 +42,7 @@ fun CodeEditor(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val horizontalScrollState = rememberScrollState()
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(value = null) }
     val activeLine = remember(editorState.selection, textLayoutResult) {
         textLayoutResult?.getLineForOffset(editorState.selection.start) ?: -1
@@ -69,6 +71,7 @@ fun CodeEditor(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
+                    .horizontalScroll(horizontalScrollState)
                     .drawBehind {
                         if (activeLine != -1 && textLayoutResult != null) {
                             val top = textLayoutResult!!.getLineTop(lineIndex = activeLine)

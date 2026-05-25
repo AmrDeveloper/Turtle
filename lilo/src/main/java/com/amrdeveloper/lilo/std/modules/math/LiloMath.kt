@@ -11,6 +11,7 @@ import com.amrdeveloper.lilo.type.liloFunctionType
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.math.tan
 import kotlin.math.tanh
 
@@ -30,6 +31,7 @@ val liloMathModule = LiloModule(name = MODULE_NAME).also {
     it.setAttr(name = "cos", value = LiloMathCos)
     it.setAttr(name = "tan", value = LiloMathTan)
     it.setAttr(name = "tanh", value = LiloMathTanh)
+    it.setAttr(name = "sqrt", value = LiloMathSqrt)
     it.setAttr(name = "radians", value = LiloMathRadians)
 }
 
@@ -87,6 +89,25 @@ object LiloMathTanh : LiloObject(liloFunctionType), LiloCallable {
         }
         val sin = tanh(argument.value)
         return LiloResult.Success(data = LiloFloat(value = sin))
+    }
+}
+
+object LiloMathSqrt : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val argument = args[0]
+        if ((argument !is LiloFloat) && argument !is LiloInt) {
+            return LiloResult.Failure(error = RuntimeException("`math.sqrt` expect `float` or `int` type but got `${argument.type.toString()}`"))
+        }
+
+        val radians = when {
+            argument is LiloInt -> sqrt(x = argument.value.toDouble()).toFloat()
+            argument is LiloFloat -> sqrt(x = argument.value.toDouble()).toFloat()
+            else -> 0.0f
+        }
+        return LiloResult.Success(data = LiloFloat(value = radians))
     }
 }
 

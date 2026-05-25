@@ -194,8 +194,13 @@ class LiloLexer(val source: String) {
                     if (indent < currIndent) {
                         indentTokens.add(createToken(kind = LiloTokenKind.DEDENT))
                         indentStack.pop()
-                        val previousIndent = indentStack.peek()
-                        if (indent != previousIndent) {
+                        while (indentStack.isNotEmpty()) {
+                            val previousIndent = indentStack.peek()
+                            if (indent == previousIndent) break
+                            indentStack.pop()
+                        }
+
+                        if (indentStack.isEmpty()) {
                             val diagnostic = createDiagnostic("Unindent amount does not match previous indent")
                             return LiloResult.Failure(error = diagnostic)
                         }

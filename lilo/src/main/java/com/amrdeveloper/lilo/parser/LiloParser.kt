@@ -432,6 +432,8 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = BlockStmt(nodes = nodes))
     }
 
+    // return_stmt:
+    //    | 'return' [star_expressions]
     private fun parseReturnStmt(): LiloResult<ReturnStmt> {
         // Advance 'return' keyword
         advance()
@@ -448,11 +450,21 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = ReturnStmt(value = returnValue))
     }
 
-    // | 'raise' expression 'from' expression
-    // | 'raise' expression
+    //  raise_stmt:
+    //    | 'raise' expression 'from' expression
+    //    | 'raise' expression
+    //    | 'raise'
     private fun parseRaiseStmt(): LiloResult<RaiseStmt> {
         // Advance 'raise' keyword
         advance()
+
+        if (isPeek(kind = LiloTokenKind.SEMI)
+            || isPeek(kind = LiloTokenKind.NEW_LINE)
+            || isPeek(kind = LiloTokenKind.END_MARKER)) {
+            advance()
+            return LiloResult.Success(data = RaiseStmt())
+        }
+
         val exc = parseExpr().valueOr { return it.toFailure() }
         var cause : LiloExpr? = null
         if (match(kind = LiloTokenKind.FROM_KEYWORD)) {

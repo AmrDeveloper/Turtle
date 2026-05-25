@@ -65,6 +65,7 @@ import com.amrdeveloper.lilo.`object`.LiloStr
 import com.amrdeveloper.lilo.`object`.LiloTuple
 import com.amrdeveloper.lilo.`object`.liloAssertionErrorType
 import com.amrdeveloper.lilo.`object`.liloBaseExceptionType
+import com.amrdeveloper.lilo.`object`.liloRuntimeErrorType
 import com.amrdeveloper.lilo.parser.LiloTokenKind
 import com.amrdeveloper.lilo.runtime.signal.LiloBreakSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloContinueSignal
@@ -259,6 +260,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<Unit> {
+        if (stmt.exc == null) {
+            val exception = LiloObject(type = liloRuntimeErrorType)
+            throw LiloRaise(exception = exception)
+        }
+
         val exc = visit(expr = stmt.exc).valueOr { return it.toFailure() }
         val type = exc as? LiloType ?: exc.type
         if (type?.isSubclass(parent = liloBaseExceptionType) == false) {

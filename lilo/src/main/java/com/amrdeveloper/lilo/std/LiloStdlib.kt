@@ -3,6 +3,7 @@ package com.amrdeveloper.lilo.std
 import com.amrdeveloper.lilo.`object`.liloAssertionErrorType
 import com.amrdeveloper.lilo.`object`.liloBaseExceptionType
 import com.amrdeveloper.lilo.`object`.liloExceptionType
+import com.amrdeveloper.lilo.`object`.liloRuntimeErrorType
 import com.amrdeveloper.lilo.`object`.liloStopIteratorType
 import com.amrdeveloper.lilo.runtime.LiloEnvironment
 import com.amrdeveloper.lilo.std.builtins.LiloBinFunction
@@ -42,6 +43,7 @@ fun registerLiloAutoImportedModule() {
     // Builtin exception types
     LiloEnvironment.builtins["BaseException"]  = liloBaseExceptionType
     LiloEnvironment.builtins["Exception"]      = liloExceptionType
+    LiloEnvironment.builtins["RuntimeError"]   = liloRuntimeErrorType
     LiloEnvironment.builtins["AssertionError"] = liloAssertionErrorType
     LiloEnvironment.builtins["StopIterator"]   = liloStopIteratorType
 }

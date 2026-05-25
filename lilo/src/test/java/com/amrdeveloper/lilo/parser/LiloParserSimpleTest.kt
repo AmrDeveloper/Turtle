@@ -28,6 +28,20 @@ class LiloParserSimpleTest {
     }
 
     @Test
+    fun `test raise statement`() {
+        val sourceCodes = listOf(
+            "raise",
+            "raise;",
+            "raise StopIterator",
+            "raise StopIterator;",
+            "raise StopIterator from Exception",
+            "raise StopIterator from Exception;",
+        )
+
+        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+    }
+
+    @Test
     fun `test parse dot expression`() {
         val sourceCodes = listOf(
             "a.b", "random.random", "a.__add__"

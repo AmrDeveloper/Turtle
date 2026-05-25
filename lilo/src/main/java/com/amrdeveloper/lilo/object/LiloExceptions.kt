@@ -29,6 +29,11 @@ val liloExceptionType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
+val liloRuntimeErrorType =
+    LiloType(name = "RuntimeError", bases = listOf(liloBaseExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
 val liloAssertionErrorType =
     LiloType(name = "AssertionError", bases = listOf(liloExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE

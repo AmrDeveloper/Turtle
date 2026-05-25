@@ -33,7 +33,7 @@ data class ExprStmt(val expr: LiloExpr) : LiloStmt
 
 data class AssignStmt(val lValue: LiloExpr, val rValue: LiloExpr) : LiloStmt
 
-data class RaiseStmt(val exc: LiloExpr, val cause : LiloExpr?) : LiloStmt
+data class RaiseStmt(val exc: LiloExpr? = null, val cause : LiloExpr? = null) : LiloStmt
 
 data class ReturnStmt(val value: LiloExpr? = null) : LiloStmt
 

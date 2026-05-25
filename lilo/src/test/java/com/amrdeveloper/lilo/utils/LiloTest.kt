@@ -25,6 +25,10 @@ fun isValidLiloSyntax(sourceCode: String): Boolean {
 
     val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
     if (parseResult.isFailure()) {
+        println("Tokens: ")
+        for (token in lexerResult.toSuccessData()) {
+            println("  ${token}")
+        }
         println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
         return false
     }

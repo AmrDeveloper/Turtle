@@ -10,7 +10,7 @@ val keywords = listOf(
     "else",
     "elif",
     "lambda",
-    "white",
+    "while",
     "for",
     "in",
 

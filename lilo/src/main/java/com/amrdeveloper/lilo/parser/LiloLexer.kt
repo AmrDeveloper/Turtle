@@ -197,6 +197,7 @@ class LiloLexer(val source: String) {
                         while (indentStack.isNotEmpty()) {
                             val previousIndent = indentStack.peek()
                             if (indent == previousIndent) break
+                            indentTokens.add(createToken(kind = LiloTokenKind.DEDENT))
                             indentStack.pop()
                         }
 

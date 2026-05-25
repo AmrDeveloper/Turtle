@@ -290,14 +290,24 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 3 || args[1] !is LiloFloat || args[2] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect 2 floats as x and y"))
+        var x: Float
+        var y: Float
+        if (args.size == 2 && args[1] is LiloTuple) {
+            val tuple = args[1] as LiloTuple
+            if (tuple.values.size != 2 || tuple.values[0] !is LiloFloat || tuple.values[1] !is LiloFloat) {
+                return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect floats x, y or (x, y)"))
+            }
+            x = (tuple.values[0] as LiloFloat).value
+            y = (tuple.values[1] as LiloFloat).value
+        } else  if (args.size == 3 && args[1] is LiloFloat && args[2] is LiloFloat) {
+             x = (args[1] as LiloFloat).value
+             y = (args[2] as LiloFloat).value
+        } else {
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect floats x, y or (x, y)"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
-        val x = (args[1] as LiloFloat).value
-        val y = (args[2] as LiloFloat).value
 
         val pointer = screen.getPointerAt(idx = self.id)!!
         if (pointer.penDown) {
@@ -308,7 +318,6 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
 
         pointer.x = x
         pointer.y = y
-
         return LiloResult.Success(data = LiloNone)
     }
 }

@@ -84,6 +84,7 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
 
         pointer.x = dstX
         pointer.y = dstY
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -114,7 +115,7 @@ private object TurtleBackword : LiloObject(liloMethodType), LiloCallable {
 
         pointer.x = dstX
         pointer.y = dstY
-
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -133,6 +134,7 @@ private object TurtleLeft : LiloObject(liloMethodType), LiloCallable {
         val degree = (args[1] as LiloFloat).value
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.degree = (pointer.degree + degree) % 360
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -151,6 +153,7 @@ private object TurtleRight : LiloObject(liloMethodType), LiloCallable {
         val degree = (args[1] as LiloFloat).value
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.degree = (pointer.degree - degree) % 360
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -176,6 +179,7 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
                 )
             )
         }
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -189,6 +193,7 @@ private object TurtleShowTurtle : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.visible = true
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -202,6 +207,7 @@ private object TurtleHideTurtle : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.visible = false
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -227,6 +233,7 @@ private object TurtlePenUp : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.penDown = false
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -240,6 +247,7 @@ private object TurtlePenDown : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.penDown = true
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -281,6 +289,7 @@ private object TurtleClear : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.path().reset()
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -318,6 +327,7 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
 
         pointer.x = x
         pointer.y = y
+        screen.updateScreen()
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -347,11 +357,13 @@ private object TurtlePenColor : LiloObject(liloMethodType), LiloCallable {
 
             if ((r is LiloInt && g is LiloInt && b is LiloInt)) {
                 pointer.setColor(Color(r.value, g.value, b.value))
+                screen.updateScreen()
                 return LiloResult.Success(data = LiloNone)
             }
 
             if (r is LiloFloat && g is LiloFloat && b is LiloFloat) {
                 pointer.setColor(Color(r.value, g.value, b.value))
+                screen.updateScreen()
                 return LiloResult.Success(data = LiloNone)
             }
 

@@ -1,7 +1,9 @@
 package com.amrdeveloper.turtle.ui.home
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableLongState
@@ -25,7 +27,7 @@ import com.amrdeveloper.turtle.R
 @Composable
 fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
     val screen = viewModel.getLiloMachine().getScreen() ?: return
-    val tick = value.longValue
+    val instCount = value.longValue
 
     val logo = vectorToBitmap(id = R.drawable.ic_turtle_pointer)
 
@@ -36,44 +38,44 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
         }
     }
 
-    Canvas(
-        modifier = Modifier
-            .fillMaxSize()
-            .onSizeChanged { canvasSize = it }) {
-        // Similar to Turtle Graphics the turtle starts from (0, 0)
-        // which is the center of the screen
-        //
-        //             y+
-        //             ↑
-        //             |
-        //             |
-        // x- ←------(0,0)------→ x+
-        //             |
-        //             |
-        //             ↓
-        //             y-
-        //
-        //
-        val centerX = size.width / 2f
-        val centerY = size.height / 2f
-        withTransform(transformBlock = { translate(left = centerX, top = centerY) }) {
-            for (pointer in screen.getPointers()) {
-                for (segment in pointer.pathSegments) {
-                    drawPath(path = segment.path, color = segment.color, style = segment.pen)
-                }
+    Column {
+        Text(text = "Instructions: ${"%,d".format(instCount)}")
+        Canvas(modifier = Modifier.fillMaxSize().onSizeChanged { canvasSize = it }) {
+            // Similar to Turtle Graphics the turtle starts from (0, 0)
+            // which is the center of the screen
+            //
+            //             y+
+            //             ↑
+            //             |
+            //             |
+            // x- ←------(0,0)------→ x+
+            //             |
+            //             |
+            //             ↓
+            //             y-
+            //
+            //
+            val centerX = size.width / 2f
+            val centerY = size.height / 2f
+            withTransform(transformBlock = { translate(left = centerX, top = centerY) }) {
+                for (pointer in screen.getPointers()) {
+                    for (segment in pointer.pathSegments) {
+                        drawPath(path = segment.path, color = segment.color, style = segment.pen)
+                    }
 
-                val lastPathSegment = pointer.pathSegments.last().path
-                val pathMeasure = PathMeasure()
-                pathMeasure.setPath(lastPathSegment, forceClosed = false)
+                    val lastPathSegment = pointer.pathSegments.last().path
+                    val pathMeasure = PathMeasure()
+                    pathMeasure.setPath(lastPathSegment, forceClosed = false)
 
-                if (pathMeasure.length > 0) {
-                    val lastPoint = pathMeasure.getPosition(distance = pathMeasure.length)
-                    pointer.x = lastPoint.x
-                    pointer.y = lastPoint.y
-                }
+                    if (pathMeasure.length > 0) {
+                        val lastPoint = pathMeasure.getPosition(distance = pathMeasure.length)
+                        pointer.x = lastPoint.x
+                        pointer.y = lastPoint.y
+                    }
 
-                if (pointer.visible) {
-                    drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
+                    if (pointer.visible) {
+                        drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
+                    }
                 }
             }
         }

@@ -27,7 +27,7 @@ class HomeViewModel : ViewModel() {
 
     private val liloHost = LiloHost(
         onStdout = { terminalOutput.add(TerminalLine.Normal(text = it)) })
-    private val liloScreen = LiloScreen(update = { screenUpdate.longValue = System.nanoTime() })
+    private val liloScreen = LiloScreen(update = { screenUpdate.longValue++ })
     private val liloGPU = LiloWebGPU()
     private val liloMachine = LiloMachine(
         liloHost = liloHost,

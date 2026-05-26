@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
@@ -39,23 +40,41 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
         modifier = Modifier
             .fillMaxSize()
             .onSizeChanged { canvasSize = it }) {
-        for (pointer in screen.getPointers()) {
-            for (segment in pointer.pathSegments) {
-                drawPath(path = segment.path, color = segment.color, style = segment.pen)
-            }
+        // Similar to Turtle Graphics the turtle starts from (0, 0)
+        // which is the center of the screen
+        //
+        //             y+
+        //             ↑
+        //             |
+        //             |
+        // x- ←------(0,0)------→ x+
+        //             |
+        //             |
+        //             ↓
+        //             y-
+        //
+        //
+        val centerX = size.width / 2f
+        val centerY = size.height / 2f
+        withTransform(transformBlock = { translate(left = centerX, top = centerY) }) {
+            for (pointer in screen.getPointers()) {
+                for (segment in pointer.pathSegments) {
+                    drawPath(path = segment.path, color = segment.color, style = segment.pen)
+                }
 
-            val lastPathSegment = pointer.pathSegments.last().path
-            val pathMeasure = PathMeasure()
-            pathMeasure.setPath(lastPathSegment, forceClosed = false)
+                val lastPathSegment = pointer.pathSegments.last().path
+                val pathMeasure = PathMeasure()
+                pathMeasure.setPath(lastPathSegment, forceClosed = false)
 
-            if (pathMeasure.length > 0) {
-                val lastPoint = pathMeasure.getPosition(distance = pathMeasure.length)
-                pointer.x = lastPoint.x
-                pointer.y = lastPoint.y
-            }
+                if (pathMeasure.length > 0) {
+                    val lastPoint = pathMeasure.getPosition(distance = pathMeasure.length)
+                    pointer.x = lastPoint.x
+                    pointer.y = lastPoint.y
+                }
 
-            if (pointer.visible) {
-                drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
+                if (pointer.visible) {
+                    drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
+                }
             }
         }
     }

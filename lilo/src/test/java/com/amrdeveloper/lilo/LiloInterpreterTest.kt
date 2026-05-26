@@ -243,11 +243,17 @@ class LiloInterpreterTest {
             a = lambda a : a + 1
             print(a(1))
             """.trimIndent(),
+            """
+            x = 10
+            add_x = lambda a : a + x
+            print(add_x(5))
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
             "1",
             "2",
+            "15",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
@@ -492,6 +498,33 @@ class LiloInterpreterTest {
               return x
             print(foo())
             """.trimIndent(),
+            """
+            x = 10
+            def foo():
+                x = 20
+            foo()
+            print(x)
+            """.trimIndent(),
+            """
+            x = 10
+            def outer():
+                x = 20
+                def inner():
+                    return x
+                return inner()
+            print(outer())
+            """.trimIndent(),
+            """
+            x = 1
+            def outer():
+                global x
+                x = 2
+                def inner():
+                    x = 3
+                    return x
+                return inner() + x
+            print(outer())
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
@@ -500,6 +533,9 @@ class LiloInterpreterTest {
             "10",
             "5",
             "10",
+            "10",
+            "20",
+            "5",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

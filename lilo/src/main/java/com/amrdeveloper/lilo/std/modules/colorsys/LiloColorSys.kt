@@ -15,9 +15,9 @@ private const val MODULE_NAME = "colorsys"
 
 val liloColorSysModule = LiloModule(name = MODULE_NAME).also {
     // Some floating-point constants
-    it.setAttr(name = "ONE_THIRD", value = LiloFloat(value = 1.0f/3.0f))
-    it.setAttr(name = "ONE_SIXTH", value = LiloFloat(value = 1.0f/6.0f))
-    it.setAttr(name = "TWO_THIRD", value = LiloFloat(value = 2.0f/3.0f))
+    it.setAttr(name = "ONE_THIRD", value = LiloFloat(value = 1.0/3.0))
+    it.setAttr(name = "ONE_SIXTH", value = LiloFloat(value = 1.0/6.0))
+    it.setAttr(name = "TWO_THIRD", value = LiloFloat(value = 2.0/3.0))
 
     // Functions
     it.setAttr(name = "hsv_to_rgb", value = LiloColorSysHSVToRGB)
@@ -41,10 +41,10 @@ object LiloColorSysHSVToRGB : LiloObject(liloFunctionType), LiloCallable {
             return LiloResult.Failure(error = RuntimeException("`hsv_to_rgb` expect 3 arguments (h, s, v) with float type"))
         }
 
-        val h = if (hArg is LiloInt) hArg.value.toFloat() else (hArg as LiloFloat).value
-        val s = if (sArg is LiloInt) sArg.value.toFloat() else (sArg as LiloFloat).value
-        val v = if (vArg is LiloInt) vArg.value.toFloat() else (vArg as LiloFloat).value
-        if (s == 0.0f) {
+        val h = if (hArg is LiloInt) hArg.value.toDouble() else (hArg as LiloFloat).value
+        val s = if (sArg is LiloInt) sArg.value.toDouble() else (sArg as LiloFloat).value
+        val v = if (vArg is LiloInt) vArg.value.toDouble() else (vArg as LiloFloat).value
+        if (s == 0.0) {
             val rgb = listOf(LiloFloat(v), LiloFloat(v), LiloFloat(v))
             return LiloResult.Success(data = LiloTuple(values = rgb))
         }

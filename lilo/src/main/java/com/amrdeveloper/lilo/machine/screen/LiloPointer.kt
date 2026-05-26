@@ -13,7 +13,7 @@ data class LiloPathSegment(
 class LiloPointer(
     var x: Float = 0f,
     var y: Float = 0f,
-    var degree: Float = 0f,
+    var degree: Double = 0.0,
     var penDown: Boolean = true,
     var visible: Boolean = true
 ) {

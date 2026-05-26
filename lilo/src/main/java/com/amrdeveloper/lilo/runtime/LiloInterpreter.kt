@@ -523,13 +523,13 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitFloatExpr(expr: FloatExpr): LiloResult<LiloObject> {
-        val value = LiloFloat(value = expr.value.lexeme!!.toFloat())
+        val value = LiloFloat(value = expr.value.lexeme!!.toDouble())
         return runtimeObject(obj = value)
     }
 
     override fun visitComplexExpr(expr: ComplexExpr): LiloResult<LiloObject> {
-        val complexImag = expr.value.lexeme!!.toFloat()
-        val complex = LiloComplex(real = 0f, imag = complexImag)
+        val complexImag = expr.value.lexeme!!.toDouble()
+        val complex = LiloComplex(real = 0.0, imag = complexImag)
         return runtimeObject(obj = complex)
     }
 

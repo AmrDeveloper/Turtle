@@ -19,7 +19,7 @@ object LiloTime : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val currentTime = System.currentTimeMillis() / 1000f
+        val currentTime = System.currentTimeMillis() / 1000.0
         return LiloResult.Success(data = LiloFloat(value = currentTime))
     }
 }

@@ -103,7 +103,7 @@ private object TurtleBackword : LiloObject(liloMethodType), LiloCallable {
         val distance = (args[1] as LiloFloat).value
         val pointer = screen.getPointerAt(idx = self.id)!!
 
-        val radius = Math.toRadians(pointer.degree.toDouble())
+        val radius = Math.toRadians(pointer.degree)
         val dstX = pointer.x - (distance * cos(x = radius)).toFloat()
         val dstY = pointer.y - (distance * sin(x = radius)).toFloat()
 
@@ -175,7 +175,7 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
             pointer.path().addOval(
                 Rect(
                     center = Offset(x = pointer.x, y = pointer.y),
-                    radius = radius
+                    radius = radius.toFloat()
                 )
             )
         }
@@ -273,8 +273,8 @@ private object TurtlePos : LiloObject(liloMethodType), LiloCallable {
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
         val position = listOf(
-            LiloFloat(value = pointer.x),
-            LiloFloat(value = pointer.y)
+            LiloFloat(value = pointer.x.toDouble()),
+            LiloFloat(value = pointer.y.toDouble())
         )
         return LiloResult.Success(data = LiloTuple(values = position))
     }
@@ -306,11 +306,11 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
             if (tuple.values.size != 2 || tuple.values[0] !is LiloFloat || tuple.values[1] !is LiloFloat) {
                 return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect floats x, y or (x, y)"))
             }
-            x = (tuple.values[0] as LiloFloat).value
-            y = (tuple.values[1] as LiloFloat).value
+            x = (tuple.values[0] as LiloFloat).value.toFloat()
+            y = (tuple.values[1] as LiloFloat).value.toFloat()
         } else  if (args.size == 3 && args[1] is LiloFloat && args[2] is LiloFloat) {
-             x = (args[1] as LiloFloat).value
-             y = (args[2] as LiloFloat).value
+             x = (args[1] as LiloFloat).value.toFloat()
+             y = (args[2] as LiloFloat).value.toFloat()
         } else {
             return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect floats x, y or (x, y)"))
         }
@@ -362,7 +362,7 @@ private object TurtlePenColor : LiloObject(liloMethodType), LiloCallable {
             }
 
             if (r is LiloFloat && g is LiloFloat && b is LiloFloat) {
-                pointer.setColor(Color(r.value, g.value, b.value))
+                pointer.setColor(Color(r.value.toFloat(), g.value.toFloat(), b.value.toFloat()))
                 screen.updateScreen()
                 return LiloResult.Success(data = LiloNone)
             }

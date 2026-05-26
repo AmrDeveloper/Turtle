@@ -107,8 +107,8 @@ private object IntDiv : LiloObject(liloFunctionType), LiloCallable {
         val rhs = args[1]
         if (lhs is LiloInt && (rhs is LiloInt || rhs is LiloFloat)) {
             return when (rhs) {
-                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value.toFloat() / rhs.value))
-                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.toFloat() / rhs.value))
+                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value.toDouble() / rhs.value))
+                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.toDouble() / rhs.value))
                 else -> LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
             }
         }

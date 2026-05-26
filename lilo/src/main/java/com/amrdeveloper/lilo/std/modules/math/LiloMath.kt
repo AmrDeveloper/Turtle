@@ -17,13 +17,13 @@ import kotlin.math.tanh
 
 private const val MODULE_NAME = "math"
 
-private const val TAU = 6.283185307179586.toFloat()
+private const val TAU = 6.283185307179586
 
 val liloMathModule = LiloModule(name = MODULE_NAME).also {
     // Constants
-    it.setAttr(name = "inf", value = LiloFloat(value = Float.POSITIVE_INFINITY))
-    it.setAttr(name = "nan", value = LiloFloat(value = Float.NaN))
-    it.setAttr(name = "pi", value = LiloFloat(value = Math.PI.toFloat()))
+    it.setAttr(name = "inf", value = LiloFloat(value = Double.POSITIVE_INFINITY))
+    it.setAttr(name = "nan", value = LiloFloat(value = Double.NaN))
+    it.setAttr(name = "pi", value = LiloFloat(value = Math.PI))
     it.setAttr(name = "tau", value = LiloFloat(value = TAU))
 
     // Functions
@@ -102,10 +102,10 @@ object LiloMathSqrt : LiloObject(liloFunctionType), LiloCallable {
             return LiloResult.Failure(error = RuntimeException("`math.sqrt` expect `float` or `int` type but got `${argument.type.toString()}`"))
         }
 
-        val radians = when {
-            argument is LiloInt -> sqrt(x = argument.value.toDouble()).toFloat()
-            argument is LiloFloat -> sqrt(x = argument.value.toDouble()).toFloat()
-            else -> 0.0f
+        val radians = when (argument) {
+            is LiloInt -> sqrt(x = argument.value.toDouble())
+            is LiloFloat -> sqrt(x = argument.value)
+            else -> 0.0
         }
         return LiloResult.Success(data = LiloFloat(value = radians))
     }
@@ -121,10 +121,10 @@ object LiloMathRadians : LiloObject(liloFunctionType), LiloCallable {
             return LiloResult.Failure(error = RuntimeException("`math.radians` expect `float` or `int` type but got `${argument.type.toString()}`"))
         }
 
-        val radians = when {
-            argument is LiloInt -> ((argument.value * PI).toFloat() / 180.0f)
-            argument is LiloFloat -> (argument.value * PI / 180.0f).toFloat()
-            else -> 0.0f
+        val radians = when (argument) {
+            is LiloInt -> ((argument.value * PI)/ 180.0)
+            is LiloFloat -> (argument.value * PI / 180.0)
+            else -> 0.0
         }
         return LiloResult.Success(data = LiloFloat(value = radians))
     }

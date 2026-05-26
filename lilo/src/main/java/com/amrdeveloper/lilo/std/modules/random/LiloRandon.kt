@@ -23,7 +23,7 @@ object LiloRandom : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val random = Random.nextFloat()
+        val random = Random.nextDouble()
         return LiloResult.Success(data = LiloFloat(value = random))
     }
 }

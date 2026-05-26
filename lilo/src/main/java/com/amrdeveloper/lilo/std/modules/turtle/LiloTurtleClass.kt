@@ -320,7 +320,7 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
 
         val pointer = screen.getPointerAt(idx = self.id)!!
         if (pointer.penDown) {
-            pointer.path().relativeLineTo(dx = x, dy = y)
+            pointer.path().lineTo(x = x, y = y)
         } else {
             pointer.path().moveTo(x = x, y = y)
         }

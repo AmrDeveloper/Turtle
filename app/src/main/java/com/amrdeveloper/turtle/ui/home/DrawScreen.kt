@@ -57,7 +57,10 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
             //
             val centerX = size.width / 2f
             val centerY = size.height / 2f
-            withTransform(transformBlock = { translate(left = centerX, top = centerY) }) {
+            withTransform(transformBlock = {
+                translate(left = centerX, top = centerY)
+                scale(scaleX = 1f, scaleY = -1f, pivot = Offset.Zero)
+            }){
                 for (pointer in screen.getPointers()) {
                     for (segment in pointer.pathSegments) {
                         drawPath(path = segment.path, color = segment.color, style = segment.pen)
@@ -74,7 +77,15 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
                     }
 
                     if (pointer.visible) {
-                        drawImage(image = logo, topLeft = Offset(x = pointer.x, y = pointer.y))
+                        withTransform(transformBlock = { scale(scaleX = 1f, scaleY = -1f, pivot = Offset(pointer.x, pointer.y)) }) {
+                            drawImage(
+                                image = logo,
+                                topLeft = Offset(
+                                    x = pointer.x - logo.width / 2f,
+                                    y = pointer.y - logo.height / 2f
+                                )
+                            )
+                        }
                     }
                 }
             }

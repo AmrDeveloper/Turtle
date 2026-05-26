@@ -16,9 +16,18 @@ class SyntaxHighlighter(colorSchema: EditorSchema) : OutputTransformation {
     private val classStyle = SpanStyle(color = colorSchema.classType)
     private val functionStyle = SpanStyle(color = colorSchema.function)
     private val operatorStyle = SpanStyle(color = colorSchema.operator)
+    private val indentStyle = SpanStyle(color = colorSchema.textColor.copy(alpha = 0.2f))
 
     override fun TextFieldBuffer.transformOutput() {
         val text = asCharSequence()
+
+        // Indentation markers
+        Regex(pattern = "^ +", options = setOf(RegexOption.MULTILINE)).findAll(text).forEach { match ->
+            for (i in match.range.first until match.range.last + 1 step 4) {
+                replace(i, i + 1, "·")
+                addStyle(indentStyle, i, i + 1)
+            }
+        }
 
         // Keywords
         Regex(pattern = "\\b(${keywords.joinToString("|")})\\b").findAll(input = text)

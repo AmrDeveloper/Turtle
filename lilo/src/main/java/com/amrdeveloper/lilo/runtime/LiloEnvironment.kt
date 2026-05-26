@@ -12,7 +12,7 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
     }
 
     fun set(name: String, value: LiloObject) {
-        if (isGlobal(name)) {
+        if (isMarkedGlobal(name)) {
             setGlobal(name, value)
             return
         }
@@ -26,8 +26,9 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
     }
 
     fun get(name: String): LiloObject? {
-        if (isGlobal(name)) return getGlobal(name)
-        return values[name]
+        if (isMarkedGlobal(name)) return getGlobal(name)
+        if (values.containsKey(name)) return values[name]
+        return enclosing?.get(name)
     }
 
     fun getGlobal(name: String): LiloObject? {
@@ -39,10 +40,8 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
         globals.add(name)
     }
 
-    fun isGlobal(name : String) : Boolean {
-        if (globals.contains(name)) return true;
-        if (enclosing != null) return enclosing.isGlobal(name)
-        return false
+    fun isMarkedGlobal(name : String) : Boolean {
+        return globals.contains(name)
     }
 
     fun globalScope() : LiloEnvironment {

@@ -479,9 +479,24 @@ class LiloInterpreterTest {
               return foo()
             print(foo2())
             """.trimIndent(),
+            """
+            x = 5
+            def foo():
+              return x
+            print(foo())
+            """.trimIndent(),
+            """
+            x = 5
+            def foo():
+              x = 10
+              return x
+            print(foo())
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
+            "10",
+            "5",
             "10",
             "5",
             "10",

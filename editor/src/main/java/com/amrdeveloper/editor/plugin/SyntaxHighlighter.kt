@@ -16,6 +16,7 @@ class SyntaxHighlighter(colorSchema: EditorSchema) : OutputTransformation {
     private val classStyle = SpanStyle(color = colorSchema.classType)
     private val functionStyle = SpanStyle(color = colorSchema.function)
     private val operatorStyle = SpanStyle(color = colorSchema.operator)
+    private val bracketStyle = SpanStyle(color = colorSchema.bracket)
     private val indentStyle = SpanStyle(color = colorSchema.textColor.copy(alpha = 0.2f))
 
     override fun TextFieldBuffer.transformOutput() {
@@ -92,6 +93,15 @@ class SyntaxHighlighter(colorSchema: EditorSchema) : OutputTransformation {
         Regex(pattern = "[+\\-*/%=<>!&|^~]").findAll(text).forEach { match ->
             addStyle(
                 operatorStyle,
+                match.range.first,
+                match.range.last + 1
+            )
+        }
+
+        // Brackets
+        Regex(pattern = "[()\\[\\]{}.]").findAll(text).forEach { match ->
+            addStyle(
+                bracketStyle,
                 match.range.first,
                 match.range.last + 1
             )

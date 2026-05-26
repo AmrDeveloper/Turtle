@@ -15,5 +15,6 @@ data class EditorSchema(
     val comment: Color,
     val classType: Color,
     val function: Color,
-    val operator: Color
+    val operator: Color,
+    val bracket: Color
 )

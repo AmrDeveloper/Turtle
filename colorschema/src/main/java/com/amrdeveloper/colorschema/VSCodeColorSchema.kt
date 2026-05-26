@@ -61,7 +61,8 @@ val VSCodeDarkLiloColorSchema = LiloColorSchema(
         comment = Color(0xFF6A9955),
         classType = Color(0xFF4EC9B0),
         function = Color(0xFFDCDCAA),
-        operator = Color(0xFFD4D4D4)
+        operator = Color(0xFFC586C0),
+        bracket = Color(0xFFFFD700)
     ),
     terminalSchema = TerminalSchema(
         background = Color(0xFF1E1E1E),
@@ -89,7 +90,8 @@ val VSCodeLightLiloColorSchema = LiloColorSchema(
         comment = Color(0xFF008000),
         classType = Color(0xFF267F99),
         function = Color(0xFF795E26),
-        operator = Color(0xFF000000)
+        operator = Color(0xFFAF5700),
+        bracket = Color(0xFF0431FA)
     ),
     terminalSchema = TerminalSchema(
         background = Color(0xFFFFFFFF),

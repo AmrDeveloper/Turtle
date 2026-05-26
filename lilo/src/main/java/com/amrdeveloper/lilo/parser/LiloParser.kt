@@ -61,7 +61,9 @@ class LiloParser(val tokens: List<LiloToken>) {
     fun parse(): LiloResult<LiloProgram> {
         val nodes = mutableListOf<LiloStmt>()
         while (!isAtEnd()) {
-            match(kind = LiloTokenKind.NEW_LINE)
+            if (match(kind = LiloTokenKind.NEW_LINE)) {
+                continue
+            }
             val stmt = parseStmt().valueOr { return it.toFailure() }
             nodes.add(stmt)
         }

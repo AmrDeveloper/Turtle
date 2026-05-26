@@ -2,7 +2,6 @@ package com.amrdeveloper.lilo.parser
 
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
-import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.valueOr
 import java.util.Stack
 

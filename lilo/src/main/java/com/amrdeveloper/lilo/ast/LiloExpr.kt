@@ -8,7 +8,7 @@ data class LambdaExpr(val params: List<String>, val body: LiloStmt) : LiloExpr
 
 data class CallExpr(val callee: LiloExpr, val args: List<LiloExpr>) : LiloExpr
 
-data class GetExpr(val obj: LiloExpr, val name: SymbolExpr) : LiloExpr
+data class GetExpr(val obj: LiloExpr, val name: NameExpr) : LiloExpr
 
 data class GetItemExpr(val obj: LiloExpr, val index: LiloExpr) : LiloExpr
 
@@ -47,7 +47,7 @@ data class DictExpr(val values: List<Pair<LiloExpr, LiloExpr>>) : LiloExpr
 
 data class TupleExpr(val values: List<LiloExpr>) : LiloExpr
 
-data class SymbolExpr(val value: LiloToken) : LiloExpr
+data class NameExpr(val value: LiloToken) : LiloExpr
 
 data class StrExpr(val value: LiloToken) : LiloExpr
 

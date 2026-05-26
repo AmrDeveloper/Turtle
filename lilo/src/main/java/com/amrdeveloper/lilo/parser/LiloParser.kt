@@ -38,7 +38,7 @@ import com.amrdeveloper.lilo.ast.RaiseStmt
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
-import com.amrdeveloper.lilo.ast.SymbolExpr
+import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryExpr
 import com.amrdeveloper.lilo.ast.WhileStmt
@@ -677,7 +677,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                     message = "expected symbol after `.` operator"
                 ).valueOr { return it.toFailure() }
 
-                expr = GetExpr(obj = expr, name = SymbolExpr(value = callNAME))
+                expr = GetExpr(obj = expr, name = NameExpr(value = callNAME))
                 continue
             }
 
@@ -691,7 +691,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         val token = peek()
         return when (token.kind) {
             LiloTokenKind.NAME -> {
-                LiloResult.Success(data = SymbolExpr(value = advance()))
+                LiloResult.Success(data = NameExpr(value = advance()))
             }
 
             LiloTokenKind.STRING -> {

@@ -37,7 +37,7 @@ import com.amrdeveloper.lilo.ast.RaiseStmt
 import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
-import com.amrdeveloper.lilo.ast.SymbolExpr
+import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryExpr
 import com.amrdeveloper.lilo.ast.WhileStmt
@@ -235,7 +235,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val lValue = stmt.lValue
         val value = visit(expr = stmt.rValue).valueOr { return it.toFailure() }
         return when (lValue) {
-            is SymbolExpr -> {
+            is NameExpr -> {
                 environment.set(name = lValue.value.lexeme!!, value = value)
                 LiloResult.Success(data = Unit)
             }
@@ -504,7 +504,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return runtimeObject(obj = LiloTuple(values = list))
     }
 
-    override fun visitSymbolExpr(expr: SymbolExpr): LiloResult<LiloObject> {
+    override fun visitNameExpr(expr: NameExpr): LiloResult<LiloObject> {
         val name = expr.value.lexeme!!
         val value = environment.get(name)
         if (value != null) return runtimeObject(obj = value)

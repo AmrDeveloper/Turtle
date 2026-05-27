@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.runtime
 
+import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryExpr
@@ -91,8 +92,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     var environment = globals
 
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
-        try { visitProgram(program).valueOr { return it.toFailure() } }
-        catch (e : LiloRaise) { return LiloResult.Failure(error = LiloExceptionMessage(e.toString())) }
+        try {
+            visitProgram(program).valueOr { return it.toFailure() }
+        } catch (e: LiloRaise) {
+            return LiloResult.Failure(error = LiloExceptionMessage(e.toString()))
+        }
         return LiloResult.Success(data = Unit)
     }
 
@@ -105,10 +109,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     private fun resolveNestedModules(
-        names : List<String>,
-        alias : String? = null,
-        shouldDefine : Boolean = false
-    ) : LiloResult<LiloObject> {
+        names: List<String>,
+        alias: String? = null,
+        shouldDefine: Boolean = false
+    ): LiloResult<LiloObject> {
         var liloModule = LiloEnvironment.builtins.get(names[0])
             ?: return runtimeException("No module named `${names[0]}`")
         if (liloModule !is LiloModule) return runtimeException("`${names[0]}` is not module")
@@ -210,19 +214,23 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             do {
                 try {
                     visit(stmt = stmt.body).valueOr { return it.toFailure() }
+                } catch (_: LiloContinueSignal) {
                 }
-                catch (_ : LiloContinueSignal) { }
 
                 // Execute the condition for the next run
                 val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
                 isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
             } while (isTruth)
-        } catch (_ : LiloBreakSignal) { return LiloResult.Success(data = Unit) }
+        } catch (_: LiloBreakSignal) {
+            return LiloResult.Success(data = Unit)
+        }
         return LiloResult.Success(data = Unit)
     }
 
     override fun visitBlockStmt(stmt: BlockStmt): LiloResult<Unit> {
-        for (node in stmt.nodes) { visit(stmt = node).valueOr { return it.toFailure() } }
+        for (node in stmt.nodes) {
+            visit(stmt = node).valueOr { return it.toFailure() }
+        }
         return LiloResult.Success(data = Unit)
     }
 
@@ -231,18 +239,47 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return LiloResult.Success(data = Unit)
     }
 
-    override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {
-        val lValue = stmt.lValue
-        val value = visit(expr = stmt.rValue).valueOr { return it.toFailure() }
-        return when (lValue) {
+    override fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): LiloResult<Unit> {
+        // Annotation will be ignored in the interpreter, but it will be used in the GPU Compiler
+        val target = stmt.target
+        val value = visit(expr = stmt.value).valueOr { return it.toFailure() }
+        return when (target) {
             is NameExpr -> {
-                environment.set(name = lValue.value.lexeme!!, value = value)
+                environment.set(name = target.value.lexeme!!, value = value)
                 LiloResult.Success(data = Unit)
             }
 
             is GetItemExpr -> {
-                val obj = visit(expr = lValue.obj).valueOr { return it.toFailure() }
-                val index = visit(expr = lValue.index).valueOr { return it.toFailure() }
+                val obj = visit(expr = target.obj).valueOr { return it.toFailure() }
+                val index = visit(expr = target.index).valueOr { return it.toFailure() }
+
+                val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
+                if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
+                    return runtimeException("`${obj}` support item assignment")
+                }
+
+                val invokeResult =
+                    liloSetItemMethod.invoke(interpreter = this, args = listOf(obj, index, value))
+                if (invokeResult.isFailure()) return invokeResult.toFailure()
+                LiloResult.Success(data = Unit)
+            }
+
+            else -> runtimeException("Invalid `lvalue` for assign expr")
+        }
+    }
+
+    override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {
+        val target = stmt.target
+        val value = visit(expr = stmt.value).valueOr { return it.toFailure() }
+        return when (target) {
+            is NameExpr -> {
+                environment.set(name = target.value.lexeme!!, value = value)
+                LiloResult.Success(data = Unit)
+            }
+
+            is GetItemExpr -> {
+                val obj = visit(expr = target.obj).valueOr { return it.toFailure() }
+                val index = visit(expr = target.index).valueOr { return it.toFailure() }
 
                 val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
                 if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
@@ -271,7 +308,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             return runtimeException("exceptions must derive from BaseException")
         }
 
-        var cause : LiloObject? = null
+        var cause: LiloObject? = null
         stmt.cause?.let {
             cause = visit(expr = stmt.cause).valueOr { return it.toFailure() }
             val isCauseType = cause is LiloType
@@ -321,7 +358,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         throw LiloContinueSignal()
     }
 
-    override fun visitPassStmt(stmt : PassStmt) : LiloResult<Unit> {
+    override fun visitPassStmt(stmt: PassStmt): LiloResult<Unit> {
         return LiloResult.Success(data = Unit)
     }
 

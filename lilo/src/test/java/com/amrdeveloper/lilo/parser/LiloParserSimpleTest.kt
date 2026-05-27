@@ -131,6 +131,17 @@ class LiloParserSimpleTest {
     }
 
     @Test
+    fun `test annotated assignment statement`() {
+        val sourceCodes = listOf(
+            "a : int = 1",
+            "a : int = 1;",
+            "a : float = 1.0",
+            "a : float = 1.0;",
+        )
+        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+    }
+
+    @Test
     fun `test assert statement`() {
         val sourceCodes = listOf(
             "assert a",

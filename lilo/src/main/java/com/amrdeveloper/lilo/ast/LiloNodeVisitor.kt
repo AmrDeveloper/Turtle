@@ -12,6 +12,7 @@ interface LiloStmtVisitor<T> {
         is WhileStmt -> visitWhileStmt(stmt)
         is BlockStmt -> visitBlockStmt(stmt)
         is ExprStmt -> visitExprStmt(stmt)
+        is AnnAssignStmt -> visitAnnotatedAssignStmt(stmt)
         is AssignStmt -> visitAssignStmt(stmt)
         is RaiseStmt -> visitRaiseStmt(stmt)
         is ReturnStmt -> visitReturnStmt(stmt)
@@ -31,6 +32,7 @@ interface LiloStmtVisitor<T> {
     fun visitWhileStmt(stmt: WhileStmt): T
     fun visitBlockStmt(stmt: BlockStmt): T
     fun visitExprStmt(stmt: ExprStmt): T
+    fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): T
     fun visitAssignStmt(stmt: AssignStmt): T
     fun visitRaiseStmt(stmt: RaiseStmt): T
     fun visitReturnStmt(stmt: ReturnStmt): T

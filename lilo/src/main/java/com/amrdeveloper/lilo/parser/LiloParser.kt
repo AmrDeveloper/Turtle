@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.parser
 
+import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryExpr
@@ -513,13 +514,32 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = PassStmt())
     }
 
+    //  assign_stmt:
+    //    | NAME '=' expression
+    //    | NAME ':' expression '=' expression
     private fun parseAssignmentStmt(): LiloResult<LiloStmt> {
         val lhs = parseExpr().valueOr { return it.toFailure() }
+
+        // Annotated assignment
+        if (match(kind = LiloTokenKind.COLON)) {
+            val annotation = parseExpr().valueOr { return it.toFailure() }
+            expectAndConsume(
+                kind = LiloTokenKind.EQ,
+                message = "expected '=' after annotated variable"
+            ).valueOr { return it.toFailure() }
+
+            val value = parseExpr().valueOr { return it.toFailure() }
+            consumeOptionalSemi()
+            return LiloResult.Success(data = AnnAssignStmt(target = lhs, annotation, value = value))
+        }
+
+        // Assignment
         if (match(kind = LiloTokenKind.EQ)) {
             val value = parseExpr().valueOr { return it.toFailure() }
             consumeOptionalSemi()
-            return LiloResult.Success(data = AssignStmt(lValue = lhs, rValue = value))
+            return LiloResult.Success(data = AssignStmt(target = lhs, value = value))
         }
+
         consumeOptionalSemi()
         return LiloResult.Success(data = ExprStmt(expr = lhs))
     }

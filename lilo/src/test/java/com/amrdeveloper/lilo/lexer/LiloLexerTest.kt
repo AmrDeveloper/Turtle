@@ -52,4 +52,59 @@ class LiloLexerTest {
         sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
     }
 
+    @Test
+    fun `test implicit line joining`() {
+        val sourceCodes = listOf(
+            """
+            x = [
+                1,
+                2,
+                3
+            ]
+            """,
+            """
+            y = (
+            1,
+              2,
+                3
+            )
+            """,
+            """
+            z = {
+                "a": 1,
+            "b": 2
+            }
+            """
+        )
+
+        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
+    }
+
+    @Test
+    fun `test nested implicit line joining`() {
+        val sourceCodes = listOf(
+            """
+            matrix = [
+                [1, 2],
+                [3, 4]
+            ]
+            """
+        )
+
+        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
+    }
+
+    @Test
+    fun `test indentation after implicit line joining`() {
+        val sourceCode = """
+            if True:
+                x = [
+                    1,
+                    2
+                ]
+                print(x)
+        """.trimIndent()
+
+        assert(isValidLiloTokens(sourceCode = sourceCode))
+    }
 }

@@ -16,6 +16,9 @@ class LiloLexer(val source: String) {
 
     private val indentStack = Stack<Int>().apply { push(0) }
 
+    // Tracking nested level to align with the Implicit Line Joining rule
+    private var nestingLevel = 0
+
     fun tokenize(): LiloResult<List<LiloToken>> {
         val tokens: MutableList<LiloToken> = mutableListOf()
         while (!isAtEnd()) {
@@ -83,7 +86,14 @@ class LiloLexer(val source: String) {
                 }
 
                 '(', ')', '[', ']', '{', '}' -> {
-                    tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
+                    val kind = getLiloOneCharTokenMap()[peek()]!!
+                    if (kind == LiloTokenKind.L_PAR || kind == LiloTokenKind.L_SQB || kind == LiloTokenKind.L_BRACE) {
+                        nestingLevel++
+                    } else {
+                        nestingLevel--
+                    }
+                    tokens.add(createToken(kind = kind))
+                    advance()
                 }
 
                 '.', ',', ':', ';' -> {
@@ -167,6 +177,10 @@ class LiloLexer(val source: String) {
             var c = peek()
             when (c) {
                 '\n' -> {
+                    if (nestingLevel > 0) {
+                        advance()
+                        continue
+                    }
                     // Push new line token
                     indentTokens.add(createToken(kind = LiloTokenKind.NEW_LINE))
                     // Consume '\n'

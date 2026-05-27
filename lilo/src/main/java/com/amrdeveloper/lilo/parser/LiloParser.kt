@@ -61,7 +61,10 @@ class LiloParser(val tokens: List<LiloToken>) {
     fun parse(): LiloResult<LiloProgram> {
         val nodes = mutableListOf<LiloStmt>()
         while (!isAtEnd()) {
-            if (match(kind = LiloTokenKind.NEW_LINE)) {
+            if (isPeek(kind = LiloTokenKind.NEW_LINE)
+                || isPeek(kind = LiloTokenKind.INDENT)
+                || isPeek(kind = LiloTokenKind.DEDENT)) {
+                advance()
                 continue
             }
             val stmt = parseStmt().valueOr { return it.toFailure() }
@@ -442,6 +445,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         if (isPeek(kind = LiloTokenKind.SEMI)
             || isPeek(kind = LiloTokenKind.NEW_LINE)
+            || isPeek(kind = LiloTokenKind.DEDENT)
             || isPeek(kind = LiloTokenKind.END_MARKER)) {
             advance()
             return LiloResult.Success(data = ReturnStmt())
@@ -462,6 +466,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         if (isPeek(kind = LiloTokenKind.SEMI)
             || isPeek(kind = LiloTokenKind.NEW_LINE)
+            || isPeek(kind = LiloTokenKind.DEDENT)
             || isPeek(kind = LiloTokenKind.END_MARKER)) {
             advance()
             return LiloResult.Success(data = RaiseStmt())

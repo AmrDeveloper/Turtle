@@ -23,7 +23,7 @@ class LiloMagicMethodTest {
             a = 1
             b = 2
             c = a + b
-            """.trimIndent(),
+            """,
         )
 
         for (sourceCode in sourceCodes) {
@@ -105,25 +105,25 @@ class LiloMagicMethodTest {
             b = 2
             c = a + b
             print(c)
-            """.trimIndent(),
+            """,
             """
             print(1)
-            """.trimIndent(),
+            """,
             """
             print(None)
-            """.trimIndent(),
+            """,
             """
             print('Lilo')
-            """.trimIndent(),
+            """,
             """
             print("Lilo")
-            """.trimIndent(),
+            """,
             """
             print(int)
-            """.trimIndent(),
+            """,
             """
             print(float)
-            """.trimIndent()
+            """
         )
 
         val expectedOutput = listOf(
@@ -169,28 +169,28 @@ class LiloMagicMethodTest {
             """
             a = [1, 2, 3]
             print(a[0])
-            """.trimIndent(),
+            """,
             """
             a = [1, 2, 3]
             print(a[1])
-            """.trimIndent(),
+            """,
             """
             a = [1, 2, 3]
             print(a[2])
-            """.trimIndent(),
+            """,
             // Tuple
             """
             a = (1, 2, 3)
             print(a[0])
-            """.trimIndent(),
+            """,
             """
             a = (1, 2, 3)
             print(a[1])
-            """.trimIndent(),
+            """,
             """
             a = (1, 2, 3)
             print(a[2])
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(
@@ -236,7 +236,7 @@ class LiloMagicMethodTest {
             a = [1, 2, 3]
             a[0] = 4
             print(a[0])
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(
@@ -277,26 +277,26 @@ class LiloMagicMethodTest {
             """
             a = [1, 2, 3]
             print(len(a))
-            """.trimIndent(),
+            """,
             // Set
             """
             a = {1, True, "Hello"}
             print(len(a))
-            """.trimIndent(),
+            """,
             """
             a = {1, 1, 1}
             print(len(a))
-            """.trimIndent(),
+            """,
             // Tuple
             """
             a = (1, True, "Hello")
             print(len(a))
-            """.trimIndent(),
+            """,
             // Dict
             """
             a = { 1 : [1, 2, 3], 2 : [4, 5, 6] }
             print(len(a))
-            """.trimIndent()
+            """
         )
 
         val expectedOutput = listOf(

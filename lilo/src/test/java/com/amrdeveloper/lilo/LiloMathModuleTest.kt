@@ -22,11 +22,11 @@ class LiloMathModuleTest {
             """
             import math
             print(math.inf)
-            """.trimIndent(),
+            """,
             """
             import math
             print(math.nan)
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(

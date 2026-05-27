@@ -14,11 +14,11 @@ class LiloParserCompoundTest {
             """
             def identity():
                return 1
-            """.trimIndent(),
+            """,
             """
             def return_none():
                return
-            """.trimIndent()
+            """
         )
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
@@ -30,13 +30,13 @@ class LiloParserCompoundTest {
             """
             while true:
                print(a)
-            """.trimIndent(),
+            """,
             """
             while true:
                print(1)
             else:
                print(2)
-            """.trimIndent()
+            """
         )
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
@@ -48,13 +48,13 @@ class LiloParserCompoundTest {
             """
             for a in list:
                print(a)
-            """.trimIndent(),
+            """,
             """
             for a in list:
                print(a)
             else:
                print(b)
-            """.trimIndent()
+            """
         )
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
@@ -66,13 +66,13 @@ class LiloParserCompoundTest {
             """
             if True:
                print(1)
-            """.trimIndent(),
+            """,
             """
             if True:
                 pass
             else:
                 pass
-            """.trimIndent(),
+            """,
             """
             if True:
                pass
@@ -80,7 +80,7 @@ class LiloParserCompoundTest {
                pass
             else:
                pass
-            """.trimIndent(),
+            """,
         )
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }

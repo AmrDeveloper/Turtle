@@ -22,19 +22,19 @@ class LiloInterpreterTest {
             """
             import random
             a = random.random()
-            """.trimIndent(),
+            """,
             """
             import random as r
             a = r.random()
-            """.trimIndent(),
+            """,
             """
             from random import random
             a = random()
-            """.trimIndent(),
+            """,
             """
             from random import (random)
             a = random()
-            """.trimIndent(),
+            """,
         )
 
         for (sourceCode in sourceCodes) {
@@ -68,11 +68,11 @@ class LiloInterpreterTest {
             def foo(p):
                 pass
             foo(10)
-            """.trimIndent(),
+            """,
             """
             import random
             a = random.random()
-            """.trimIndent()
+            """
         )
 
         for (sourceCode in sourceCodes) {
@@ -105,7 +105,7 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             """
             print(42)
-            """.trimIndent(),
+            """,
         )
 
         for (sourceCode in sourceCodes) {
@@ -139,23 +139,23 @@ class LiloInterpreterTest {
             """
             a = 1 if True else 2
             print(a)
-            """.trimIndent(),
+            """,
             """
             a = 1 if False else (2 if True else 3)
             print(a)  
-            """.trimIndent(),
+            """,
             """
             a = (2 if (False) else 3) if (True) else 2
             print(a)
-            """.trimIndent(),
+            """,
             """
             a = 1 if 1 else 2
             print(a)
-            """.trimIndent(),
+            """,
             """
             a = 1 if 0 else 2
             print(a)
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(
@@ -196,10 +196,10 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             """
             print(-10)
-            """.trimIndent(),
+            """,
             """
             print(+10)
-            """.trimIndent()
+            """
         )
 
         val expectedOutput = listOf(
@@ -238,16 +238,16 @@ class LiloInterpreterTest {
             """
             identity = lambda a : a
             print(identity(1))
-            """.trimIndent(),
+            """,
             """
             a = lambda a : a + 1
             print(a(1))
-            """.trimIndent(),
+            """,
             """
             x = 10
             add_x = lambda a : a + x
             print(add_x(5))
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(
@@ -287,23 +287,23 @@ class LiloInterpreterTest {
             """
             if True:
                print(1)
-            """.trimIndent(),
+            """,
             """
             if False:
                print(1)
-            """.trimIndent(),
+            """,
             """
             if False:
                print(1)
             elif True:
                print(2)
-            """.trimIndent(),
+            """,
             """
             if False:
                print(1)
             else:
                print(2)
-            """.trimIndent(),
+            """,
             """
             if False:
                print(1)
@@ -311,15 +311,15 @@ class LiloInterpreterTest {
                print(2)
             else:
                print(3)
-            """.trimIndent(),
+            """,
             """
             if 2:
                print(1)
-            """.trimIndent(),
+            """,
             """
             if 0:
                print(1)
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(
@@ -365,20 +365,20 @@ class LiloInterpreterTest {
             while x > 0:
                 print(x)
                 x = x - 1
-            """.trimIndent(),
+            """,
             """
             x = 5
             while x > 0:
                 print(x)
                 break
-            """.trimIndent(),
+            """,
             """
             x = 5
             while x > 0:
                 x = x - 1
                 continue
                 print(x)
-            """.trimIndent(),
+            """,
             """
             x = 5
             while x > 5:
@@ -386,7 +386,7 @@ class LiloInterpreterTest {
                 x = x - 1
             else:
                 print(0)
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(
@@ -470,41 +470,41 @@ class LiloInterpreterTest {
               x = 10
             foo()
             print(x)
-            """.trimIndent(),
+            """,
             """
             x = 5
             def foo():
               x = 10
             foo()
             print(x)
-            """.trimIndent(),
+            """,
             """
             def foo():
               return 10
             def foo2():
               return foo()
             print(foo2())
-            """.trimIndent(),
+            """,
             """
             x = 5
             def foo():
               return x
             print(foo())
-            """.trimIndent(),
+            """,
             """
             x = 5
             def foo():
               x = 10
               return x
             print(foo())
-            """.trimIndent(),
+            """,
             """
             x = 10
             def foo():
                 x = 20
             foo()
             print(x)
-            """.trimIndent(),
+            """,
             """
             x = 10
             def outer():
@@ -513,7 +513,7 @@ class LiloInterpreterTest {
                     return x
                 return inner()
             print(outer())
-            """.trimIndent(),
+            """,
             """
             x = 1
             def outer():
@@ -524,7 +524,7 @@ class LiloInterpreterTest {
                     return x
                 return inner() + x
             print(outer())
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(

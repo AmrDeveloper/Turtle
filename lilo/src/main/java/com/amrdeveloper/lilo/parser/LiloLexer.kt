@@ -111,6 +111,12 @@ class LiloLexer(val source: String) {
             }
         }
 
+        // Generate `DEDENT` for all remaining `INDENT` in the stack
+        while (indentStack.size > 1) {
+            tokens.add(createToken(kind = LiloTokenKind.DEDENT))
+            indentStack.pop()
+        }
+
         tokens.add(createToken(kind = LiloTokenKind.END_MARKER))
         return LiloResult.Success(data = tokens)
     }

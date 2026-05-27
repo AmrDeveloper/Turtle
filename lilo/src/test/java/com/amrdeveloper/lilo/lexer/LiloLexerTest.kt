@@ -19,7 +19,7 @@ class LiloLexerTest {
                 while True:
                     pass
             print(1)    
-            """.trimIndent()
+            """
         )
 
         sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }

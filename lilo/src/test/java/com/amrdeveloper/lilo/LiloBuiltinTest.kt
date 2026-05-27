@@ -61,7 +61,7 @@ class LiloBuiltinTest {
         val sourceCodes = mutableListOf(
             """
             print(1)
-            """.trimIndent(),
+            """,
         )
 
         val expectedOutput = listOf(

@@ -9,7 +9,9 @@ import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.liloFunctionType
 import kotlin.math.PI
+import kotlin.math.ceil
 import kotlin.math.cos
+import kotlin.math.floor
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
@@ -33,6 +35,8 @@ val liloMathModule = LiloModule(name = MODULE_NAME).also {
     it.setAttr(name = "tanh", value = LiloMathTanh)
     it.setAttr(name = "sqrt", value = LiloMathSqrt)
     it.setAttr(name = "radians", value = LiloMathRadians)
+    it.setAttr(name = "floor", value = LiloMathFloor)
+    it.setAttr(name = "ceil", value = LiloMathCeil)
 }
 
 object LiloMathSin : LiloObject(liloFunctionType), LiloCallable {
@@ -110,6 +114,39 @@ object LiloMathSqrt : LiloObject(liloFunctionType), LiloCallable {
         return LiloResult.Success(data = LiloFloat(value = radians))
     }
 }
+
+object LiloMathFloor : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val argument = args[0]
+        if ((argument !is LiloFloat) && argument !is LiloInt) {
+            return LiloResult.Failure(error = RuntimeException("`math.floor` expect must be real number, not `${argument.type.toString()}`"))
+        }
+
+        if (argument is LiloInt) return LiloResult.Success(data = argument)
+        val result = floor(x = (argument as LiloFloat).value)
+        return LiloResult.Success(data = LiloFloat(value = result))
+    }
+}
+
+object LiloMathCeil : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val argument = args[0]
+        if ((argument !is LiloFloat) && argument !is LiloInt) {
+            return LiloResult.Failure(error = RuntimeException("`math.ceil` expect must be real number, not `${argument.type.toString()}`"))
+        }
+
+        if (argument is LiloInt) return LiloResult.Success(data = argument)
+        val result = ceil(x = (argument as LiloFloat).value)
+        return LiloResult.Success(data = LiloFloat(value = result))
+    }
+}
+
 
 object LiloMathRadians : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(

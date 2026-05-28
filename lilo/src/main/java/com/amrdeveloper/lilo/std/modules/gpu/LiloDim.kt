@@ -10,40 +10,41 @@ import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.type.LiloBaseType
 import com.amrdeveloper.lilo.type.LiloType
+import com.amrdeveloper.lilo.type.liloFunctionType
 import com.amrdeveloper.lilo.type.liloMethodType
 
-val liloDim3Type = LiloType(name = "Dim3", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE))
+val liloDimType = LiloType(name = "Dim", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE))
     .also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
 
-        it.setAttr(name = LiloMagicMethod.INIT, value = Dim3Init)
-
-        it.setAttr(name = LiloMagicMethod.STR, value = Dim3Str)
+        it.setAttr(name = LiloMagicMethod.INIT, value = GPUDimInit)
+        it.setAttr(name = LiloMagicMethod.STR, value = GPUDimStr)
     }
 
-private object Dim3Init : LiloObject(liloMethodType), LiloCallable {
+private object GPUDimInit : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size > 3)
-            return LiloResult.Failure(error = LiloExceptionMessage("Dim3 expects 0 to 3 args not ${args.size}"))
+        if (args.size !in 1 .. 3) {
+            return LiloResult.Failure(error = LiloExceptionMessage("Dim expects 1 to 3 args not ${args.size}"))
+        }
 
-        val dim3 = LiloObject(type = liloDim3Type)
+        val dim = LiloObject(type = liloDimType)
         for ((index, arg) in args.withIndex()) {
             if (arg !is LiloInt)
-                return LiloResult.Failure(error = LiloExceptionMessage("Dim3 arg ${index} expected to be Int"))
+                return LiloResult.Failure(error = LiloExceptionMessage("Dim arg $index expected to be Int but got ${arg.type}"))
             when (index) {
-                0 -> dim3.setAttr(name = "x", value = arg)
-                1 -> dim3.setAttr(name = "y", value = arg)
-                2 -> dim3.setAttr(name = "z", value = arg)
+                0 -> dim.setAttr(name = "x", value = arg)
+                1 -> dim.setAttr(name = "y", value = arg)
+                2 -> dim.setAttr(name = "z", value = arg)
             }
         }
-        return LiloResult.Success(data = dim3)
+        return LiloResult.Success(data = dim)
     }
 }
 
-private object Dim3Str : LiloObject(liloMethodType), LiloCallable {
+private object GPUDimStr : LiloObject(liloMethodType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

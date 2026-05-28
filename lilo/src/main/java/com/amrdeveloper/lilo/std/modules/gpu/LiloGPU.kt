@@ -11,5 +11,5 @@ val liloGPUModule = LiloModule(name = MODULE_NAME).also {
     it.setAttr(name = "wrap_size", value = LiloGPUWrapSize)
 
     // Types
-    it.setAttr(name = "Dim3", value = liloDim3Type)
+    it.setAttr(name = "Dim", value = liloDimType)
 }

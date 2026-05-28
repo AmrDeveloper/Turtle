@@ -163,7 +163,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitFunctionStmt(stmt: FunctionStmt): LiloResult<Unit> {
-        val function = LiloFunction(params = stmt.params, body = stmt.body)
+        val function = LiloFunction(params = stmt.parameters, body = stmt.body)
         environment.setGlobal(name = stmt.name, value = function)
         return LiloResult.Success(data = Unit)
     }
@@ -363,7 +363,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {
-        val function = LiloFunction(params = expr.params, body = expr.body)
+        val function = LiloFunction(params = expr.parameters, body = expr.body)
         return LiloResult.Success(data = function)
     }
 

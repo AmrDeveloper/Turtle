@@ -45,6 +45,7 @@ enum class LiloTokenKind {
     L_BRACE,             // {
     R_BRACE,             // }
 
+    AT,                  // @
     DOT,                 // .
     COMMA,               // ,
     COLON,               // :
@@ -121,6 +122,7 @@ fun getLiloOneCharTokenMap() = mapOf(
     '{' to LiloTokenKind.L_BRACE,
     '}' to LiloTokenKind.R_BRACE,
 
+    '@' to LiloTokenKind.AT,
     '.' to LiloTokenKind.DOT,
     ',' to LiloTokenKind.COMMA,
     ':' to LiloTokenKind.COLON,

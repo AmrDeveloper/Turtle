@@ -96,7 +96,7 @@ class LiloLexer(val source: String) {
                     advance()
                 }
 
-                '.', ',', ':', ';' -> {
+                '@', '.', ',', ':', ';' -> {
                     tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
                 }
 

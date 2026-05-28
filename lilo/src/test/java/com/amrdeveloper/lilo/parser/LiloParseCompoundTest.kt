@@ -27,6 +27,10 @@ class LiloParserCompoundTest {
             def add(a : int, b : int) : return a + b
             """,
             """
+            @kernal
+            def add(a : int, b : int) : return a + b
+            """,
+            """
             def add(a, b, out c):
                return
             """,
@@ -35,6 +39,23 @@ class LiloParserCompoundTest {
                return
             """,
             """
+            def add(a : int, b : int, out c : int):
+               return
+            """,
+            """
+            @decorator1
+            @decorator2
+            @decorator3
+            def add(a : int, b : int, out c : int):
+               return
+            """,
+            """
+            @gpu
+            def add(a : int, b : int, out c : int):
+               return
+            """,
+            """
+            @kernal
             def add(a : int, b : int, out c : int):
                return
             """,

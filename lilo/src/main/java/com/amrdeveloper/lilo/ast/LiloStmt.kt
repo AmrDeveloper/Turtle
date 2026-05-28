@@ -9,9 +9,16 @@ data class FromImportStmt(
 
 data class ImportStmt(val modules: List<Pair<List<String>, String?>>) : LiloStmt
 
+data class Parameter(
+    val name: String,
+    val type: LiloExpr? = null,
+    // Used for GPU kernal to mark parameter as output
+    val isOut: Boolean = false
+)
+
 data class FunctionStmt(
     val name: String,
-    val params: List<String>,
+    val params: List<Parameter>,
     val body: LiloStmt
 ) : LiloStmt
 

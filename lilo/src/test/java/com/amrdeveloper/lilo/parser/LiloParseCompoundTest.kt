@@ -18,7 +18,26 @@ class LiloParserCompoundTest {
             """
             def return_none():
                return
+            """,
             """
+            def add(a : int, b : int):
+               return a + b
+            """,
+            """
+            def add(a : int, b : int) : return a + b
+            """,
+            """
+            def add(a, b, out c):
+               return
+            """,
+            """
+            def add(a, b, out c, out d):
+               return
+            """,
+            """
+            def add(a : int, b : int, out c : int):
+               return
+            """,
         )
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }

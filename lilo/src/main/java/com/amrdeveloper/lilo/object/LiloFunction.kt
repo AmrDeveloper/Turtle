@@ -1,6 +1,7 @@
 package com.amrdeveloper.lilo.`object`
 
 import com.amrdeveloper.lilo.ast.LiloStmt
+import com.amrdeveloper.lilo.ast.Parameter
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.valueOr
@@ -10,7 +11,7 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.type.liloFunctionType
 
-data class LiloFunction(val params: List<String>, val body: LiloStmt) :
+data class LiloFunction(val params: List<Parameter>, val body: LiloStmt) :
     LiloObject(liloFunctionType), LiloCallable {
 
     override fun invoke(
@@ -21,7 +22,7 @@ data class LiloFunction(val params: List<String>, val body: LiloStmt) :
         interpreter.environment = LiloEnvironment(enclosing = interpreter.environment)
 
         for ((index, arg) in args.withIndex()) {
-            interpreter.environment.set(name = params[index], value = arg)
+            interpreter.environment.set(name = params[index].name, value = arg)
         }
 
         try {

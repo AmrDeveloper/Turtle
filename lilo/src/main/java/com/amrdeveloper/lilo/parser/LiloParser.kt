@@ -40,6 +40,7 @@ import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.NameExpr
+import com.amrdeveloper.lilo.ast.Parameter
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryExpr
 import com.amrdeveloper.lilo.ast.WhileStmt
@@ -247,14 +248,21 @@ class LiloParser(val tokens: List<LiloToken>) {
             message = "Expect `(` after function name"
         ).valueOr { return it.toFailure() }
 
-        val nodes = mutableListOf<String>()
+        val parameters = mutableListOf<Parameter>()
         loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_PAR).not()) {
-            val parameter = expectAndConsume(
+            val isOut = match(kind = LiloTokenKind.OUT_KEYWORD)
+
+            val name = expectAndConsume(
                 kind = LiloTokenKind.NAME,
                 message = "Expect parameter name"
-            ).valueOr { return it.toFailure() }
-            nodes.add(parameter.lexeme!!)
+            ).valueOr { return it.toFailure() }.lexeme!!
 
+            var type: LiloExpr? = null
+            if (match(kind = LiloTokenKind.COLON)) {
+                type = parseExpr().valueOr { return it.toFailure() }
+            }
+
+            parameters.add(Parameter(name, type, isOut))
             consumeCommaOr { break@loop }
         }
 
@@ -268,7 +276,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
 
         val block = parseBlockStmt().valueOr { return it.toFailure() }
-        val functionStmt = FunctionStmt(name = name.lexeme!!, params = nodes, body = block)
+        val functionStmt = FunctionStmt(name = name.lexeme!!, params = parameters, body = block)
         return LiloResult.Success(data = functionStmt)
     }
 
@@ -803,14 +811,19 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'lambda'
         advance()
 
-        val parameters = mutableListOf<String>()
+        val parameters = mutableListOf<Parameter>()
         loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.COLON).not()) {
-            val parameter = expectAndConsume(
+            if (isPeek(kind = LiloTokenKind.OUT_KEYWORD)) {
+                return createDiagnostic(peek().loc, message = "`out` parameter is not supported with lambda")
+            }
+
+            val name = expectAndConsume(
                 kind = LiloTokenKind.NAME,
                 message = "expected 'symbol' as lambda parameter name"
-            ).valueOr { return it.toFailure() }
-            parameters.add(parameter.lexeme!!)
+            ).valueOr { return it.toFailure() }.lexeme!!
 
+            // lambda expressions do not support inline parameter type annotations
+            parameters.add(Parameter(name, type = null, isOut = false))
             consumeCommaOr { break@loop }
         }
 

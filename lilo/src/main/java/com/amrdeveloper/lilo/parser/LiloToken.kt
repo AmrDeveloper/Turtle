@@ -26,6 +26,8 @@ enum class LiloTokenKind {
     CONTINUE_KEYWORD,
     PASS_KEYWORD,
 
+    OUT_KEYWORD,
+
     TRUE_KEYWORD,
     FALSE_KEYWORD,
     NONE_KEYWORD,
@@ -97,6 +99,8 @@ fun getLiloKeywordsMap() = mapOf(
     "break" to LiloTokenKind.BREAK_KEYWORD,
     "continue" to LiloTokenKind.CONTINUE_KEYWORD,
     "pass" to LiloTokenKind.PASS_KEYWORD,
+
+    "out" to LiloTokenKind.OUT_KEYWORD,
 
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,

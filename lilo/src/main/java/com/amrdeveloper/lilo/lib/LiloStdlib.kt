@@ -25,6 +25,7 @@ import com.amrdeveloper.lilo.lib.builtins.LiloRangeFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloTypeFunction
 import com.amrdeveloper.lilo.lib.colorsys.liloColorSysModule
 import com.amrdeveloper.lilo.lib.gpu.liloGPUModule
+import com.amrdeveloper.lilo.lib.inspect.liloInspectModule
 import com.amrdeveloper.lilo.lib.keyword.liloKeywordModule
 import com.amrdeveloper.lilo.lib.math.liloMathModule
 import com.amrdeveloper.lilo.lib.random.liloRandomModule
@@ -33,14 +34,14 @@ import com.amrdeveloper.lilo.lib.turtle.liloTurtleModule
 
 fun registerLiloAutoImportedModule() {
     // Builtin types
-    LiloEnvironment.builtins["bool"] = liloBoolType
-    LiloEnvironment.builtins["int"] = liloIntType
-    LiloEnvironment.builtins["float"] = liloFloatType
-    LiloEnvironment.builtins["str"] = liloStrType
-    LiloEnvironment.builtins["tuple"] = liloTupleType
-    LiloEnvironment.builtins["list"] = liloListType
-    LiloEnvironment.builtins["set"] = liloSetType
-    LiloEnvironment.builtins["dict"] = liloDictType
+    LiloEnvironment.builtins["bool"]   = liloBoolType
+    LiloEnvironment.builtins["int"]    = liloIntType
+    LiloEnvironment.builtins["float"]  = liloFloatType
+    LiloEnvironment.builtins["str"]    = liloStrType
+    LiloEnvironment.builtins["tuple"]  = liloTupleType
+    LiloEnvironment.builtins["list"]   = liloListType
+    LiloEnvironment.builtins["set"]    = liloSetType
+    LiloEnvironment.builtins["dict"]   = liloDictType
 
     // Builtin exception types
     LiloEnvironment.builtins["BaseException"]  = liloBaseExceptionType
@@ -52,22 +53,23 @@ fun registerLiloAutoImportedModule() {
 
 fun registerLiloStandardLibrary() {
     // Register Stdlib modules
-    LiloEnvironment.builtins["random"] = liloRandomModule
-    LiloEnvironment.builtins["math"] = liloMathModule
-    LiloEnvironment.builtins["gpu"] = liloGPUModule
-    LiloEnvironment.builtins["time"] = liloTimeModule
-    LiloEnvironment.builtins["turtle"] = liloTurtleModule
-    LiloEnvironment.builtins["colorsys"] = liloColorSysModule
-    LiloEnvironment.builtins["keyword"] = liloKeywordModule
+    LiloEnvironment.builtins["random"]    = liloRandomModule
+    LiloEnvironment.builtins["math"]      = liloMathModule
+    LiloEnvironment.builtins["gpu"]       = liloGPUModule
+    LiloEnvironment.builtins["time"]      = liloTimeModule
+    LiloEnvironment.builtins["turtle"]    = liloTurtleModule
+    LiloEnvironment.builtins["colorsys"]  = liloColorSysModule
+    LiloEnvironment.builtins["keyword"]   = liloKeywordModule
+    LiloEnvironment.builtins["inspect"]   = liloInspectModule
 
     // Register Stdlib functions
-    LiloEnvironment.builtins["print"] = LiloPrintFunction
-    LiloEnvironment.builtins["len"] = LiloLenFunction
-    LiloEnvironment.builtins["type"] = LiloTypeFunction
-    LiloEnvironment.builtins["id"] = LiloIdFunction
-    LiloEnvironment.builtins["hasattr"] = LiloHasAttrFunction
-    LiloEnvironment.builtins["bin"] = LiloBinFunction
-    LiloEnvironment.builtins["oct"] = LiloOctFunction
-    LiloEnvironment.builtins["hex"] = LiloHexFunction
-    LiloEnvironment.builtins["range"] = LiloRangeFunction
+    LiloEnvironment.builtins["print"]    = LiloPrintFunction
+    LiloEnvironment.builtins["len"]      = LiloLenFunction
+    LiloEnvironment.builtins["type"]     = LiloTypeFunction
+    LiloEnvironment.builtins["id"]       = LiloIdFunction
+    LiloEnvironment.builtins["hasattr"]  = LiloHasAttrFunction
+    LiloEnvironment.builtins["bin"]      = LiloBinFunction
+    LiloEnvironment.builtins["oct"]      = LiloOctFunction
+    LiloEnvironment.builtins["hex"]      = LiloHexFunction
+    LiloEnvironment.builtins["range"]    = LiloRangeFunction
 }

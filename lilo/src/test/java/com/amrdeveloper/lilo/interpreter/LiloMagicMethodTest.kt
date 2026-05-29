@@ -1,4 +1,4 @@
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.interpreter
 
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult

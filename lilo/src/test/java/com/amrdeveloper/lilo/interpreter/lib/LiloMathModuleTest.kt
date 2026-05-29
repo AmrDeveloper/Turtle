@@ -1,4 +1,4 @@
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.interpreter.lib
 
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
@@ -11,30 +11,27 @@ import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.utils.LiloMockMachine
-import org.junit.Assert.assertTrue
+import org.junit.Assert
 import org.junit.Test
 
-class LiloListTest {
+class LiloMathModuleTest {
 
     @Test
-    fun `test builtin list`() {
+    fun `test math modules`() {
         val sourceCodes = mutableListOf(
             """
-            v = []
-            v.append(1)
-            print(len(v))
+            import math
+            print(math.inf)
             """,
             """
-            a = [1]
-            b = [2]
-            a.extend(b)
-            print(len(a))
+            import math
+            print(math.nan)
             """,
         )
 
         val expectedOutput = listOf(
-            "1",
-            "2"
+            "inf",
+            "nan"
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
@@ -42,24 +39,23 @@ class LiloListTest {
             if (lexerResult.isFailure()) {
                 println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
-            assertTrue("Lexer error", lexerResult.isSuccess())
+            Assert.assertTrue("Lexer error", lexerResult.isSuccess())
 
             val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
             if (parseResult.isFailure()) {
                 println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
             }
-            assertTrue("Parser error", parseResult.isSuccess())
+            Assert.assertTrue("Parser error", parseResult.isSuccess())
 
             val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloMockMachine()
-            val interpreter = LiloInterpreter(liloHostTest)
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloExceptionMessage>().message)
             }
-            assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloHostTest.getHost().buffer.toString() == expectedOutput[index])
+            Assert.assertTrue("Interpreter error", interpreterResult.isSuccess())
+            Assert.assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
         }
     }
-
 }

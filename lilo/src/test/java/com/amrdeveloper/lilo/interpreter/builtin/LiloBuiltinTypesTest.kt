@@ -1,4 +1,4 @@
-package com.amrdeveloper.lilo
+package com.amrdeveloper.lilo.interpreter.builtin
 
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
@@ -14,20 +14,22 @@ import com.amrdeveloper.lilo.utils.LiloMockMachine
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class LiloBuiltinTest {
+class LiloBuiltinTypesTest {
 
     @Test
-    fun `test builtin type`() {
+    fun `test builtin Int type`() {
         val sourceCodes = mutableListOf(
-            "print(type(1))",
-            "print(type(True))",
-            "print(type(1.0))",
+            "print(int(1))",
+            "print(int(1.0))",
+            "print(int(True))",
+            "print(int.__init__(True))"
         )
 
         val expectedOutput = listOf(
-            "<class 'int'>",
-            "<class 'bool'>",
-            "<class 'float'>"
+            "1",
+            "1",
+            "1",
+            "1",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
@@ -56,16 +58,15 @@ class LiloBuiltinTest {
         }
     }
 
+
     @Test
-    fun `test builtin print`() {
+    fun `test builtin Complex type`() {
         val sourceCodes = mutableListOf(
-            """
-            print(1)
-            """,
+            "print(1j)",
         )
 
         val expectedOutput = listOf(
-            "1"
+            "(0.0+1.0j)",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
@@ -83,13 +84,14 @@ class LiloBuiltinTest {
 
             val liloTree = parseResult.toSuccessData()
             val liloMachine = LiloMockMachine()
-            val interpreter = LiloInterpreter(liloMachine = liloMachine)
+            val interpreter = LiloInterpreter(liloMachine)
             val interpreterResult = interpreter.evaluate(program = liloTree)
             if (interpreterResult.isFailure()) {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloExceptionMessage>>().error.message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
             assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
+            liloMachine.getHost().clear()
         }
     }
 }

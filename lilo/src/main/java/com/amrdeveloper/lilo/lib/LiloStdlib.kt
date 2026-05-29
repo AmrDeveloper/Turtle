@@ -25,6 +25,7 @@ import com.amrdeveloper.lilo.lib.builtins.LiloRangeFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloTypeFunction
 import com.amrdeveloper.lilo.lib.colorsys.liloColorSysModule
 import com.amrdeveloper.lilo.lib.gpu.liloGPUModule
+import com.amrdeveloper.lilo.lib.keyword.liloKeywordModule
 import com.amrdeveloper.lilo.lib.math.liloMathModule
 import com.amrdeveloper.lilo.lib.random.liloRandomModule
 import com.amrdeveloper.lilo.lib.time.liloTimeModule
@@ -57,6 +58,7 @@ fun registerLiloStandardLibrary() {
     LiloEnvironment.builtins["time"] = liloTimeModule
     LiloEnvironment.builtins["turtle"] = liloTurtleModule
     LiloEnvironment.builtins["colorsys"] = liloColorSysModule
+    LiloEnvironment.builtins["keyword"] = liloKeywordModule
 
     // Register Stdlib functions
     LiloEnvironment.builtins["print"] = LiloPrintFunction

@@ -1,7 +1,7 @@
 package com.amrdeveloper.lilo.runtime
 
-import com.amrdeveloper.lilo.`object`.EXCEPTION_CAUSE_FIELD
-import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.objects.EXCEPTION_CAUSE_FIELD
+import com.amrdeveloper.lilo.objects.LiloObject
 
 class LiloExceptionMessage(val message: String) {
     override fun toString() = message

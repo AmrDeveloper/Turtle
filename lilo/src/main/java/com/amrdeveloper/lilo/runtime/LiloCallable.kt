@@ -1,7 +1,7 @@
 package com.amrdeveloper.lilo.runtime
 
 import com.amrdeveloper.lilo.common.LiloResult
-import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.objects.LiloObject
 
 interface LiloCallable {
     fun invoke(

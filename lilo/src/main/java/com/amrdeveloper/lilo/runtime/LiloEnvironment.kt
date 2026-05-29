@@ -1,6 +1,6 @@
 package com.amrdeveloper.lilo.runtime
 
-import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.objects.LiloObject
 
 class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
 

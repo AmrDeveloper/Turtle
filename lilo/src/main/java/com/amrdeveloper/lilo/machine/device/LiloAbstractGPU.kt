@@ -3,7 +3,7 @@ package com.amrdeveloper.lilo.machine.device
 import androidx.webgpu.GPUDevice
 import androidx.webgpu.helper.WebGpu
 import com.amrdeveloper.lilo.common.LiloResult
-import com.amrdeveloper.lilo.`object`.LiloObject
+import com.amrdeveloper.lilo.objects.LiloObject
 
 interface LiloAbstractGPU {
     suspend fun initWebGPU()

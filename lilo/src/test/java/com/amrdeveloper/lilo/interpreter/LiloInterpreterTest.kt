@@ -17,7 +17,7 @@ import org.junit.Test
 class LiloInterpreterTest {
 
     @Test
-    fun `test evaluate imported function`() {
+    fun test_evaluate_imported_function() {
         val sourceCodes = mutableListOf(
             """
             import random
@@ -62,7 +62,7 @@ class LiloInterpreterTest {
     }
 
     @Test
-    fun `test evaluate call`() {
+    fun test_evaluate_call() {
         val sourceCodes = mutableListOf(
             """
             def foo(p):
@@ -101,7 +101,7 @@ class LiloInterpreterTest {
     }
 
     @Test
-    fun `test evaluate print call`() {
+    fun test_evaluate_print_call() {
         val sourceCodes = mutableListOf(
             """
             print(42)

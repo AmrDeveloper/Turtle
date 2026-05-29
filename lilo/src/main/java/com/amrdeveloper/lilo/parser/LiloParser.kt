@@ -104,13 +104,16 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
     }
 
-    private fun parseDecorators() : LiloResult<List<String>> {
-        val decorators = mutableListOf<String>()
+    private fun parseDecorators() : LiloResult<List<LiloExpr>> {
+        val decorators = mutableListOf<LiloExpr>()
         while (!isAtEnd() && match(kind = LiloTokenKind.AT)) {
-            val name = expectAndConsume(
-                kind = LiloTokenKind.NAME,
-                message = "Expect decorator name"
-            ).valueOr { return it.toFailure() }.lexeme!!
+            val name = parseExpr().valueOr { return it.toFailure() }
+            if (name !is NameExpr) {
+                return createDiagnostic(
+                    loc = peek().loc,
+                    message = "Expect `Name` as decorator name"
+                )
+            }
 
             expectAndConsume(
                 kind = LiloTokenKind.NEW_LINE,
@@ -261,7 +264,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = ImportStmt(modules))
     }
 
-    private fun parseFunctionDefStmt(decorators: List<String> = emptyList()): LiloResult<FunctionStmt> {
+    private fun parseFunctionDefStmt(decorators: List<LiloExpr> = emptyList()): LiloResult<FunctionStmt> {
         // Advance 'def' keyword
         advance()
 

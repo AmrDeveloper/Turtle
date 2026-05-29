@@ -163,7 +163,18 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitFunctionStmt(stmt: FunctionStmt): LiloResult<Unit> {
-        val function = LiloFunction(params = stmt.parameters, body = stmt.body)
+        var function : LiloObject = LiloFunction(params = stmt.parameters, body = stmt.body)
+
+        // Decorators applied in reverse order
+        for (decorator in stmt.decorators.reversed()) {
+            val decoratorObject = visit(expr = decorator).valueOr { return it.toFailure() }
+            if (decoratorObject !is LiloCallable) {
+                return runtimeException("Decorator `$decorator` must be callable")
+            }
+            function = decoratorObject.invoke(interpreter = this, args = listOf(function))
+                .valueOr { return it.toFailure() }
+        }
+
         environment.setGlobal(name = stmt.name, value = function)
         return LiloResult.Success(data = Unit)
     }

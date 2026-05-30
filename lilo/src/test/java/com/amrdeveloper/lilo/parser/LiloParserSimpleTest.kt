@@ -6,7 +6,7 @@ import org.junit.Test
 class LiloParserSimpleTest {
 
     @Test
-    fun `test parse import statement`() {
+    fun test_parse_import_statement() {
         val sourceCodes = listOf(
             "import a",
             "import complex",
@@ -21,14 +21,24 @@ class LiloParserSimpleTest {
             "from random import (random)",
             "from random import (random);",
             "from random import *",
-            "from random import *;"
+            "from random import *;",
+            """
+            from a import (
+                b, c, d
+            )
+            """,
+            """
+            from a import (
+                b, c, d
+            );
+            """,
         )
 
         sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
     }
 
     @Test
-    fun `test raise statement`() {
+    fun test_raise_statement() {
         val sourceCodes = listOf(
             "raise",
             "raise;",
@@ -42,7 +52,7 @@ class LiloParserSimpleTest {
     }
 
     @Test
-    fun `test parse dot expression`() {
+    fun test_parse_dot_expression() {
         val sourceCodes = listOf(
             "a.b", "random.random", "a.__add__"
         )

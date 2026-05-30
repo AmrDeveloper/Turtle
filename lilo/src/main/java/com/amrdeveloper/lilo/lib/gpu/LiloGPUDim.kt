@@ -13,7 +13,7 @@ import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.liloFunctionType
 import com.amrdeveloper.lilo.objects.liloMethodType
 
-val liloDimType = LiloType(name = "Dim", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE))
+val liloDimType = LiloType(name = "gpu.Dim", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE))
     .also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
 
@@ -62,7 +62,7 @@ private object GPUDimStr : LiloObject(liloMethodType), LiloCallable {
         val z = dim3.getAttr(name = "z")
         if (z != null && z is LiloInt) zValue = z.value
 
-        val str = "(x:${xValue}, y:${yValue}, z:${zValue})"
+        val str = "(x=${xValue}, y=${yValue}, z=${zValue})"
         return LiloResult.Success(data = LiloStr(value = str))
     }
 }

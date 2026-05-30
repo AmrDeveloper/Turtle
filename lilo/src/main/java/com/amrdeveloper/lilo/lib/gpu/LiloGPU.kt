@@ -15,5 +15,6 @@ val liloGPUModule = LiloModule(name = MODULE_NAME).also {
 
     // Types
     it.setAttr(name = "Dim", value = liloDimType)
+    it.setAttr(name = "LaunchConfig", value = liloLaunchConfigType)
     it.setAttr(name = "kernal", value = liloKernalType)
 }

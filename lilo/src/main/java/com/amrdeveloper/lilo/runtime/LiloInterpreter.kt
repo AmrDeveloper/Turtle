@@ -163,7 +163,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitFunctionStmt(stmt: FunctionStmt): LiloResult<Unit> {
-        var function : LiloObject = LiloFunction(params = stmt.parameters, body = stmt.body)
+        var function : LiloObject = LiloFunction(definition = stmt)
 
         // Decorators applied in reverse order
         for (decorator in stmt.decorators.reversed()) {
@@ -374,7 +374,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {
-        val function = LiloFunction(params = expr.parameters, body = expr.body)
+        val definition = FunctionStmt("Lambda", expr.parameters, expr.body)
+        val function = LiloFunction(definition)
         return LiloResult.Success(data = function)
     }
 

@@ -1,7 +1,6 @@
 package com.amrdeveloper.lilo.objects
 
-import com.amrdeveloper.lilo.ast.LiloStmt
-import com.amrdeveloper.lilo.ast.Parameter
+import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.valueOr
@@ -15,9 +14,7 @@ val liloFunctionType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
-
-data class LiloFunction(val params: List<Parameter>, val body: LiloStmt) :
-    LiloObject(liloFunctionType), LiloCallable {
+data class LiloFunction(val definition: FunctionStmt) : LiloObject(liloFunctionType), LiloCallable {
 
     override fun invoke(
         interpreter: LiloInterpreter,
@@ -25,6 +22,9 @@ data class LiloFunction(val params: List<Parameter>, val body: LiloStmt) :
     ): LiloResult<LiloObject> {
         val previous = interpreter.environment
         interpreter.environment = LiloEnvironment(enclosing = interpreter.environment)
+
+        val params = definition.parameters
+        val body = definition.body
 
         for ((index, arg) in args.withIndex()) {
             interpreter.environment.set(name = params[index].name, value = arg)

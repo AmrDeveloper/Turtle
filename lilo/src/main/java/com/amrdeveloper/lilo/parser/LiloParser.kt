@@ -548,7 +548,14 @@ class LiloParser(val tokens: List<LiloToken>) {
     private fun parsePassStmt() : LiloResult<PassStmt> {
         // Advance 'pass' keyword
         advance()
-        consumeOptionalSemi()
+
+        if (isPeek(kind = LiloTokenKind.SEMI)
+            || isPeek(kind = LiloTokenKind.NEW_LINE)
+            || isPeek(kind = LiloTokenKind.DEDENT)
+            || isPeek(kind = LiloTokenKind.END_MARKER)) {
+            advance()
+        }
+
         return LiloResult.Success(data = PassStmt())
     }
 

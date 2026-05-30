@@ -1,7 +1,6 @@
 package com.amrdeveloper.lilo.lib.gpu
 
 import com.amrdeveloper.lilo.objects.LiloModule
-import com.amrdeveloper.lilo.objects.liloKernalType
 
 private const val MODULE_NAME = "gpu"
 
@@ -17,4 +16,5 @@ val liloGPUModule = LiloModule(name = MODULE_NAME).also {
     it.setAttr(name = "Dim", value = liloDimType)
     it.setAttr(name = "LaunchConfig", value = liloLaunchConfigType)
     it.setAttr(name = "kernal", value = liloKernalType)
+    it.setAttr(name = "ConfiguredKernal", value = liloConfiguredKernalType)
 }

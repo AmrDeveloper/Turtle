@@ -2,7 +2,6 @@ package com.amrdeveloper.lilo.lib.gpu
 
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.objects.LiloFunction
-import com.amrdeveloper.lilo.objects.LiloKernal
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.liloFunctionType
 import com.amrdeveloper.lilo.runtime.LiloCallable

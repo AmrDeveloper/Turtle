@@ -25,13 +25,13 @@ private object GPULaunchConfigInitInit : LiloObject(liloFunctionType), LiloCalla
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[0].type != liloDimType || args[1].type != liloDimType) {
+        if (args.size != 2 || args[0] !is LiloGPUDim || args[1] !is LiloGPUDim) {
             return LiloResult.Failure(error = LiloExceptionMessage("`gpu.LaunchConfig` expects 2 arguments (blocks=gpu.Dim, threads=gpu.Dim)"))
         }
-
-        val launchConfig = LiloObject(type = liloLaunchConfigType)
-        launchConfig.setAttr(name = "blocks", value = args[0])
-        launchConfig.setAttr(name = "threads", value = args[1])
+        val launchConfig = LiloLaunchConfig(
+            blocksDim = args[0] as LiloGPUDim,
+            threadsDim = args[1] as LiloGPUDim
+        )
         return LiloResult.Success(data = launchConfig)
     }
 }
@@ -41,10 +41,16 @@ private object GPULaunchConfigStr : LiloObject(liloMethodType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val self = args[0]
-        val blocks = self.getAttr(name = "blocks")
-        val threads = self.getAttr(name = "threads")
-        val str = "(blocks=${blocks}, threads=${threads})"
+        val self = args[0] as LiloLaunchConfig
+        val str = "(blocks=${self.blocksDim}, threads=${self.threadsDim})"
         return LiloResult.Success(data = LiloStr(value = str))
     }
+}
+
+data class LiloLaunchConfig(
+    val blocksDim: LiloGPUDim,
+    val threadsDim: LiloGPUDim,
+) : LiloObject(liloLaunchConfigType) {
+    override fun toString() = "gpu.LaunchConfig(${blocksDim}, ${threadsDim})"
+
 }

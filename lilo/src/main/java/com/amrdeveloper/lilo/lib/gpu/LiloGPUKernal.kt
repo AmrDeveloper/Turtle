@@ -1,8 +1,13 @@
-package com.amrdeveloper.lilo.objects
+package com.amrdeveloper.lilo.lib.gpu
 
 import com.amrdeveloper.lilo.ast.FunctionStmt
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.objects.LiloBaseType
+import com.amrdeveloper.lilo.objects.LiloFunction
+import com.amrdeveloper.lilo.objects.LiloObject
+import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.liloFunctionType
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 

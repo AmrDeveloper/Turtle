@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.amrdeveloper.turtle.R
+import com.amrdeveloper.turtle.ui.navigation.AppRoute
 import com.amrdeveloper.turtle.ui.search.SearchScreen
 
 @Composable
@@ -93,8 +94,8 @@ fun TurtleToolbar(
                     }
 
                     OptionsMenuWithDropDownActions(
-                        onFilesClick = { navController.navigate(route = "files") },
-                        onSettingsClick = { navController.navigate(route = "settings") }
+                        onFilesClick = { navController.navigate(route = AppRoute.Files) },
+                        onSettingsClick = { navController.navigate(route = AppRoute.Settings) }
                     )
                 }
             }

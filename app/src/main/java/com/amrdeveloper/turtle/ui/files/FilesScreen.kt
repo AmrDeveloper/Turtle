@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.amrdeveloper.turtle.ui.components.LiloFile
 import com.amrdeveloper.turtle.ui.components.TurtleToolbar
+import com.amrdeveloper.turtle.ui.navigation.AppRoute
 
 @Composable
 fun LiloFilesScreen(
@@ -39,7 +40,7 @@ fun LiloFilesScreen(
                         LiloFile(
                             file = file,
                             onClick = {
-                                // TODO: Send the file to the Main screen for the editor
+                                navController.navigate(route = AppRoute.Home(file.sourceCode))
                             },
                             onLongClick = {}
                         )

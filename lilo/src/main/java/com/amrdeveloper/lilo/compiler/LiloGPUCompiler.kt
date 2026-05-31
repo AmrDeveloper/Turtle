@@ -199,7 +199,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         val cond = visit(expr.condition).valueOr { return it.toFailure() }
         val thenValue = visit(expr.thenValue).valueOr { return it.toFailure() }
         val elseValue = visit(expr.elseValue).valueOr { return it.toFailure() }
-        return LiloResult.Success("$cond ? $thenValue : $elseValue")
+        return LiloResult.Success("select($thenValue, $elseValue, $cond)")
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<String> {

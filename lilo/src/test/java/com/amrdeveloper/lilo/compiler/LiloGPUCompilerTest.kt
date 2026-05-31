@@ -27,6 +27,11 @@ class LiloGPUCompilerTest {
                 i = gpu.global_id.x
                 c[i] = a[i] + b[i]
             """,
+            """
+            def vec_add(a, b, out c):
+                i = 0 if gpu.global_id.x < 4 else gpu.global_id.x
+                c[i] = a[i] + b[i]
+            """,
         )
 
         val expectedResults = mutableListOf(
@@ -48,12 +53,23 @@ class LiloGPUCompilerTest {
               var i = global_id.x;
               c[i] = a[i] + b[i];
             }
+            """.trimIndent(),
+            """
+            @group(0) @binding(0) var<storage, read> a: array<f32>;
+            @group(0) @binding(1) var<storage, read> b: array<f32>;
+            @group(0) @binding(2) var<storage, read_write> c: array<f32>;
+
+            @compute @workgroup_size(2, 1, 1)
+            fn main(@builtin(global_invocation_id) global_id: vec3<u32>)
+            {
+              var i = select(0, global_id.x, global_id.x < 4);
+              c[i] = a[i] + b[i];
+            }
             """.trimIndent()
         )
 
         val dim3 = LiloGPUDim(LiloConfigDim3(x = 2, y = 1, z = 1))
         val config = LiloLaunchConfig(blocksDim = dim3, threadsDim = dim3)
-        val gpuCompiler = LiloGPUCompiler(config)
         for ((index, sourceCode) in sourceCodes.withIndex()) {
             val lexerResult = LiloLexer(source = sourceCode).tokenize()
             if (lexerResult.isFailure()) {
@@ -67,10 +83,11 @@ class LiloGPUCompilerTest {
             }
             assertTrue("Parser error", parseResult.isSuccess())
             val result = parseResult.toSuccessData()
-            val gpuCodeResult = gpuCompiler.visitProgram(result)
+            val gpuCodeResult = LiloGPUCompiler(config).visitProgram(result)
             if (gpuCodeResult.isFailure()) {
                 println("Error[GPUCompiler]: " + gpuCodeResult.toFailureError<LiloDiagnostic>().message)
             }
+
             assertTrue("GPU Compiler results", expectedResults[index] == gpuCodeResult.toSuccessData().trimIndent())
         }
     }

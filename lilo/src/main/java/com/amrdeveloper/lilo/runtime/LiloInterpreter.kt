@@ -440,7 +440,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         // Call `__call__` if the callee is LiloObject
         val callFunction = callee.getAttr(name = LiloMagicMethod.CALL)
         if (callFunction != null && callFunction is LiloCallable) {
-            return callFunction.invoke(interpreter = this, args = args)
+            val fullArgs = listOf(callee) + args
+            return callFunction.invoke(interpreter = this, args = fullArgs)
         }
 
         // In case of function call

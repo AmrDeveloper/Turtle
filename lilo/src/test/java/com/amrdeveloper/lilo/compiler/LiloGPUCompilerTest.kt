@@ -13,7 +13,7 @@ import com.amrdeveloper.lilo.parser.LiloParser
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class LiloDecoratorTest {
+class LiloGPUCompilerTest {
 
     @Test
     fun compile_lilo_to_webgpu_test() {
@@ -21,6 +21,11 @@ class LiloDecoratorTest {
             """
             def empty_function():
                 pass
+            """,
+            """
+            def vec_add(a, b, out c):
+                i = gpu.global_id.x
+                c[i] = a[i] + b[i]
             """,
         )
 
@@ -31,11 +36,23 @@ class LiloDecoratorTest {
             {
               return;
             }
+            """.trimIndent(),
+            """
+            @group(0) @binding(0) var<storage, read> a: array<f32>;
+            @group(0) @binding(1) var<storage, read> b: array<f32>;
+            @group(0) @binding(2) var<storage, read_write> c: array<f32>;
+
+            @compute @workgroup_size(2, 1, 1)
+            fn main(@builtin(global_invocation_id) global_id: vec3<u32>)
+            {
+              var i = global_id.x;
+              c[i] = a[i] + b[i];
+            }
             """.trimIndent()
         )
 
-        val dim3 = LiloGPUDim(LiloConfigDim3(2, 1, 1))
-        val config = LiloLaunchConfig(dim3, dim3)
+        val dim3 = LiloGPUDim(LiloConfigDim3(x = 2, y = 1, z = 1))
+        val config = LiloLaunchConfig(blocksDim = dim3, threadsDim = dim3)
         val gpuCompiler = LiloGPUCompiler(config)
         for ((index, sourceCode) in sourceCodes.withIndex()) {
             val lexerResult = LiloLexer(source = sourceCode).tokenize()

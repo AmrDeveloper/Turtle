@@ -107,12 +107,25 @@ private fun OptionsMenuWithDropDownActions() {
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
+                text = { Text("Files") },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_turtle_pack),
+                        contentDescription = "Files",
+                        tint = Color.Unspecified
+                    )
+                },
+                onClick = {
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
                 text = { Text("Settings") },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.ic_settings),
                         contentDescription = "Settings",
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = Color.Unspecified
                     )
                 },
                 onClick = {

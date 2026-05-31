@@ -203,7 +203,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<String> {
-        TODO("Not yet implemented")
+        return LiloResult.Failure("Call NYI on GPU")
     }
 
     override fun visitBinaryExpr(expr: BinaryExpr): LiloResult<String> {

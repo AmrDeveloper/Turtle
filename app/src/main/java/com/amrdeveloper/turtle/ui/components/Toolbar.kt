@@ -27,11 +27,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.ui.search.SearchScreen
 
 @Composable
-fun TurtleToolbar(onRunActionClicked: () -> Unit = {}) {
+fun TurtleToolbar(
+    isRunActionEnabled: Boolean = false,
+    onRunActionClicked: () -> Unit = {},
+    navController: NavController,
+) {
     var expanded by rememberSaveable { mutableStateOf(value = false) }
     val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
 
@@ -77,15 +82,20 @@ fun TurtleToolbar(onRunActionClicked: () -> Unit = {}) {
 
             if (!expanded) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onRunActionClicked) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_run),
-                            contentDescription = "Run",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                    if (isRunActionEnabled) {
+                        IconButton(onClick = onRunActionClicked) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_run),
+                                contentDescription = "Run",
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
 
-                    OptionsMenuWithDropDownActions()
+                    OptionsMenuWithDropDownActions(
+                        onFilesClick = { navController.navigate(route = "files") },
+                        onSettingsClick = { navController.navigate(route = "settings") }
+                    )
                 }
             }
         }
@@ -93,7 +103,10 @@ fun TurtleToolbar(onRunActionClicked: () -> Unit = {}) {
 }
 
 @Composable
-private fun OptionsMenuWithDropDownActions() {
+private fun OptionsMenuWithDropDownActions(
+    onFilesClick: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Box {
@@ -117,6 +130,7 @@ private fun OptionsMenuWithDropDownActions() {
                 },
                 onClick = {
                     expanded = false
+                    onFilesClick()
                 }
             )
             DropdownMenuItem(
@@ -130,6 +144,7 @@ private fun OptionsMenuWithDropDownActions() {
                 },
                 onClick = {
                     expanded = false
+                    onSettingsClick()
                 }
             )
         }

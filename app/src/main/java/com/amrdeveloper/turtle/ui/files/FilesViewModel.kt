@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FilesViewModel @Inject constructor(
-    private val fileRepository: LiloFileRepository
+    fileRepository: LiloFileRepository
 ) : ViewModel() {
 
     val uiState: StateFlow<LazyValue<List<LiloFileEntity>>> = fileRepository.getLiloFiles()

@@ -9,28 +9,43 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.amrdeveloper.turtle.ui.components.LiloFile
+import com.amrdeveloper.turtle.ui.components.TurtleToolbar
 
 @Composable
-fun LiloFilesScreen(viewModel: FilesViewModel = viewModel()) {
+fun LiloFilesScreen(
+    viewModel: FilesViewModel = hiltViewModel(),
+    navController: NavController
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(topBar = { }) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            LazyColumn {
-                items(uiState.data) { file ->
-                    LiloFile(
-                        file = file,
-                        onClick = {},
-                        onLongClick = {}
-                    )
+    Scaffold(
+        topBar = {
+            TurtleToolbar(
+                isRunActionEnabled = false,
+                navController = navController
+            )
+        },
+        content = { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                LazyColumn {
+                    items(uiState.data) { file ->
+                        LiloFile(
+                            file = file,
+                            onClick = {
+                                // TODO: Send the file to the Main screen for the editor
+                            },
+                            onLongClick = {}
+                        )
+                    }
                 }
             }
         }
-    }
+    )
 }

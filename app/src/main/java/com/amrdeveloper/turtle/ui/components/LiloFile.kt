@@ -30,7 +30,7 @@ fun LiloFile(
     onLongClick: (LiloFileEntity) -> Unit = {},
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.padding(2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Row(modifier = Modifier
@@ -41,6 +41,7 @@ fun LiloFile(
                 onLongClick = { onLongClick(file) }
             ),
             verticalAlignment = Alignment.CenterVertically) {
+
             Icon(
                 painter = painterResource(id = R.drawable.ic_turtle_pack),
                 contentDescription = "Link Icon",

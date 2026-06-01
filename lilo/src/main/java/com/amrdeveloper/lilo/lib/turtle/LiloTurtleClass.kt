@@ -336,9 +336,17 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
             }
             x = (tuple.values[0] as LiloFloat).value.toFloat()
             y = (tuple.values[1] as LiloFloat).value.toFloat()
-        } else if (args.size == 3 && args[1] is LiloFloat && args[2] is LiloFloat) {
-            x = (args[1] as LiloFloat).value.toFloat()
-            y = (args[2] as LiloFloat).value.toFloat()
+        } else if (args.size == 3 && (args[1] is LiloFloat || args[1] is LiloInt) && (args[2] is LiloFloat || args[2] is LiloInt)) {
+            x = when (val lhs = args[1]) {
+                is LiloInt -> lhs.value.toFloat()
+                is LiloFloat -> lhs.value.toFloat()
+                else -> 0.0f
+            }
+            y = when (val rhs = args[2]) {
+                is LiloInt -> rhs.value.toFloat()
+                is LiloFloat -> rhs.value.toFloat()
+                else -> 0.0f
+            }
         } else {
             return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect floats x, y or (x, y)"))
         }

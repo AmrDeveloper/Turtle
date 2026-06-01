@@ -4,9 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 private const val DATABASE_NAME = "turtle_database"
@@ -37,12 +36,11 @@ abstract class TurtleDatabase : RoomDatabase() {
     }
 
     /**
-     * Helper function to init default data into db once created
+     * Populate the database with shipped examples
      */
-    @OptIn(DelicateCoroutinesApi::class)
     private fun populateInitialData() {
-        GlobalScope.launch(Dispatchers.Main) {
-
+        CoroutineScope(context = Dispatchers.IO).launch {
+            liloFileDao().insert(items = liloShippedExamples)
         }
     }
 }

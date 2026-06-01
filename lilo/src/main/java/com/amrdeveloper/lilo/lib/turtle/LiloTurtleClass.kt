@@ -24,8 +24,8 @@ data class LiloTurtle(val id: Int = 0) : LiloObject(liloTurtleType) {
         // Draw shapes
         setAttr(name = "forward", value = TurtleForward)
         setAttr(name = "bf", value = TurtleForward)
-        setAttr(name = "backward", value = TurtleBackword)
-        setAttr(name = "bk", value = TurtleBackword)
+        setAttr(name = "backward", value = TurtleBackward)
+        setAttr(name = "bk", value = TurtleBackward)
         setAttr(name = "left", value = TurtleLeft)
         setAttr(name = "lt", value = TurtleLeft)
         setAttr(name = "right", value = TurtleRight)
@@ -92,13 +92,13 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleBackword : LiloObject(liloMethodType), LiloCallable {
+private object TurtleBackward : LiloObject(liloMethodType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.backward` expect 1 floats as distance"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.backward` expect 1 number as distance"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -133,7 +133,7 @@ private object TurtleLeft : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.left` expect 1 floats as degree"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.left` expect 1 number as degree"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -157,7 +157,7 @@ private object TurtleRight : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.right` expect 1 floats as degree"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.right` expect 1 number as degree"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -181,7 +181,7 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.circle` expect 1 floats as radius"))
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.circle` expect 1 number as radius"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -194,9 +194,15 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
 
         val pointer = screen.getPointerAt(idx = self.id)!!
         if (pointer.penDown) {
+            val angle = Math.toRadians(pointer.degree)
+            // Calculate center so that the turtle is on the edge (Python style)
+            // Center is 90 degrees to the "left" of the current heading
+            val centerX = pointer.x + (radius * cos(angle + Math.PI / 2)).toFloat()
+            val centerY = pointer.y + (radius * sin(angle + Math.PI / 2)).toFloat()
+
             pointer.path().addOval(
                 Rect(
-                    center = Offset(x = pointer.x, y = pointer.y),
+                    center = Offset(x = centerX, y = centerY),
                     radius = radius.toFloat()
                 )
             )

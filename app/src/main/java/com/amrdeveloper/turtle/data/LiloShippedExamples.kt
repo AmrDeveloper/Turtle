@@ -162,4 +162,50 @@ val liloShippedExamples = listOf(
         branch(120)
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "TurtleMandelbrot",
+        sourceCode = """
+        import turtle
+        
+        t = turtle.Turtle()
+        t.hideturtle()
+        
+        max_iter = 30
+        zoom = 200.0
+        move_x = -0.75
+        move_y = 0.0
+        screen_x = -400
+        while screen_x < 400:
+            screen_y = -400
+            while screen_y < 400:
+                cx = screen_x / zoom + move_x
+                cy = screen_y / zoom + move_y
+                zx = 0.0
+                zy = 0.0
+                iteration = 0
+                while iteration < max_iter:
+                    new_zx = zx * zx - zy * zy + cx
+                    new_zy = 2 * zx * zy + cy
+                    zx = new_zx
+                    zy = new_zy
+                    if zx * zx + zy * zy > 4:
+                        break
+                    iteration = iteration + 1
+                if iteration < max_iter:
+                    # Color based on iteration count
+                    r = (iteration * 10) % 256
+                    g = (iteration * 15) % 256
+                    b = (iteration * 20) % 256
+                    t.pencolor((r, g, b))
+                else:
+                    # Points inside the set (the main body)
+                    t.pencolor((0, 0, 0))
+                t.penup()
+                t.goto(screen_x, screen_y)
+                t.pendown()
+                t.circle(2)
+                screen_y = screen_y + 4
+            screen_x = screen_x + 4
+        """.trimIndent()
+    ),
 )

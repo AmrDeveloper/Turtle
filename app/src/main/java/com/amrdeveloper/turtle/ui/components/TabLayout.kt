@@ -2,6 +2,7 @@ package com.amrdeveloper.turtle.ui.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.runtime.Composable
@@ -34,7 +35,7 @@ fun TurtleHomeTabLayout(tabs: List<TurtleTab>, onTabSelected: (Int) -> Unit) {
                             modifier = Modifier.size(18.dp),
                             painter = painterResource(id = tab.icon),
                             contentDescription = tab.title,
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 )

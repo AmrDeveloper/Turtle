@@ -42,7 +42,7 @@ fun TurtleToolbar(
     val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
 
     Surface(
-        color = MaterialTheme.colorScheme.surfaceContainer,
+        color = MaterialTheme.colorScheme.surface,
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
@@ -88,7 +88,7 @@ fun TurtleToolbar(
                             Icon(
                                 painter = painterResource(R.drawable.ic_run),
                                 contentDescription = "Run",
-                                tint = MaterialTheme.colorScheme.onSurface
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -115,7 +115,7 @@ private fun OptionsMenuWithDropDownActions(
             Icon(
                 painter = painterResource(R.drawable.ic_options),
                 contentDescription = "Options",
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = MaterialTheme.colorScheme.primary
             )
         }
 

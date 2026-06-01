@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -58,7 +59,7 @@ fun SearchScreen(modifier: Modifier = Modifier, onSearchExpandedChanged: (Boolea
                     Icon(
                         painter = painterResource(R.drawable.ic_search),
                         contentDescription = "Search",
-                        tint = Color.Unspecified,
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 },
                 trailingIcon = {

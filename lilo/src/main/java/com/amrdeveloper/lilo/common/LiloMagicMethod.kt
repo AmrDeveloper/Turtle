@@ -10,7 +10,7 @@ object LiloMagicMethod {
     const val DIV = "__truediv__"
     const val MOD = "__mod__"
 
-    // Comparison expr
+    // Comparison op
     const val EQ = "__eq__"
     const val NE = "__ne__"
     const val GT = "__gt__"
@@ -18,9 +18,13 @@ object LiloMagicMethod {
     const val LT = "__lt__"
     const val LE = "__le__"
 
-    // Unary expr
+    // Unary op
     const val POS = "__pos__"
     const val NEG = "__neg__"
+
+    // Boolean op
+    const val AND = "__and__"
+    const val OR = "__or__"
 
     const val SET_ITEM = "__setitem__"
     const val GET_ITEM = "__getitem__"

@@ -332,4 +332,48 @@ class LiloMagicMethodTest {
             liloMachine.getHost().clear()
         }
     }
+
+    @Test
+    fun `test __AND__, __OR__ magic method`() {
+        val sourceCodes = mutableListOf(
+            "print(True or True)",
+            "print(True or False)",
+            "print(False or False)",
+            "print(True and False and False)",
+            "print(False and False)",
+        )
+
+        val expectedOutput = listOf(
+            "True",
+            "True",
+            "False",
+            "False",
+            "False",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloExceptionMessage>().message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
+            liloMachine.getHost().clear()
+        }
+    }
 }

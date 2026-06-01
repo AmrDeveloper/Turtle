@@ -7,6 +7,8 @@ import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
+import com.amrdeveloper.lilo.ast.BoolOp
+import com.amrdeveloper.lilo.ast.BoolOpExpr
 import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ComparisonExpr
@@ -481,6 +483,24 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             ComparisonOp.GE -> LiloMagicMethod.GE
             ComparisonOp.LT -> LiloMagicMethod.LT
             ComparisonOp.LE -> LiloMagicMethod.LE
+        }
+
+        val method = lhs.getAttr(methodName)
+            ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
+
+        if (method !is LiloCallable)
+            return runtimeException("Op `${lhs.type}` has no $methodName attribute")
+
+        return method.invoke(interpreter = this, args = listOf(lhs, rhs))
+    }
+
+    override fun visitBoolOpExpr(expr: BoolOpExpr): LiloResult<LiloObject> {
+        val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
+        val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
+
+        val methodName = when (expr.op) {
+            BoolOp.AND -> LiloMagicMethod.AND
+            BoolOp.OR -> LiloMagicMethod.OR
         }
 
         val method = lhs.getAttr(methodName)

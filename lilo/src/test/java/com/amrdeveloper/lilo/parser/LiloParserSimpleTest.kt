@@ -38,6 +38,18 @@ class LiloParserSimpleTest {
     }
 
     @Test
+    fun test_boolean_op() {
+        val sourceCodes = listOf(
+            "a or b",
+            "a and b",
+            "(a and b) and c",
+            "(a and b) or c",
+        )
+
+        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+    }
+
+    @Test
     fun test_raise_statement() {
         val sourceCodes = listOf(
             "raise",

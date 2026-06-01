@@ -32,6 +32,9 @@ enum class LiloTokenKind {
     FALSE_KEYWORD,
     NONE_KEYWORD,
 
+    AND_KEYWORD,
+    OR_KEYWORD,
+
     PLUS,                // +
     MINUS,               // -
     STAR,                // *
@@ -102,6 +105,9 @@ fun getLiloKeywordsMap() = mapOf(
     "pass" to LiloTokenKind.PASS_KEYWORD,
 
     "out" to LiloTokenKind.OUT_KEYWORD,
+
+    "and" to LiloTokenKind.AND_KEYWORD,
+    "or" to LiloTokenKind.OR_KEYWORD,
 
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,

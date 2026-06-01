@@ -7,6 +7,7 @@ import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
+import com.amrdeveloper.lilo.ast.BoolOpExpr
 import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ComparisonExpr
@@ -232,6 +233,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
         return LiloResult.Success("$lhs $op $rhs")
+    }
+
+    override fun visitBoolOpExpr(expr: BoolOpExpr): LiloResult<String> {
+        return LiloResult.Failure("BoolOp NYI on GPU")
     }
 
     override fun visitUnaryExpr(expr: UnaryExpr): LiloResult<String> {

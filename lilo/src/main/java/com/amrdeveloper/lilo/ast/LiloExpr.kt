@@ -35,6 +35,13 @@ enum class ComparisonOp {
 
 data class ComparisonExpr(val lhs: LiloExpr, val op: ComparisonOp, val rhs: LiloExpr) : LiloExpr
 
+enum class BoolOp {
+    AND,
+    OR
+}
+
+data class BoolOpExpr(val lhs: LiloExpr, val op: BoolOp, val rhs: LiloExpr) : LiloExpr
+
 data class UnaryExpr(val op: LiloToken, val operand: LiloExpr) : LiloExpr
 
 data class GroupExpr(val expr: LiloExpr) : LiloExpr

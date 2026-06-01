@@ -7,6 +7,8 @@ import com.amrdeveloper.lilo.ast.BinaryExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
+import com.amrdeveloper.lilo.ast.BoolOp
+import com.amrdeveloper.lilo.ast.BoolOpExpr
 import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
 import com.amrdeveloper.lilo.ast.ComparisonExpr
@@ -613,11 +615,11 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseIfExpr(): LiloResult<LiloExpr> {
-        val expr = parseEqualityExpr()
+        val expr = parseDisjunctionExpr()
 
         if (match(kind = LiloTokenKind.IF_KEYWORD)) {
             val thenValue = expr.valueOr { return it.toFailure() }
-            val condition = parseIfExpr().valueOr { return it.toFailure() }
+            val condition = parseDisjunctionExpr().valueOr { return it.toFailure() }
 
             // Advance `else`
             expectAndConsume(
@@ -629,6 +631,26 @@ class LiloParser(val tokens: List<LiloToken>) {
             return LiloResult.Success(data = IfExpr(condition, thenValue, elseValue))
         }
 
+        return expr
+    }
+
+    private fun parseDisjunctionExpr() : LiloResult<LiloExpr> {
+        var expr = parseConjunctionExpr()
+        while (match(kind = LiloTokenKind.OR_KEYWORD)) {
+            val lhs = expr.valueOr { return it.toFailure() }
+            val rhs = parseConjunctionExpr().valueOr { return it.toFailure() }
+            expr = LiloResult.Success(data = BoolOpExpr(lhs, op = BoolOp.OR, rhs))
+        }
+        return expr
+    }
+
+    private fun parseConjunctionExpr() : LiloResult<LiloExpr> {
+        var expr = parseEqualityExpr()
+        while (match(kind = LiloTokenKind.AND_KEYWORD)) {
+            val lhs = expr.valueOr { return it.toFailure() }
+            val rhs = parseEqualityExpr().valueOr { return it.toFailure() }
+            expr = LiloResult.Success(data = BoolOpExpr(lhs, op = BoolOp.AND, rhs))
+        }
         return expr
     }
 

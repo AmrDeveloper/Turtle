@@ -3,7 +3,7 @@ package com.amrdeveloper.lilo.runtime
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
-import com.amrdeveloper.lilo.ast.BinaryExpr
+import com.amrdeveloper.lilo.ast.BinaryOpExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
@@ -11,7 +11,7 @@ import com.amrdeveloper.lilo.ast.BoolOp
 import com.amrdeveloper.lilo.ast.BoolOpExpr
 import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
-import com.amrdeveloper.lilo.ast.ComparisonExpr
+import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
@@ -42,7 +42,8 @@ import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
-import com.amrdeveloper.lilo.ast.UnaryExpr
+import com.amrdeveloper.lilo.ast.UnaryOp
+import com.amrdeveloper.lilo.ast.UnaryOpExpr
 import com.amrdeveloper.lilo.ast.WhileStmt
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
@@ -451,7 +452,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return runtimeException("`$callee` is not callable")
     }
 
-    override fun visitBinaryExpr(expr: BinaryExpr): LiloResult<LiloObject> {
+    override fun visitBinaryExpr(expr: BinaryOpExpr): LiloResult<LiloObject> {
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
 
@@ -472,7 +473,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return method.invoke(interpreter = this, args = listOf(lhs, rhs))
     }
 
-    override fun visitComparisonExpr(expr: ComparisonExpr): LiloResult<LiloObject> {
+    override fun visitComparisonExpr(expr: ComparisonOpExpr): LiloResult<LiloObject> {
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
 
@@ -512,17 +513,13 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return method.invoke(interpreter = this, args = listOf(lhs, rhs))
     }
 
-    override fun visitUnaryExpr(expr: UnaryExpr): LiloResult<LiloObject> {
+    override fun visitUnaryExpr(expr: UnaryOpExpr): LiloResult<LiloObject> {
         val operand = visit(expr.operand).valueOr { return it.toFailure() }
 
-        val methodName = when (expr.op.kind) {
-            LiloTokenKind.PLUS -> LiloMagicMethod.POS
-            LiloTokenKind.MINUS -> LiloMagicMethod.NEG
-            else -> null
+        val methodName = when (expr.op) {
+            UnaryOp.PLUS -> LiloMagicMethod.POS
+            UnaryOp.MINUS -> LiloMagicMethod.NEG
         }
-
-        if (methodName == null)
-            return runtimeException("Op `${expr.op.kind.name}` is unsupported on ${operand.type}")
 
         val method = operand.getAttr(methodName)
             ?: return runtimeException("Method `${methodName}` unsupported from ${operand.type}")

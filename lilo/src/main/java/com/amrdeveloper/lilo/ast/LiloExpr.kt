@@ -22,7 +22,7 @@ enum class BinaryOp {
     MOD
 }
 
-data class BinaryExpr(val lhs: LiloExpr, val op: BinaryOp, val rhs: LiloExpr) : LiloExpr
+data class BinaryOpExpr(val lhs: LiloExpr, val op: BinaryOp, val rhs: LiloExpr) : LiloExpr
 
 enum class ComparisonOp {
     EQ,
@@ -33,7 +33,7 @@ enum class ComparisonOp {
     LE,
 }
 
-data class ComparisonExpr(val lhs: LiloExpr, val op: ComparisonOp, val rhs: LiloExpr) : LiloExpr
+data class ComparisonOpExpr(val lhs: LiloExpr, val op: ComparisonOp, val rhs: LiloExpr) : LiloExpr
 
 enum class BoolOp {
     AND,
@@ -42,7 +42,12 @@ enum class BoolOp {
 
 data class BoolOpExpr(val lhs: LiloExpr, val op: BoolOp, val rhs: LiloExpr) : LiloExpr
 
-data class UnaryExpr(val op: LiloToken, val operand: LiloExpr) : LiloExpr
+enum class UnaryOp {
+    PLUS,
+    MINUS
+}
+
+data class UnaryOpExpr(val op: UnaryOp, val operand: LiloExpr) : LiloExpr
 
 data class GroupExpr(val expr: LiloExpr) : LiloExpr
 

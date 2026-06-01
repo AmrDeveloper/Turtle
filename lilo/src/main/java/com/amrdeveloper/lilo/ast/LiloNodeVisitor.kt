@@ -49,10 +49,10 @@ interface LiloExprVisitor<T> {
         is GetItemExpr -> visitGetItemExpr(expr)
         is IfExpr -> visitIfExpr(expr)
         is CallExpr -> visitCallExpr(expr)
-        is BinaryExpr -> visitBinaryExpr(expr)
-        is ComparisonExpr -> visitComparisonExpr(expr)
+        is BinaryOpExpr -> visitBinaryExpr(expr)
+        is ComparisonOpExpr -> visitComparisonExpr(expr)
         is BoolOpExpr -> visitBoolOpExpr(expr)
-        is UnaryExpr -> visitUnaryExpr(expr)
+        is UnaryOpExpr -> visitUnaryExpr(expr)
         is GroupExpr -> visitGroupExpr(expr)
         is ListExpr -> visitListExpr(expr)
         is SetExpr -> visitSetExpr(expr)
@@ -72,10 +72,10 @@ interface LiloExprVisitor<T> {
     fun visitGetItemExpr(expr: GetItemExpr): T
     fun visitIfExpr(expr: IfExpr): T
     fun visitCallExpr(expr: CallExpr): T
-    fun visitBinaryExpr(expr: BinaryExpr): T
-    fun visitComparisonExpr(expr: ComparisonExpr): T
+    fun visitBinaryExpr(expr: BinaryOpExpr): T
+    fun visitComparisonExpr(expr: ComparisonOpExpr): T
     fun visitBoolOpExpr(expr: BoolOpExpr): T
-    fun visitUnaryExpr(expr: UnaryExpr): T
+    fun visitUnaryExpr(expr: UnaryOpExpr): T
     fun visitGroupExpr(expr: GroupExpr): T
     fun visitListExpr(expr: ListExpr): T
     fun visitSetExpr(expr: SetExpr): T

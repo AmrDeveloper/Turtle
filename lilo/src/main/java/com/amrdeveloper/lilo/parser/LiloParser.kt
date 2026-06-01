@@ -3,7 +3,7 @@ package com.amrdeveloper.lilo.parser
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
-import com.amrdeveloper.lilo.ast.BinaryExpr
+import com.amrdeveloper.lilo.ast.BinaryOpExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
@@ -11,7 +11,7 @@ import com.amrdeveloper.lilo.ast.BoolOp
 import com.amrdeveloper.lilo.ast.BoolOpExpr
 import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
-import com.amrdeveloper.lilo.ast.ComparisonExpr
+import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
@@ -44,7 +44,8 @@ import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.Parameter
 import com.amrdeveloper.lilo.ast.TupleExpr
-import com.amrdeveloper.lilo.ast.UnaryExpr
+import com.amrdeveloper.lilo.ast.UnaryOp
+import com.amrdeveloper.lilo.ast.UnaryOpExpr
 import com.amrdeveloper.lilo.ast.WhileStmt
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
@@ -67,7 +68,8 @@ class LiloParser(val tokens: List<LiloToken>) {
         while (!isAtEnd()) {
             if (isPeek(kind = LiloTokenKind.NEW_LINE)
                 || isPeek(kind = LiloTokenKind.INDENT)
-                || isPeek(kind = LiloTokenKind.DEDENT)) {
+                || isPeek(kind = LiloTokenKind.DEDENT)
+            ) {
                 advance()
                 continue
             }
@@ -86,7 +88,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | if_stmt
     //    | for_stmt
     //    | while_stmt
-    private fun parseCompoundStmt() : LiloResult<LiloStmt> {
+    private fun parseCompoundStmt(): LiloResult<LiloStmt> {
         return when (peek().kind) {
             LiloTokenKind.AT -> {
                 val decorators = parseDecorators().valueOr { return it.toFailure() }
@@ -98,6 +100,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                 }
                 parseFunctionDefStmt(decorators)
             }
+
             LiloTokenKind.DEF_KEYWORD -> parseFunctionDefStmt()
             LiloTokenKind.IF_KEYWORD -> parseIfStmt()
             LiloTokenKind.FOR_KEYWORD -> parseForStmt()
@@ -106,7 +109,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
     }
 
-    private fun parseDecorators() : LiloResult<List<LiloExpr>> {
+    private fun parseDecorators(): LiloResult<List<LiloExpr>> {
         val decorators = mutableListOf<LiloExpr>()
         while (!isAtEnd() && match(kind = LiloTokenKind.AT)) {
             val name = parseExpr().valueOr { return it.toFailure() }
@@ -138,8 +141,8 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | continue_stmt
     //    | global_stmt
     //    | nonlocal_stmt
-    private fun parseSimpleStmt() : LiloResult<LiloStmt> {
-        val simpleStmtRes =  when (peek().kind) {
+    private fun parseSimpleStmt(): LiloResult<LiloStmt> {
+        val simpleStmtRes = when (peek().kind) {
             LiloTokenKind.FROM_KEYWORD -> parseFromImportStmt()
             LiloTokenKind.IMPORT_KEYWORD -> parseImportStmt()
             LiloTokenKind.RETURN_KEYWORD -> parseReturnStmt()
@@ -393,7 +396,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     // | 'for' star_targets 'in' ~ star_expressions ':' block [else_block]
-    private fun parseForStmt() : LiloResult<ForStmt> {
+    private fun parseForStmt(): LiloResult<ForStmt> {
         // Advance 'for' keyword
         advance()
 
@@ -440,7 +443,10 @@ class LiloParser(val tokens: List<LiloToken>) {
         var elseBlock: LiloStmt? = null
         if (match(kind = LiloTokenKind.ELSE_KEYWORD)) {
             consumeOr(kind = LiloTokenKind.COLON) {
-                return createDiagnostic(peek().loc, message = "Expected `:` after function parameters")
+                return createDiagnostic(
+                    peek().loc,
+                    message = "Expected `:` after function parameters"
+                )
             }
 
             elseBlock = parseBlockStmt().valueOr { return it.toFailure() }
@@ -487,7 +493,8 @@ class LiloParser(val tokens: List<LiloToken>) {
         if (isPeek(kind = LiloTokenKind.SEMI)
             || isPeek(kind = LiloTokenKind.NEW_LINE)
             || isPeek(kind = LiloTokenKind.DEDENT)
-            || isPeek(kind = LiloTokenKind.END_MARKER)) {
+            || isPeek(kind = LiloTokenKind.END_MARKER)
+        ) {
             advance()
             return LiloResult.Success(data = ReturnStmt())
         }
@@ -508,13 +515,14 @@ class LiloParser(val tokens: List<LiloToken>) {
         if (isPeek(kind = LiloTokenKind.SEMI)
             || isPeek(kind = LiloTokenKind.NEW_LINE)
             || isPeek(kind = LiloTokenKind.DEDENT)
-            || isPeek(kind = LiloTokenKind.END_MARKER)) {
+            || isPeek(kind = LiloTokenKind.END_MARKER)
+        ) {
             advance()
             return LiloResult.Success(data = RaiseStmt())
         }
 
         val exc = parseExpr().valueOr { return it.toFailure() }
-        var cause : LiloExpr? = null
+        var cause: LiloExpr? = null
         if (match(kind = LiloTokenKind.FROM_KEYWORD)) {
             cause = parseExpr().valueOr { return it.toFailure() }
         }
@@ -533,28 +541,29 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = AssertStmt(test, msg))
     }
 
-    private fun parseBreakStmt() : LiloResult<BreakStmt> {
+    private fun parseBreakStmt(): LiloResult<BreakStmt> {
         // Advance 'break' keyword
         advance()
         consumeOptionalSemi()
         return LiloResult.Success(data = BreakStmt())
     }
 
-    private fun parseContinueStmt() : LiloResult<ContinueStmt> {
+    private fun parseContinueStmt(): LiloResult<ContinueStmt> {
         // Advance 'Continue' keyword
         advance()
         consumeOptionalSemi()
         return LiloResult.Success(data = ContinueStmt())
     }
 
-    private fun parsePassStmt() : LiloResult<PassStmt> {
+    private fun parsePassStmt(): LiloResult<PassStmt> {
         // Advance 'pass' keyword
         advance()
 
         if (isPeek(kind = LiloTokenKind.SEMI)
             || isPeek(kind = LiloTokenKind.NEW_LINE)
             || isPeek(kind = LiloTokenKind.DEDENT)
-            || isPeek(kind = LiloTokenKind.END_MARKER)) {
+            || isPeek(kind = LiloTokenKind.END_MARKER)
+        ) {
             advance()
         }
 
@@ -597,7 +606,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
     // | expr (',' expr )+ [',']
     // | expr
-    private fun parseCommaSeparatedExpr() : LiloResult<LiloExpr> {
+    private fun parseCommaSeparatedExpr(): LiloResult<LiloExpr> {
         val elements = mutableListOf<LiloExpr>()
         val expr = parseExpr().valueOr { return it.toFailure() }
         elements.add(expr)
@@ -634,7 +643,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         return expr
     }
 
-    private fun parseDisjunctionExpr() : LiloResult<LiloExpr> {
+    private fun parseDisjunctionExpr(): LiloResult<LiloExpr> {
         var expr = parseConjunctionExpr()
         while (match(kind = LiloTokenKind.OR_KEYWORD)) {
             val lhs = expr.valueOr { return it.toFailure() }
@@ -644,7 +653,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         return expr
     }
 
-    private fun parseConjunctionExpr() : LiloResult<LiloExpr> {
+    private fun parseConjunctionExpr(): LiloResult<LiloExpr> {
         var expr = parseEqualityExpr()
         while (match(kind = LiloTokenKind.AND_KEYWORD)) {
             val lhs = expr.valueOr { return it.toFailure() }
@@ -672,7 +681,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             val op = advance()
             val rhs = parseComparisonsExpr().valueOr { return it.toFailure() }
             val binOp = comparisonOpFromTokenKind(op.kind)
-            lhs = ComparisonExpr(lhs = lhs, op = binOp, rhs = rhs)
+            lhs = ComparisonOpExpr(lhs = lhs, op = binOp, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
     }
@@ -683,7 +692,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             val op = advance()
             val rhs = parseAdditiveExpr().valueOr { return it.toFailure() }
             val binOp = comparisonOpFromTokenKind(op.kind)
-            lhs = ComparisonExpr(lhs = lhs, op = binOp, rhs = rhs)
+            lhs = ComparisonOpExpr(lhs = lhs, op = binOp, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
     }
@@ -702,10 +711,9 @@ class LiloParser(val tokens: List<LiloToken>) {
     private fun parseAdditiveExpr(): LiloResult<LiloExpr> {
         var lhs = parseMultiplicativeExpr().valueOr { return it.toFailure() }
         while (!isAtEnd() && peek().kind.isTermOperator()) {
-            val op = advance()
+            val op = binaryOpFromTokenKind(advance().kind)
             val rhs = parseMultiplicativeExpr().valueOr { return it.toFailure() }
-            val binOp = binaryOpFromTokenKind(op.kind)
-            lhs = BinaryExpr(lhs = lhs, op = binOp, rhs = rhs)
+            lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
     }
@@ -713,21 +721,27 @@ class LiloParser(val tokens: List<LiloToken>) {
     private fun parseMultiplicativeExpr(): LiloResult<LiloExpr> {
         var lhs = parseUnaryExpr().valueOr { return it.toFailure() }
         while (!isAtEnd() && peek().kind.isFactorOperator()) {
-            val op = advance()
+            val op = binaryOpFromTokenKind(advance().kind)
             val rhs = parseUnaryExpr().valueOr { return it.toFailure() }
-            val binOp = binaryOpFromTokenKind(op.kind)
-            lhs = BinaryExpr(lhs = lhs, op = binOp, rhs = rhs)
+            lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
     }
 
+    private fun unaryOpFromTokenKind(kind: LiloTokenKind): UnaryOp {
+        return when (kind) {
+            LiloTokenKind.PLUS -> UnaryOp.PLUS
+            LiloTokenKind.MINUS -> UnaryOp.MINUS
+            else -> TODO(reason = "Unreachable BinaryOp")
+        }
+    }
+
     private fun parseUnaryExpr(): LiloResult<LiloExpr> {
         if (peek().kind.isUnaryOperator()) {
-            val op = advance()
+            val op = unaryOpFromTokenKind(advance().kind)
             val expr = parseUnaryExpr().valueOr { return it.toFailure() }
-            return LiloResult.Success(data = UnaryExpr(op = op, operand = expr))
+            return LiloResult.Success(data = UnaryOpExpr(op = op, operand = expr))
         }
-
         return parseCallOrGetExpr()
     }
 
@@ -873,7 +887,10 @@ class LiloParser(val tokens: List<LiloToken>) {
         val parameters = mutableListOf<Parameter>()
         loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.COLON).not()) {
             if (isPeek(kind = LiloTokenKind.OUT_KEYWORD)) {
-                return createDiagnostic(peek().loc, message = "`out` parameter is not supported with lambda")
+                return createDiagnostic(
+                    peek().loc,
+                    message = "`out` parameter is not supported with lambda"
+                )
             }
 
             val name = expectAndConsume(

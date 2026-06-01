@@ -3,14 +3,14 @@ package com.amrdeveloper.lilo.compiler
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
-import com.amrdeveloper.lilo.ast.BinaryExpr
+import com.amrdeveloper.lilo.ast.BinaryOpExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
 import com.amrdeveloper.lilo.ast.BlockStmt
 import com.amrdeveloper.lilo.ast.BoolExpr
 import com.amrdeveloper.lilo.ast.BoolOpExpr
 import com.amrdeveloper.lilo.ast.BreakStmt
 import com.amrdeveloper.lilo.ast.CallExpr
-import com.amrdeveloper.lilo.ast.ComparisonExpr
+import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
@@ -41,7 +41,8 @@ import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
-import com.amrdeveloper.lilo.ast.UnaryExpr
+import com.amrdeveloper.lilo.ast.UnaryOp
+import com.amrdeveloper.lilo.ast.UnaryOpExpr
 import com.amrdeveloper.lilo.ast.WhileStmt
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.toFailure
@@ -207,7 +208,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         return LiloResult.Failure("Call NYI on GPU")
     }
 
-    override fun visitBinaryExpr(expr: BinaryExpr): LiloResult<String> {
+    override fun visitBinaryExpr(expr: BinaryOpExpr): LiloResult<String> {
         val op = when (expr.op) {
             BinaryOp.PLUS -> "+"
             BinaryOp.MINUS -> "-"
@@ -220,7 +221,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         return LiloResult.Success("$lhs $op $rhs")
     }
 
-    override fun visitComparisonExpr(expr: ComparisonExpr): LiloResult<String> {
+    override fun visitComparisonExpr(expr: ComparisonOpExpr): LiloResult<String> {
         val op = when (expr.op) {
             ComparisonOp.EQ -> "=="
             ComparisonOp.NE -> "!="
@@ -239,11 +240,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         return LiloResult.Failure("BoolOp NYI on GPU")
     }
 
-    override fun visitUnaryExpr(expr: UnaryExpr): LiloResult<String> {
-        val op = when (expr.op.kind) {
-            LiloTokenKind.PLUS -> "+"
-            LiloTokenKind.MINUS -> "-"
-            else -> ""
+    override fun visitUnaryExpr(expr: UnaryOpExpr): LiloResult<String> {
+        val op = when (expr.op) {
+            UnaryOp.PLUS -> "+"
+            UnaryOp.MINUS -> "-"
         }
         val operand = visit(expr.operand).valueOr { return it.toFailure() }
         return LiloResult.Success("$op${operand}")

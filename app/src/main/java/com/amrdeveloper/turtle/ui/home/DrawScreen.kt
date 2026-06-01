@@ -62,7 +62,9 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
                 scale(scaleX = 1f, scaleY = -1f, pivot = Offset.Zero)
             }){
                 for (pointer in screen.getPointers()) {
-                    for (segment in pointer.pathSegments) {
+                    val segmentIter = pointer.pathSegments.iterator()
+                    while (segmentIter.hasNext()) {
+                        val segment = segmentIter.next()
                         drawPath(path = segment.path, color = segment.color, style = segment.pen)
                     }
 

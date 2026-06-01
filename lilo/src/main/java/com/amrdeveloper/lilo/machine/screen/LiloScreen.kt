@@ -1,12 +1,13 @@
 package com.amrdeveloper.lilo.machine.screen
 
 import androidx.compose.ui.unit.IntSize
+import java.util.concurrent.CopyOnWriteArrayList
 
 class LiloScreen(
     val update: () -> Unit
 ) : LiloAbstractScreen {
 
-    val turtles: MutableList<LiloPointer> = mutableListOf()
+    val turtles: MutableList<LiloPointer> = CopyOnWriteArrayList()
     var size: IntSize = IntSize.Zero
 
     fun initPointer(): Int {

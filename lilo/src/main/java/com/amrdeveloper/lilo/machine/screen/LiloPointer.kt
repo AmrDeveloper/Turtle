@@ -3,6 +3,7 @@ package com.amrdeveloper.lilo.machine.screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import java.util.concurrent.CopyOnWriteArrayList
 
 data class LiloPathSegment(
     val path: Path = Path(),
@@ -17,7 +18,7 @@ class LiloPointer(
     var penDown: Boolean = true,
     var visible: Boolean = true
 ) {
-    val pathSegments = mutableListOf<LiloPathSegment>().apply { add(LiloPathSegment()) }
+    val pathSegments = CopyOnWriteArrayList<LiloPathSegment>().apply { add(LiloPathSegment()) }
 
     fun path() = pathSegments.last().path
     fun pen() = pathSegments.last().pen

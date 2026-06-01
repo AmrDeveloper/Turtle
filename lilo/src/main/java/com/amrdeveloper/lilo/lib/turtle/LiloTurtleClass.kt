@@ -63,16 +63,19 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[1] !is LiloFloat) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.forward` expect 1 floats as distance"))
+        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
+            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.forward` expect 1 number as distance"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
-        val distance = (args[1] as LiloFloat).value
+        val distance = when (val distance = args[1]) {
+            is LiloFloat -> distance.value
+            is LiloInt -> distance.value.toDouble()
+            else -> 0.0
+        }
         val pointer = screen.getPointerAt(idx = self.id)!!
-
-        val radius = Math.toRadians(pointer.degree.toDouble())
+        val radius = Math.toRadians(pointer.degree)
         val dstX = pointer.x + (distance * cos(x = radius)).toFloat()
         val dstY = pointer.y + (distance * sin(x = radius)).toFloat()
 
@@ -94,15 +97,19 @@ private object TurtleBackword : LiloObject(liloMethodType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[1] !is LiloFloat) {
+        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
             return LiloResult.Failure(error = LiloExceptionMessage("`turtle.backward` expect 1 floats as distance"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
-        val distance = (args[1] as LiloFloat).value
-        val pointer = screen.getPointerAt(idx = self.id)!!
+        val distance = when (val distance = args[1]) {
+            is LiloFloat -> distance.value
+            is LiloInt -> distance.value.toDouble()
+            else -> 0.0
+        }
 
+        val pointer = screen.getPointerAt(idx = self.id)!!
         val radius = Math.toRadians(pointer.degree)
         val dstX = pointer.x - (distance * cos(x = radius)).toFloat()
         val dstY = pointer.y - (distance * sin(x = radius)).toFloat()
@@ -125,13 +132,18 @@ private object TurtleLeft : LiloObject(liloMethodType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[1] !is LiloFloat) {
+        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
             return LiloResult.Failure(error = LiloExceptionMessage("`turtle.left` expect 1 floats as degree"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
-        val degree = (args[1] as LiloFloat).value
+        val degree = when (val degree = args[1]) {
+            is LiloFloat -> degree.value
+            is LiloInt -> degree.value.toDouble()
+            else -> 0.0
+        }
+
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.degree = (pointer.degree + degree) % 360
         screen.updateScreen()
@@ -144,13 +156,18 @@ private object TurtleRight : LiloObject(liloMethodType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[1] !is LiloFloat) {
+        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
             return LiloResult.Failure(error = LiloExceptionMessage("`turtle.right` expect 1 floats as degree"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
-        val degree = (args[1] as LiloFloat).value
+        val degree = when (val degree = args[1]) {
+            is LiloFloat -> degree.value
+            is LiloInt -> degree.value.toDouble()
+            else -> 0.0
+        }
+
         val pointer = screen.getPointerAt(idx = self.id)!!
         pointer.degree = (pointer.degree - degree) % 360
         screen.updateScreen()
@@ -163,13 +180,18 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[1] !is LiloFloat) {
+        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
             return LiloResult.Failure(error = LiloExceptionMessage("`turtle.circle` expect 1 floats as radius"))
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
-        val radius = (args[1] as LiloFloat).value
+        val radius = when (val radius = args[1]) {
+            is LiloFloat -> radius.value
+            is LiloInt -> radius.value.toDouble()
+            else -> 0.0
+        }
+
         val pointer = screen.getPointerAt(idx = self.id)!!
         if (pointer.penDown) {
             pointer.path().addOval(

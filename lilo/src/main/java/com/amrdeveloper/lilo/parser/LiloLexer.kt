@@ -198,10 +198,19 @@ class LiloLexer(val source: String) {
                         indent += 1
                     }
 
-                    // If the current line is empty, consume it and don't emit extra token
-                    if (!isAtEnd() && peek() == '\n') {
-                        nestingLevel = 0
-                        continue
+                    if (!isAtEnd()) {
+                        // If the current line is empty, consume it and don't emit extra token
+                        if (peek() == '\n') {
+                            continue
+                        }
+
+                        // If the current line is comment, consume it and don't emit extra token
+                        if (peek() == '#') {
+                            while (!isAtEnd() && peek() != '\n') {
+                                advance()
+                            }
+                            continue
+                        }
                     }
 
                     // Push new line token

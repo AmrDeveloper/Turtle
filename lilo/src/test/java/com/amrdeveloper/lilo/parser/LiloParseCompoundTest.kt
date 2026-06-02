@@ -14,6 +14,11 @@ class LiloParserCompoundTest {
             """
             def identity():
                return 1
+            
+              # Comment with different indentation
+            
+            def identity2():
+               return 1
             """,
             """
             def return_none():

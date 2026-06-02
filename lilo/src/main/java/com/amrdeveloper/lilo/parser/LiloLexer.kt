@@ -42,7 +42,7 @@ class LiloLexer(val source: String) {
                 }
 
                 '+', '-', '*', '/', '%' -> {
-                    tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
+                    tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
                 }
 
                 '=' -> {
@@ -86,7 +86,7 @@ class LiloLexer(val source: String) {
                 }
 
                 '(', ')', '[', ']', '{', '}' -> {
-                    val kind = getLiloOneCharTokenMap()[peek()]!!
+                    val kind = liloOneCharTokenMap[peek()]!!
                     if (kind == LiloTokenKind.L_PAR || kind == LiloTokenKind.L_SQB || kind == LiloTokenKind.L_BRACE) {
                         nestingLevel++
                     } else {
@@ -97,7 +97,7 @@ class LiloLexer(val source: String) {
                 }
 
                 '@', '.', ',', ':', ';' -> {
-                    tokens.add(createToken(kind = getLiloOneCharTokenMap()[advance()]!!))
+                    tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
                 }
 
                 '\'', '"' -> {
@@ -125,7 +125,7 @@ class LiloLexer(val source: String) {
         while (!isAtEnd() && peek().isLetterOrDigitOrUnderscore()) advance()
         val lexeme = source.substring(startPos, currentPos)
         val tokenKind =
-            getLiloKeywordsMap().getOrDefault(key = lexeme, defaultValue = LiloTokenKind.NAME)
+            liloKeywordsMap.getOrDefault(key = lexeme, defaultValue = LiloTokenKind.NAME)
         return LiloResult.Success(data = createToken(kind = tokenKind, lexeme))
     }
 

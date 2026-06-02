@@ -80,7 +80,7 @@ data class LiloLoc(val line: Int, val start: Int, val end: Int)
 
 data class LiloToken(val kind: LiloTokenKind, val loc: LiloLoc, val lexeme: String?)
 
-fun getLiloKeywordsMap() = mapOf(
+val liloKeywordsMap = mapOf(
     "from" to LiloTokenKind.FROM_KEYWORD,
     "import" to LiloTokenKind.IMPORT_KEYWORD,
     "as" to LiloTokenKind.AS_KEYWORD,
@@ -114,7 +114,7 @@ fun getLiloKeywordsMap() = mapOf(
     "None" to LiloTokenKind.NONE_KEYWORD,
 )
 
-fun getLiloOneCharTokenMap() = mapOf(
+val liloOneCharTokenMap = mapOf(
     '+' to LiloTokenKind.PLUS,
     '-' to LiloTokenKind.MINUS,
     '*' to LiloTokenKind.STAR,

@@ -5,6 +5,7 @@ import com.amrdeveloper.turtle.data.LiloFileDataSource
 import com.amrdeveloper.turtle.data.LiloFileLocalDataSource
 import com.amrdeveloper.turtle.data.LiloFileRepository
 import com.amrdeveloper.turtle.data.TurtleDatabase
+import com.amrdeveloper.turtle.ui.config.UIConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,4 +34,10 @@ object AppModule {
     fun provideLiloFileRepository(
         dataSource: LiloFileDataSource
     ) = LiloFileRepository(dataSource)
+
+    @Singleton
+    @Provides
+    fun provideUiConfig(
+        @ApplicationContext context: Context
+    ) = UIConfig(context)
 }

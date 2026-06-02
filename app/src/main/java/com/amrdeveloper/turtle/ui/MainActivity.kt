@@ -1,15 +1,18 @@
-package com.amrdeveloper.turtle
+package com.amrdeveloper.turtle.ui
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.amrdeveloper.colorschema.VSCodeDarkLiloColorSchema
-import com.amrdeveloper.colorschema.VSCodeLightLiloColorSchema
+import com.amrdeveloper.colorschema.colorSchemasMap
+import com.amrdeveloper.colorschema.defaultColorSchema
 import com.amrdeveloper.turtle.ui.home.HomeScreen
 import com.amrdeveloper.turtle.ui.files.LiloFilesScreen
 import com.amrdeveloper.turtle.ui.navigation.AppRoute
@@ -111,8 +114,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val colorSchema =
-                if (isSystemInDarkTheme()) VSCodeDarkLiloColorSchema else VSCodeLightLiloColorSchema
+            val viewModel = hiltViewModel<MainViewModel>()
+            val currentColorSchema by viewModel.colorSchema.collectAsState()
+            val isDarkTheme = isSystemInDarkTheme()
+            val colorSchema =  colorSchemasMap()
+                .getOrDefault(
+                    key = currentColorSchema,
+                    defaultValue = defaultColorSchema(isDarkTheme)
+                )
             TurtleAppTheme(colorSchema) {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = Home(sourceCode = starterLiloCode)) {
@@ -120,7 +129,6 @@ class MainActivity : AppCompatActivity() {
                         val currentRoute = navController.currentBackStackEntry?.toRoute<Home>()
                         HomeScreen(
                             starterCode = currentRoute?.sourceCode.orEmpty(),
-                            colorSchema = colorSchema,
                             navController = navController
                         )
                     }

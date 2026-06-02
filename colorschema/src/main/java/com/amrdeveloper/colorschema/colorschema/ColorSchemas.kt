@@ -14,4 +14,4 @@ fun colorSchemasMap() = mapOf(
 )
 
 fun defaultColorSchema(isDarkTheme: Boolean) =
-    if (isDarkTheme) VSCodeDarkLiloColorSchema else VSCodeLightLiloColorSchema
+    if (isDarkTheme) GitHubDarkLiloColorSchema else GitHubLightLiloColorSchema

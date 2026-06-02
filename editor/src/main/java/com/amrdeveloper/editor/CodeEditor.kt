@@ -49,7 +49,7 @@ fun CodeEditor(
     }
 
     val highlightColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-    val syntaxHighlighter = remember { SyntaxHighlighter(colorSchema) }
+    val syntaxHighlighter = remember(colorSchema) { SyntaxHighlighter(colorSchema) }
 
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.weight(1f)) {

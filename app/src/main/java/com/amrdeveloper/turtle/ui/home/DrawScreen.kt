@@ -1,6 +1,7 @@
 package com.amrdeveloper.turtle.ui.home
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -13,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.asImageBitmap
@@ -38,8 +40,12 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
         }
     }
 
-    Column {
-        Text(text = "Instructions: ${"%,d".format(instCount)}")
+    // Color of drawing screen should be white and controlled only from Lilo
+    Column(modifier = Modifier.background(Color.White)) {
+        Text(
+            text = "Instructions: ${"%,d".format(instCount)}",
+            color = Color.Black
+        )
         Canvas(modifier = Modifier.fillMaxSize().onSizeChanged { canvasSize = it }) {
             // Similar to Turtle Graphics the turtle starts from (0, 0)
             // which is the center of the screen

@@ -36,8 +36,13 @@ class LiloGPUCompilerTest {
 
         val expectedResults = mutableListOf(
             """
+            const block_dim = vec3<u32>(2u, 1u, 1u);
             @compute @workgroup_size(2, 1, 1)
-            fn main(@builtin(global_invocation_id) global_id: vec3<u32>)
+            fn main(
+              @builtin(workgroup_id) block_idx: vec3<u32>,
+              @builtin(local_invocation_id) thread_idx: vec3<u32>,
+              @builtin(global_invocation_id) global_id: vec3<u32>
+            )
             {
               return;
             }
@@ -47,8 +52,13 @@ class LiloGPUCompilerTest {
             @group(0) @binding(1) var<storage, read> b: array<f32>;
             @group(0) @binding(2) var<storage, read_write> c: array<f32>;
 
+            const block_dim = vec3<u32>(2u, 1u, 1u);
             @compute @workgroup_size(2, 1, 1)
-            fn main(@builtin(global_invocation_id) global_id: vec3<u32>)
+            fn main(
+              @builtin(workgroup_id) block_idx: vec3<u32>,
+              @builtin(local_invocation_id) thread_idx: vec3<u32>,
+              @builtin(global_invocation_id) global_id: vec3<u32>
+            )
             {
               var i = global_id.x;
               c[i] = a[i] + b[i];
@@ -59,8 +69,13 @@ class LiloGPUCompilerTest {
             @group(0) @binding(1) var<storage, read> b: array<f32>;
             @group(0) @binding(2) var<storage, read_write> c: array<f32>;
 
+            const block_dim = vec3<u32>(2u, 1u, 1u);
             @compute @workgroup_size(2, 1, 1)
-            fn main(@builtin(global_invocation_id) global_id: vec3<u32>)
+            fn main(
+              @builtin(workgroup_id) block_idx: vec3<u32>,
+              @builtin(local_invocation_id) thread_idx: vec3<u32>,
+              @builtin(global_invocation_id) global_id: vec3<u32>
+            )
             {
               var i = select(0, global_id.x, global_id.x < 4);
               c[i] = a[i] + b[i];
@@ -87,8 +102,12 @@ class LiloGPUCompilerTest {
             if (gpuCodeResult.isFailure()) {
                 println("Error[GPUCompiler]: " + gpuCodeResult.toFailureError<LiloDiagnostic>().message)
             }
+            println(gpuCodeResult.toSuccessData().trimIndent())
 
-            assertTrue("GPU Compiler results", expectedResults[index] == gpuCodeResult.toSuccessData().trimIndent())
+            assertTrue(
+                "GPU Compiler results",
+                expectedResults[index] == gpuCodeResult.toSuccessData().trimIndent()
+            )
         }
     }
 }

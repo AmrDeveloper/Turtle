@@ -86,8 +86,13 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
 
         // Generate Kernel Entry Point
         val threadConfigDim = config.threadsDim.dim
+        builder.append("const block_dim = vec3<u32>(${threadConfigDim.x}u, ${threadConfigDim.y}u, ${threadConfigDim.z}u);\n")
         builder.append("@compute @workgroup_size(${threadConfigDim.x}, ${threadConfigDim.y}, ${threadConfigDim.z})\n")
-        builder.append("fn main(@builtin(global_invocation_id) global_id: vec3<u32>)\n")
+        builder.append("fn main(\n")
+        builder.append("  @builtin(workgroup_id) block_idx: vec3<u32>,\n")
+        builder.append("  @builtin(local_invocation_id) thread_idx: vec3<u32>,\n")
+        builder.append("  @builtin(global_invocation_id) global_id: vec3<u32>\n")
+        builder.append(")\n")
         builder.append(visit(stmt.body).valueOr { return it.toFailure() })
         return LiloResult.Success(builder.toString())
     }
@@ -186,8 +191,14 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     override fun visitGetExpr(expr: GetExpr): LiloResult<String> {
         val obj = visit(expr.obj).valueOr { return it.toFailure() }
         val attr = (expr.name).value.lexeme
-        // Map gpu.global_id.x to global_id.x
-        if (obj == "gpu" && attr == "global_id") return LiloResult.Success("global_id")
+        if (obj == "gpu") {
+            when (attr) {
+                "block_dim" -> return LiloResult.Success("block_dim")
+                "block_idx" -> return LiloResult.Success("block_idx")
+                "thread_idx" -> return LiloResult.Success("thread_idx")
+                "global_id" -> return LiloResult.Success("global_id")
+            }
+        }
         return LiloResult.Success("$obj.$attr")
     }
 

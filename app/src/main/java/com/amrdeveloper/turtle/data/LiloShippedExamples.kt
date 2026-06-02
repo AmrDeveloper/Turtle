@@ -211,7 +211,7 @@ val liloShippedExamples = listOf(
     ),
     // GPU Examples
     LiloFileEntity(
-        name = "GPU_VecAdd",
+        name = "GPU_VecAdd_Global_id",
         sourceCode = """
         from gpu import (
             gpu,
@@ -223,6 +223,33 @@ val liloShippedExamples = listOf(
         @gpu
         def vec_add(a, b, out c):
           i = 0 if gpu.global_id.x < 4 else gpu.global_id.x
+          c[i] = a[i] + b[i]
+        
+        a = [1.0, 2.0, 3.0, 4.0]
+        b = [5.0, 6.0, 7.0, 8.0]
+        c = [0.0, 0.0, 0.0, 0.0]
+        
+        blocks = Dim(1, 1, 1)
+        threads = Dim(4, 1, 1)
+        config = LaunchConfig(blocks, threads)
+        kernal = ConfiguredKernal(vec_add, config)
+        kernal(a, b, c)
+        print(c)
+        """.trimIndent()
+    ),
+    LiloFileEntity(
+        name = "GPU_VecAdd",
+        sourceCode = """
+        from gpu import (
+            gpu,
+            Dim,
+            LaunchConfig,
+            ConfiguredKernal
+        )
+        
+        @gpu
+        def vec_add(a, b, out c):
+          i = gpu.block_dim.x * gpu.block_idx.x + gpu.thread_idx.x
           c[i] = a[i] + b[i]
         
         a = [1.0, 2.0, 3.0, 4.0]

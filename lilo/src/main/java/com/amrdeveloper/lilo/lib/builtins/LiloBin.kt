@@ -18,6 +18,6 @@ object LiloBinFunction : LiloObject(liloFunctionType), LiloCallable {
         if (argument !is LiloInt) {
             return LiloResult.Failure(error = LiloExceptionMessage(message = "Expect `Int` but got `${argument.type}`"))
         }
-        return LiloResult.Success(data = LiloStr(value = "0b" + argument.value.toString(radix = 8)))
+        return LiloResult.Success(data = LiloStr(value = "0b" + argument.value.toString(radix = 2)))
     }
 }

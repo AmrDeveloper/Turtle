@@ -11,8 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.amrdeveloper.colorschema.colorSchemasMap
-import com.amrdeveloper.colorschema.defaultColorSchema
+import com.amrdeveloper.colorschema.colorschema.colorSchemasMap
+import com.amrdeveloper.colorschema.colorschema.defaultColorSchema
 import com.amrdeveloper.turtle.ui.home.HomeScreen
 import com.amrdeveloper.turtle.ui.files.LiloFilesScreen
 import com.amrdeveloper.turtle.ui.navigation.AppRoute

@@ -1,5 +1,6 @@
 package com.amrdeveloper.turtle.ui.settings
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,12 +41,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.amrdeveloper.colorschema.colorSchemasMap
+import com.amrdeveloper.colorschema.colorschema.colorSchemasMap
 import com.amrdeveloper.turtle.BuildConfig
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.ui.components.TurtleToolbar
 import com.amrdeveloper.turtle.ui.theme.supportedFontFamiliesMap
-import kotlin.math.max
 
 private const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle"
 private const val REPOSITORY_URL = "https://github.com/AmrDeveloper/Turtle"
@@ -59,6 +60,11 @@ fun SettingsScreen(
 
     val scrollState = rememberScrollState()
     val currentColorSchema by viewModel.colorSchema.collectAsState()
+    var selectedColorSchemaIndex = remember(currentColorSchema) {
+        colorSchemasMap().keys.toList().indexOf(currentColorSchema).coerceAtLeast(minimumValue = 0)
+    }
+
+    Log.d("AmrDeveloper", "Theme index ${currentColorSchema} -> ${selectedColorSchemaIndex} \n ${colorSchemasMap().keys.toList().indexOf(currentColorSchema)}")
 
     var selectedUrlOptionToOpen by remember { mutableStateOf(value = "") }
     val uriHandler = LocalUriHandler.current
@@ -74,7 +80,9 @@ fun SettingsScreen(
             TurtleToolbar(isRunActionEnabled = false, navController = navController)
         },
         content = { padding ->
-            Column(modifier = Modifier.padding(paddingValues = padding).verticalScroll(scrollState)) {
+            Column(modifier = Modifier
+                .padding(paddingValues = padding)
+                .verticalScroll(scrollState)) {
                 SettingSectionDivider(text = "App Info")
 
                 SimpleSettingOption(
@@ -87,7 +95,7 @@ fun SettingsScreen(
                 DropdownSettingOption(
                     text = "ColorSchema",
                     icon = R.drawable.ic_dark_mode,
-                    defaultSelectedIndex = max(colorSchemasMap().keys.toList().indexOf(currentColorSchema), 0),
+                    defaultSelectedIndex = selectedColorSchemaIndex,
                     options = colorSchemasMap().keys.toList(),
                     onOptionSelected = { colorSchema ->
                         viewModel.setColorSchema(colorSchema)
@@ -206,7 +214,7 @@ private fun DropdownSettingOption(
     onOptionSelected: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(defaultSelectedIndex) }
+    var selectedIndex by remember(defaultSelectedIndex) { mutableIntStateOf(defaultSelectedIndex) }
 
     Card(
         modifier = Modifier

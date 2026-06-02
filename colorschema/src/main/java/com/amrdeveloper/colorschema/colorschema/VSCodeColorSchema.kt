@@ -1,4 +1,4 @@
-package com.amrdeveloper.colorschema
+package com.amrdeveloper.colorschema.colorschema
 
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme

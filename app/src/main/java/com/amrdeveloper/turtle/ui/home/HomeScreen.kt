@@ -17,8 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.amrdeveloper.colorschema.colorSchemasMap
-import com.amrdeveloper.colorschema.defaultColorSchema
+import com.amrdeveloper.colorschema.colorschema.colorSchemasMap
+import com.amrdeveloper.colorschema.colorschema.defaultColorSchema
 import com.amrdeveloper.editor.CodeEditor
 import com.amrdeveloper.terminal.Terminal
 import com.amrdeveloper.turtle.R

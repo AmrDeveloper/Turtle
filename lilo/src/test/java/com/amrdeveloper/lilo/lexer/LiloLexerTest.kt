@@ -19,6 +19,14 @@ class LiloLexerTest {
                 while True:
                     pass
             print(1)    
+            """,
+            """
+            while True:
+                while True:
+                    pass
+                while True:
+                    pass
+            print(1)    
             """
         )
 

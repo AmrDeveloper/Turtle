@@ -187,8 +187,7 @@ class LiloLexer(val source: String) {
                         advance()
                         continue
                     }
-                    // Push new line token
-                    indentTokens.add(createToken(kind = LiloTokenKind.NEW_LINE))
+
                     // Consume '\n'
                     advance()
 
@@ -198,6 +197,15 @@ class LiloLexer(val source: String) {
                         advance()
                         indent += 1
                     }
+
+                    // If the current line is empty, consume it and don't emit extra token
+                    if (!isAtEnd() && peek() == '\n') {
+                        nestingLevel = 0
+                        continue
+                    }
+
+                    // Push new line token
+                    indentTokens.add(createToken(kind = LiloTokenKind.NEW_LINE))
 
                     // Compare the indentation with the top stack
                     val currIndent = indentStack.peek() ?: 0

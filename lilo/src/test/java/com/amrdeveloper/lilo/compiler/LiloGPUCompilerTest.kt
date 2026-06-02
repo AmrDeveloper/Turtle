@@ -102,7 +102,6 @@ class LiloGPUCompilerTest {
             if (gpuCodeResult.isFailure()) {
                 println("Error[GPUCompiler]: " + gpuCodeResult.toFailureError<LiloDiagnostic>().message)
             }
-            println(gpuCodeResult.toSuccessData().trimIndent())
 
             assertTrue(
                 "GPU Compiler results",

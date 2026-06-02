@@ -5,8 +5,9 @@
 </p>
 
 <p align="center">
-Turtle started as an re-implementation of TurtleGraphics on Android OS with simple language, but then that simple language `Lilo`
-turned into a python implementation that support GPU programming and allow you to mix CPU/GPU code in a nice way inspired by CUDA, Mojo and Python of course 😎.
+Turtle started as a re-implementation of TurtleGraphics on Android OS with simple language, but then that simple language `Lilo`
+turned into a A platform with Heterogeneous Pythonic like language to practice targeting CPU & GPU in the same program
+Influenced by Python, Mojo and CUDA.
 </p>
 
 # Download
@@ -50,7 +51,7 @@ print("Output: ", c)
 ```
 
 ## Features
-- Free And open source with no ads.
+- Free And open source with no ads or data collecting.
 - Python implementation from scratch that support GPU Programming with user-friendly error messages.
 - Supports most of Python stdlib modules.
 - Preview custom view for turtle graphics execution.

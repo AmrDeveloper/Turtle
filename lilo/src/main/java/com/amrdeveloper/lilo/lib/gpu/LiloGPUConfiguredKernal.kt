@@ -11,7 +11,6 @@ import com.amrdeveloper.lilo.objects.LiloNone
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.liloFunctionType
-import com.amrdeveloper.lilo.objects.liloMethodType
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import kotlinx.coroutines.runBlocking
@@ -39,7 +38,7 @@ private object LiloConfiguredKernalInit : LiloObject(liloFunctionType), LiloCall
     }
 }
 
-private object LiloConfiguredKernalCall : LiloObject(liloMethodType), LiloCallable {
+private object LiloConfiguredKernalCall : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

@@ -36,7 +36,7 @@ private object GPULaunchConfigInitInit : LiloObject(liloFunctionType), LiloCalla
     }
 }
 
-private object GPULaunchConfigStr : LiloObject(liloMethodType), LiloCallable {
+private object GPULaunchConfigStr : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

@@ -78,6 +78,7 @@ import com.amrdeveloper.lilo.lib.registerLiloAutoImportedModule
 import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.liloMethodType
+import com.amrdeveloper.lilo.objects.liloModuleType
 import kotlin.collections.set
 
 class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
@@ -385,13 +386,20 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitGetExpr(expr: GetExpr): LiloResult<LiloObject> {
         val liloObj = visit(expr.obj).valueOr { return it.toFailure() }
         val attribute = expr.name.value.lexeme!!
-        val liloAttribute = liloObj.getAttr(name = attribute)
-        if (liloAttribute != null) {
-            val methodOrAttribute = if (liloAttribute.type == liloMethodType)
-                LiloMethod(self = liloObj, method = liloAttribute)
-            else liloAttribute
-            return runtimeObject(obj = methodOrAttribute)
+
+        // If the attribute found on the instance, return it directly
+        val instanceAttr = liloObj.dict[attribute]
+        if (instanceAttr != null) return runtimeObject(obj = instanceAttr)
+
+        // If it's a callable on an instance, bind it
+        val typeAttr = liloObj.type?.getAttr(name = attribute)
+        if (typeAttr != null) {
+            if (liloObj !is LiloType && liloObj.type != liloModuleType && typeAttr is LiloCallable) {
+                return runtimeObject(obj = LiloMethod(self = liloObj, method = typeAttr))
+            }
+            return runtimeObject(obj = typeAttr)
         }
+
         return runtimeException("Invalid `.` expression on $liloObj.${attribute}")
     }
 

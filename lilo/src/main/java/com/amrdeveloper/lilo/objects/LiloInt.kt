@@ -245,7 +245,7 @@ data class LiloInt(val value: Int) : LiloObject(liloIntType) {
     override fun toString() = value.toString()
 }
 
-private object IntBool : LiloObject(liloMethodType), LiloCallable {
+private object IntBool : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

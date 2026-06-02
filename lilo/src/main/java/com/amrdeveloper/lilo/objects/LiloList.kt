@@ -11,14 +11,13 @@ val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJE
 
     it.setAttr(name = LiloMagicMethod.SET_ITEM, value = ListSetItem)
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = ListGetItem)
-
     it.setAttr(name = LiloMagicMethod.LEN, value = ListLen)
 
     it.setAttr(name = "append", value = ListAppend)
     it.setAttr(name = "extend", value = ListExtend)
 }
 
-private object ListAppend : LiloObject(liloMethodType), LiloCallable {
+private object ListAppend : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -31,7 +30,7 @@ private object ListAppend : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object ListExtend : LiloObject(liloMethodType), LiloCallable {
+private object ListExtend : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

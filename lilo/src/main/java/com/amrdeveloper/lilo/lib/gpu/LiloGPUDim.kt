@@ -12,7 +12,6 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.LiloBaseType
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.liloFunctionType
-import com.amrdeveloper.lilo.objects.liloMethodType
 
 val liloDimType = LiloType(name = "gpu.Dim", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE))
     .also {
@@ -47,7 +46,7 @@ private object GPUDimInit : LiloObject(liloFunctionType), LiloCallable {
     }
 }
 
-private object GPUDimStr : LiloObject(liloMethodType), LiloCallable {
+private object GPUDimStr : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>

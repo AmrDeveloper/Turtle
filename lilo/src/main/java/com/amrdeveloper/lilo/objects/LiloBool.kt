@@ -15,11 +15,7 @@ val liloBoolType = LiloType(name = "bool", bases = listOf(LiloBaseType.LILO_OBJE
     it.setAttr(name = LiloMagicMethod.OR, value = BoolOr)
 }
 
-data class LiloBool(val value: Boolean) : LiloObject(liloBoolType) {
-    override fun toString() = if (value) "True" else "False"
-}
-
-private object BoolBool : LiloObject(liloMethodType), LiloCallable {
+private object BoolBool : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -29,7 +25,7 @@ private object BoolBool : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object BoolAnd : LiloObject(liloMethodType), LiloCallable {
+private object BoolAnd : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -44,7 +40,7 @@ private object BoolAnd : LiloObject(liloMethodType), LiloCallable {
 }
 
 
-private object BoolOr : LiloObject(liloMethodType), LiloCallable {
+private object BoolOr : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -56,4 +52,8 @@ private object BoolOr : LiloObject(liloMethodType), LiloCallable {
         val other = args[1] as LiloBool
         return LiloResult.Success(data = LiloBool(value = self.value.or(other.value)))
     }
+}
+
+data class LiloBool(val value: Boolean) : LiloObject(liloBoolType) {
+    override fun toString() = if (value) "True" else "False"
 }

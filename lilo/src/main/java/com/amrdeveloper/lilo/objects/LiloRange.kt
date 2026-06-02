@@ -6,6 +6,6 @@ data class LiloRange(
     val start: Int = 0,
     val stop: Int,
     val step: Int = 1
-) : LiloObject(liloIntType) {
+) : LiloObject(liloRangeType) {
     override fun toString() = "range($start, $stop, $step)"
 }

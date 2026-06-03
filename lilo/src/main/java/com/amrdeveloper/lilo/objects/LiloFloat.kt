@@ -13,7 +13,7 @@ val liloFloatType = LiloType(name = "float", bases = listOf(LiloBaseType.LILO_OB
     it.setAttr(name = LiloMagicMethod.ADD, value = FloatAdd)
     it.setAttr(name = LiloMagicMethod.SUB, value = FloatSub)
     it.setAttr(name = LiloMagicMethod.MUL, value = FloatMul)
-    it.setAttr(name = LiloMagicMethod.DIV, value = FloatDiv)
+    it.setAttr(name = LiloMagicMethod.TRUE_DIV, value = FloatDiv)
 
     // Comparisons
     it.setAttr(name = LiloMagicMethod.GT, value = FloatGT)

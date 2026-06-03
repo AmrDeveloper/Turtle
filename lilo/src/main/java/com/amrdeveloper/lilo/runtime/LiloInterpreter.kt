@@ -77,7 +77,6 @@ import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.lib.registerLiloAutoImportedModule
 import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.objects.LiloType
-import com.amrdeveloper.lilo.objects.liloMethodType
 import com.amrdeveloper.lilo.objects.liloModuleType
 import kotlin.collections.set
 
@@ -463,13 +462,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitBinaryExpr(expr: BinaryOpExpr): LiloResult<LiloObject> {
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
-
         val methodName = when (expr.op) {
             BinaryOp.PLUS -> LiloMagicMethod.ADD
             BinaryOp.MINUS -> LiloMagicMethod.SUB
             BinaryOp.MUL -> LiloMagicMethod.MUL
-            BinaryOp.DIV -> LiloMagicMethod.DIV
+            BinaryOp.TRUE_DIV -> LiloMagicMethod.TRUE_DIV
+            BinaryOp.FLOOR_DIV -> LiloMagicMethod.FLOOR_DIV
             BinaryOp.MOD -> LiloMagicMethod.MOD
+            BinaryOp.POW -> LiloMagicMethod.POW
         }
 
         val method = lhs.getAttr(methodName)

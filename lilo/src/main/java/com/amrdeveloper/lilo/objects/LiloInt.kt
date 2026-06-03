@@ -5,6 +5,7 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import kotlin.math.pow
 
 val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
@@ -15,8 +16,10 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     it.setAttr(name = LiloMagicMethod.ADD, value = IntAdd)
     it.setAttr(name = LiloMagicMethod.SUB, value = IntSub)
     it.setAttr(name = LiloMagicMethod.MUL, value = IntMul)
-    it.setAttr(name = LiloMagicMethod.DIV, value = IntDiv)
+    it.setAttr(name = LiloMagicMethod.TRUE_DIV, value = IntTrueDiv)
+    it.setAttr(name = LiloMagicMethod.FLOOR_DIV, value = IntFloorDiv)
     it.setAttr(name = LiloMagicMethod.MOD, value = IntMod)
+    it.setAttr(name = LiloMagicMethod.POW, value = IntPow)
 
     // Comparisons
     it.setAttr(name = LiloMagicMethod.EQ, value = IntEq)
@@ -29,6 +32,9 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     // Unary
     it.setAttr(name = LiloMagicMethod.POS, value = IntPos)
     it.setAttr(name = LiloMagicMethod.NEG, value = IntNeg)
+
+    // Bool
+    it.setAttr(name = LiloMagicMethod.BOOL, value = IntBool)
 }
 
 private object IntInit : LiloObject(liloFunctionType), LiloCallable {
@@ -94,7 +100,7 @@ private object IntMul : LiloObject(liloFunctionType), LiloCallable {
     }
 }
 
-private object IntDiv : LiloObject(liloFunctionType), LiloCallable {
+private object IntTrueDiv : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -107,6 +113,25 @@ private object IntDiv : LiloObject(liloFunctionType), LiloCallable {
                 is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.toDouble() / rhs.value))
                 else -> LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
             }
+        }
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
+    }
+}
+
+private object IntFloorDiv : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && (rhs is LiloInt || rhs is LiloFloat)) {
+            val rhsValue =  when (rhs) {
+                is LiloInt -> rhs.value
+                is LiloFloat -> rhs.value.toInt()
+                else -> 1
+            }
+            return LiloResult.Success(data = LiloInt(value = lhs.value.floorDiv(other = rhsValue)))
         }
         return LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
     }
@@ -126,6 +151,19 @@ private object IntMod : LiloObject(liloFunctionType), LiloCallable {
     }
 }
 
+private object IntPow : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloInt(value = lhs.value.toDouble().pow(rhs.value).toInt()))
+        }
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `%` is unsupported between lhs & rhs"))
+    }
+}
 private object IntEq : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
@@ -236,15 +274,6 @@ private object IntNeg : LiloObject(liloFunctionType), LiloCallable {
     }
 }
 
-data class LiloInt(val value: Int) : LiloObject(liloIntType) {
-
-    init {
-        setAttr(name = LiloMagicMethod.BOOL, value = IntBool)
-    }
-
-    override fun toString() = value.toString()
-}
-
 private object IntBool : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
@@ -253,4 +282,8 @@ private object IntBool : LiloObject(liloFunctionType), LiloCallable {
         val self = args[0] as LiloInt
         return LiloResult.Success(data = LiloBool(value = self.value != 0))
     }
+}
+
+data class LiloInt(val value: Int) : LiloObject(liloIntType) {
+    override fun toString() = value.toString()
 }

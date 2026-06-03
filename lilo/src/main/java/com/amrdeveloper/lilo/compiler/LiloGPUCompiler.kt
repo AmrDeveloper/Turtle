@@ -224,8 +224,9 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
             BinaryOp.PLUS -> "+"
             BinaryOp.MINUS -> "-"
             BinaryOp.MUL -> "*"
-            BinaryOp.DIV -> "/"
+            BinaryOp.TRUE_DIV -> "/"
             BinaryOp.MOD -> "%"
+            else -> return LiloResult.Failure("Binary op ${expr.op} NYI on GPU")
         }
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }

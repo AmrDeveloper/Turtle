@@ -7,8 +7,10 @@ object LiloMagicMethod {
     const val ADD = "__add__"
     const val SUB = "__sub__"
     const val MUL = "__mul__"
-    const val DIV = "__truediv__"
+    const val TRUE_DIV = "__truediv__"
+    const val FLOOR_DIV = "__floordiv__"
     const val MOD = "__mod__"
+    const val POW = "__pow__"
 
     // Comparison op
     const val EQ = "__eq__"

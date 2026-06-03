@@ -687,10 +687,10 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseComparisonsExpr(): LiloResult<LiloExpr> {
-        var lhs = parseAdditiveExpr().valueOr { return it.toFailure() }
+        var lhs = parseSumExpr().valueOr { return it.toFailure() }
         while (!isAtEnd() && peek().kind.isComparisonOperator()) {
             val op = advance()
-            val rhs = parseAdditiveExpr().valueOr { return it.toFailure() }
+            val rhs = parseSumExpr().valueOr { return it.toFailure() }
             val binOp = comparisonOpFromTokenKind(op.kind)
             lhs = ComparisonOpExpr(lhs = lhs, op = binOp, rhs = rhs)
         }
@@ -702,25 +702,38 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.PLUS -> BinaryOp.PLUS
             LiloTokenKind.MINUS -> BinaryOp.MINUS
             LiloTokenKind.STAR -> BinaryOp.MUL
-            LiloTokenKind.SLASH -> BinaryOp.DIV
+            LiloTokenKind.DOUBLE_STAR -> BinaryOp.POW
+            LiloTokenKind.SLASH -> BinaryOp.TRUE_DIV
+            LiloTokenKind.DOUBLE_SLASH -> BinaryOp.FLOOR_DIV
             LiloTokenKind.PERCENT -> BinaryOp.MOD
             else -> TODO(reason = "Unreachable BinaryOp")
         }
     }
 
-    private fun parseAdditiveExpr(): LiloResult<LiloExpr> {
-        var lhs = parseMultiplicativeExpr().valueOr { return it.toFailure() }
-        while (!isAtEnd() && peek().kind.isTermOperator()) {
+    // sum:
+    //    | sum '+' term
+    //    | sum '-' term
+    //    | term
+    private fun parseSumExpr(): LiloResult<LiloExpr> {
+        var lhs = parseTermExpr().valueOr { return it.toFailure() }
+        while (!isAtEnd() && peek().kind.isSumOperator()) {
             val op = binaryOpFromTokenKind(advance().kind)
-            val rhs = parseMultiplicativeExpr().valueOr { return it.toFailure() }
+            val rhs = parseTermExpr().valueOr { return it.toFailure() }
             lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
     }
 
-    private fun parseMultiplicativeExpr(): LiloResult<LiloExpr> {
+    //  term:
+    //    | term '*' factor
+    //    | term '/' factor
+    //    | term '//' factor
+    //    | term '%' factor
+    //    | term '@' factor
+    //    | factor
+    private fun parseTermExpr(): LiloResult<LiloExpr> {
         var lhs = parseUnaryExpr().valueOr { return it.toFailure() }
-        while (!isAtEnd() && peek().kind.isFactorOperator()) {
+        while (!isAtEnd() && peek().kind.isTermOperator()) {
             val op = binaryOpFromTokenKind(advance().kind)
             val rhs = parseUnaryExpr().valueOr { return it.toFailure() }
             lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
@@ -736,13 +749,31 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
     }
 
+    // factor:
+    //    | '+' factor
+    //    | '-' factor
+    //    | '~' factor
+    //    | power
     private fun parseUnaryExpr(): LiloResult<LiloExpr> {
         if (peek().kind.isUnaryOperator()) {
             val op = unaryOpFromTokenKind(advance().kind)
-            val expr = parseUnaryExpr().valueOr { return it.toFailure() }
+            val expr = parsePowExpr().valueOr { return it.toFailure() }
             return LiloResult.Success(data = UnaryOpExpr(op = op, operand = expr))
         }
-        return parseCallOrGetExpr()
+        return parsePowExpr()
+    }
+
+    // power:
+    //    | primary '**' factor
+    //    | primary
+    private fun parsePowExpr() : LiloResult<LiloExpr> {
+        var lhs = parseCallOrGetExpr().valueOr { return it.toFailure() }
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.DOUBLE_STAR)) {
+            val op = binaryOpFromTokenKind(advance().kind)
+            val rhs = parseUnaryExpr().valueOr { return it.toFailure() }
+            lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
+        }
+        return LiloResult.Success(data = lhs)
     }
 
     private fun parseCallOrGetExpr(): LiloResult<LiloExpr> {

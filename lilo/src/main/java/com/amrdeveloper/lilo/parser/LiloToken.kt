@@ -40,6 +40,8 @@ enum class LiloTokenKind {
     STAR,                // *
     SLASH,               // /
     PERCENT,             // %
+    DOUBLE_STAR,         // **
+    DOUBLE_SLASH,        // //
 
     L_PAR,               // (
     R_PAR,               // )
@@ -135,15 +137,16 @@ val liloOneCharTokenMap = mapOf(
     ';' to LiloTokenKind.SEMI,
 )
 
-fun LiloTokenKind.isTermOperator() = this in listOf(
+fun LiloTokenKind.isSumOperator() = this in listOf(
     LiloTokenKind.PLUS,
     LiloTokenKind.MINUS,
 )
 
-fun LiloTokenKind.isFactorOperator() = this in listOf(
+fun LiloTokenKind.isTermOperator() = this in listOf(
     LiloTokenKind.STAR,
     LiloTokenKind.SLASH,
-    LiloTokenKind.PERCENT
+    LiloTokenKind.DOUBLE_SLASH,
+    LiloTokenKind.PERCENT,
 )
 
 fun LiloTokenKind.isUnaryOperator() = this in listOf(

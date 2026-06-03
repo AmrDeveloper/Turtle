@@ -41,8 +41,28 @@ class LiloLexer(val source: String) {
                     tokens.add(token)
                 }
 
-                '+', '-', '*', '/', '%' -> {
+                '+', '-', '%' -> {
                     tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
+                }
+
+                '*' -> {
+                    advance()
+                    if (peek() == '*') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.DOUBLE_STAR))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.STAR))
+                    }
+                }
+
+                '/' -> {
+                    advance()
+                    if (peek() == '/') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.DOUBLE_SLASH))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.SLASH))
+                    }
                 }
 
                 '=' -> {

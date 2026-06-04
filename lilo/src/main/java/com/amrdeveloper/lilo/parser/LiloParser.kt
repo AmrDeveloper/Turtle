@@ -643,6 +643,9 @@ class LiloParser(val tokens: List<LiloToken>) {
         return expr
     }
 
+    // disjunction:
+    //    | conjunction ('or' conjunction )+
+    //    | conjunction
     private fun parseDisjunctionExpr(): LiloResult<LiloExpr> {
         var expr = parseConjunctionExpr()
         while (match(kind = LiloTokenKind.OR_KEYWORD)) {
@@ -653,14 +656,28 @@ class LiloParser(val tokens: List<LiloToken>) {
         return expr
     }
 
+    // conjunction:
+    //    | inversion ('and' inversion )+
+    //    | inversion
     private fun parseConjunctionExpr(): LiloResult<LiloExpr> {
-        var expr = parseEqualityExpr()
+        var expr = parseInversion()
         while (match(kind = LiloTokenKind.AND_KEYWORD)) {
             val lhs = expr.valueOr { return it.toFailure() }
-            val rhs = parseEqualityExpr().valueOr { return it.toFailure() }
+            val rhs = parseInversion().valueOr { return it.toFailure() }
             expr = LiloResult.Success(data = BoolOpExpr(lhs, op = BoolOp.AND, rhs))
         }
         return expr
+    }
+
+    // inversion:
+    //    | 'not' inversion
+    //    | comparison
+    private fun parseInversion() : LiloResult<LiloExpr> {
+        if (match(kind = LiloTokenKind.NOT_KEYWORD)) {
+            val operand = parseEqualityExpr().valueOr { return it.toFailure() }
+            return LiloResult.Success(data = UnaryOpExpr(op = UnaryOp.NOT, operand = operand))
+        }
+        return parseEqualityExpr()
     }
 
     private fun comparisonOpFromTokenKind(kind: LiloTokenKind): ComparisonOp {

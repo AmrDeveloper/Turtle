@@ -256,9 +256,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         val op = when (expr.op) {
             UnaryOp.PLUS -> "+"
             UnaryOp.MINUS -> "-"
+            UnaryOp.NOT -> "!"
         }
         val operand = visit(expr.operand).valueOr { return it.toFailure() }
-        return LiloResult.Success("$op${operand}")
+        return LiloResult.Success(data = "$op${operand}")
     }
 
     override fun visitGroupExpr(expr: GroupExpr): LiloResult<String> {

@@ -46,7 +46,8 @@ data class BoolOpExpr(val lhs: LiloExpr, val op: BoolOp, val rhs: LiloExpr) : Li
 
 enum class UnaryOp {
     PLUS,
-    MINUS
+    MINUS,
+    NOT,
 }
 
 data class UnaryOpExpr(val op: UnaryOp, val operand: LiloExpr) : LiloExpr

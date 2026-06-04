@@ -23,6 +23,7 @@ object LiloMagicMethod {
     // Unary op
     const val POS = "__pos__"
     const val NEG = "__neg__"
+    const val NOT = "__not__"
 
     // Boolean op
     const val AND = "__and__"

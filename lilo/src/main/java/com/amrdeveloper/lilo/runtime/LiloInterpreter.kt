@@ -523,10 +523,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitUnaryExpr(expr: UnaryOpExpr): LiloResult<LiloObject> {
         val operand = visit(expr.operand).valueOr { return it.toFailure() }
-
         val methodName = when (expr.op) {
             UnaryOp.PLUS -> LiloMagicMethod.POS
             UnaryOp.MINUS -> LiloMagicMethod.NEG
+            UnaryOp.NOT -> LiloMagicMethod.NOT
         }
 
         val method = operand.getAttr(methodName)

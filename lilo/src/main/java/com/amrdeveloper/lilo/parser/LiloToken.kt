@@ -34,6 +34,7 @@ enum class LiloTokenKind {
 
     AND_KEYWORD,
     OR_KEYWORD,
+    NOT_KEYWORD,
 
     PLUS,                // +
     MINUS,               // -
@@ -110,6 +111,7 @@ val liloKeywordsMap = mapOf(
 
     "and" to LiloTokenKind.AND_KEYWORD,
     "or" to LiloTokenKind.OR_KEYWORD,
+    "not" to LiloTokenKind.NOT_KEYWORD,
 
     "True" to LiloTokenKind.TRUE_KEYWORD,
     "False" to LiloTokenKind.FALSE_KEYWORD,

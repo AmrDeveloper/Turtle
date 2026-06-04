@@ -13,6 +13,7 @@ val liloBoolType = LiloType(name = "bool", bases = listOf(LiloBaseType.LILO_OBJE
 
     it.setAttr(name = LiloMagicMethod.AND, value = BoolAnd)
     it.setAttr(name = LiloMagicMethod.OR, value = BoolOr)
+    it.setAttr(name = LiloMagicMethod.NOT, value = BoolNot)
 }
 
 private object BoolBool : LiloObject(liloFunctionType), LiloCallable {
@@ -51,6 +52,16 @@ private object BoolOr : LiloObject(liloFunctionType), LiloCallable {
         val self = args[0] as LiloBool
         val other = args[1] as LiloBool
         return LiloResult.Success(data = LiloBool(value = self.value.or(other.value)))
+    }
+}
+
+private object BoolNot : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val self = args[0] as LiloBool
+        return LiloResult.Success(data = LiloBool(value = self.value.not()))
     }
 }
 

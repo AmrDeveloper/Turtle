@@ -26,6 +26,7 @@ class LiloComplexTest {
             "print(complex())",
             "print(complex(1))",
             "print(complex(1, 2))",
+            "print(complex(1, 2) + complex(2, 1))",
         )
 
         val expectedOutput = listOf(
@@ -33,6 +34,7 @@ class LiloComplexTest {
             "(0.0+0.0j)",
             "(1.0+0.0j)",
             "(1.0+2.0j)",
+            "(3.0+3.0j)",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

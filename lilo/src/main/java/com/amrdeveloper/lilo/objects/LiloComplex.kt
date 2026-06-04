@@ -11,6 +11,9 @@ val liloComplexType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
 
         it.setAttr(name = LiloMagicMethod.INIT, value = ComplexInit)
+
+        // Binary
+        it.setAttr(name = LiloMagicMethod.ADD, value = ComplexAdd)
     }
 
 private object ComplexInit : LiloObject(liloFunctionType), LiloCallable {
@@ -45,6 +48,25 @@ private object ComplexInit : LiloObject(liloFunctionType), LiloCallable {
         }
 
         return LiloResult.Success(data = LiloComplex(real, imag))
+    }
+}
+
+private object ComplexAdd : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 arguments, got ${args.size}"))
+        }
+
+        if (args[0] !is LiloComplex || args[1] !is LiloComplex) {
+            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 complex arguments, got ${args[0].type} and ${args[1].type}"))
+        }
+
+        val lhs = args[0] as LiloComplex
+        val rhs = args[1] as LiloComplex
+        return LiloResult.Success(data = LiloComplex(lhs.real + rhs.real, lhs.imag + rhs.imag))
     }
 }
 

@@ -7,6 +7,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LiloFileDao : BaseDao<LiloFileEntity> {
 
-    @Query(value = "SELECT * FROM lilo_package")
-    fun getLiloFiles() : Flow<List<LiloFileEntity>>
+    @Query(value = """
+        SELECT * FROM lilo_package
+        WHERE ((:keyword IS NULL) OR (:keyword = ' ')
+            OR (name LIKE '%' || :keyword || '%') 
+            OR (sourceCode LIKE '%' || :keyword || '%'))
+    """)
+    fun getLiloFiles(
+        keyword: String? = null,
+    ) : Flow<List<LiloFileEntity>>
 }

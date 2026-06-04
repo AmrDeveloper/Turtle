@@ -6,5 +6,7 @@ class LiloFileLocalDataSource internal constructor(
     private val fileDao: LiloFileDao,
 ) : LiloFileDataSource {
 
-    override fun getLiloFiles(): Flow<List<LiloFileEntity>> = fileDao.getLiloFiles()
+    override fun getLiloFiles(
+        keyword: String?
+    ): Flow<List<LiloFileEntity>> = fileDao.getLiloFiles(keyword)
 }

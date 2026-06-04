@@ -76,6 +76,7 @@ fun TurtleToolbar(
 
             SearchScreen(
                 modifier = Modifier.weight(1f),
+                navController = navController,
                 onSearchExpandedChanged = { isExpanded ->
                     expanded = isExpanded
                 }

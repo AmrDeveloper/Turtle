@@ -498,6 +498,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             BinaryOp.FLOOR_DIV -> LiloMagicMethod.FLOOR_DIV
             BinaryOp.MOD -> LiloMagicMethod.MOD
             BinaryOp.POW -> LiloMagicMethod.POW
+            BinaryOp.RIGHT_SHIFT -> LiloMagicMethod.RIGHT_SHIFT
+            BinaryOp.LEFT_SHIFT -> LiloMagicMethod.LEFT_SHIFT
         }
 
         val method = lhs.getAttr(methodName)

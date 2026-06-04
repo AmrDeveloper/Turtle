@@ -21,7 +21,9 @@ enum class BinaryOp {
     TRUE_DIV,
     FLOOR_DIV,
     MOD,
-    POW
+    POW,
+    RIGHT_SHIFT,
+    LEFT_SHIFT,
 }
 
 data class BinaryOpExpr(val lhs: LiloExpr, val op: BinaryOp, val rhs: LiloExpr) : LiloExpr

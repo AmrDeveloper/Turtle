@@ -241,6 +241,8 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
             BinaryOp.FLOOR_DIV -> "floor($lhs / $rhs)"
             BinaryOp.MOD -> "$lhs % $rhs"
             BinaryOp.POW -> "pow($lhs, $rhs)"
+            BinaryOp.RIGHT_SHIFT -> "$lhs >> $rhs"
+            BinaryOp.LEFT_SHIFT -> "$lhs << $rhs"
         }
         return LiloResult.Success(data = result)
     }
@@ -254,7 +256,6 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
             ComparisonOp.LT -> "<"
             ComparisonOp.LE -> "<="
         }
-
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
         return LiloResult.Success(data = "$lhs $op $rhs")

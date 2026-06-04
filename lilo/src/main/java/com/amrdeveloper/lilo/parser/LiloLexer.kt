@@ -90,6 +90,9 @@ class LiloLexer(val source: String) {
                     if (peek() == '=') {
                         advance()
                         tokens.add(createToken(kind = LiloTokenKind.GE))
+                    } else if (peek() == '>') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.RIGHT_SHIFT))
                     } else {
                         tokens.add(createToken(kind = LiloTokenKind.GT))
                     }
@@ -100,6 +103,9 @@ class LiloLexer(val source: String) {
                     if (peek() == '=') {
                         advance()
                         tokens.add(createToken(kind = LiloTokenKind.LE))
+                    } else if (peek() == '<') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.LEFT_SHIFT))
                     } else {
                         tokens.add(createToken(kind = LiloTokenKind.LT))
                     }

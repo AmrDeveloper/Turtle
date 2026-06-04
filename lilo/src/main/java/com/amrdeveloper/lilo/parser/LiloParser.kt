@@ -697,19 +697,19 @@ class LiloParser(val tokens: List<LiloToken>) {
         while (!isAtEnd() && peek().kind.isEqualityOperator()) {
             val op = advance()
             val rhs = parseComparisonsExpr().valueOr { return it.toFailure() }
-            val binOp = comparisonOpFromTokenKind(op.kind)
-            lhs = ComparisonOpExpr(lhs = lhs, op = binOp, rhs = rhs)
+            val compOp = comparisonOpFromTokenKind(op.kind)
+            lhs = ComparisonOpExpr(lhs = lhs, op = compOp, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
     }
 
     private fun parseComparisonsExpr(): LiloResult<LiloExpr> {
-        var lhs = parseSumExpr().valueOr { return it.toFailure() }
+        var lhs = parseShiftExpr().valueOr { return it.toFailure() }
         while (!isAtEnd() && peek().kind.isComparisonOperator()) {
             val op = advance()
-            val rhs = parseSumExpr().valueOr { return it.toFailure() }
-            val binOp = comparisonOpFromTokenKind(op.kind)
-            lhs = ComparisonOpExpr(lhs = lhs, op = binOp, rhs = rhs)
+            val rhs = parseShiftExpr().valueOr { return it.toFailure() }
+            val compOp = comparisonOpFromTokenKind(op.kind)
+            lhs = ComparisonOpExpr(lhs = lhs, op = compOp, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
     }
@@ -723,8 +723,24 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.SLASH -> BinaryOp.TRUE_DIV
             LiloTokenKind.DOUBLE_SLASH -> BinaryOp.FLOOR_DIV
             LiloTokenKind.PERCENT -> BinaryOp.MOD
+            LiloTokenKind.RIGHT_SHIFT -> BinaryOp.RIGHT_SHIFT
+            LiloTokenKind.LEFT_SHIFT -> BinaryOp.LEFT_SHIFT
             else -> TODO(reason = "Unreachable BinaryOp")
         }
+    }
+
+    // shift_expr:
+    //    | shift_expr '<<' sum
+    //    | shift_expr '>>' sum
+    //    | sum
+    private fun parseShiftExpr() :  LiloResult<LiloExpr> {
+        var lhs = parseSumExpr().valueOr { return it.toFailure() }
+        while (!isAtEnd() && peek().kind.isShiftOperator()) {
+            val op = binaryOpFromTokenKind(advance().kind)
+            val rhs = parseSumExpr().valueOr { return it.toFailure() }
+            lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
+        }
+        return LiloResult.Success(data = lhs)
     }
 
     // sum:

@@ -44,6 +44,9 @@ enum class LiloTokenKind {
     DOUBLE_STAR,         // **
     DOUBLE_SLASH,        // //
 
+    RIGHT_SHIFT,         // >>
+    LEFT_SHIFT,          // <<
+
     L_PAR,               // (
     R_PAR,               // )
     L_SQB,               // [
@@ -137,6 +140,11 @@ val liloOneCharTokenMap = mapOf(
     ',' to LiloTokenKind.COMMA,
     ':' to LiloTokenKind.COLON,
     ';' to LiloTokenKind.SEMI,
+)
+
+fun LiloTokenKind.isShiftOperator() = this in listOf(
+    LiloTokenKind.RIGHT_SHIFT,
+    LiloTokenKind.LEFT_SHIFT,
 )
 
 fun LiloTokenKind.isSumOperator() = this in listOf(

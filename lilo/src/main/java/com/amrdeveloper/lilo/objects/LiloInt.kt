@@ -20,6 +20,8 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     it.setAttr(name = LiloMagicMethod.FLOOR_DIV, value = IntFloorDiv)
     it.setAttr(name = LiloMagicMethod.MOD, value = IntMod)
     it.setAttr(name = LiloMagicMethod.POW, value = IntPow)
+    it.setAttr(name = LiloMagicMethod.RIGHT_SHIFT, value = IntRightShift)
+    it.setAttr(name = LiloMagicMethod.LEFT_SHIFT, value = IntLeftShift)
 
     // Comparisons
     it.setAttr(name = LiloMagicMethod.EQ, value = IntEq)
@@ -164,6 +166,35 @@ private object IntPow : LiloObject(liloFunctionType), LiloCallable {
         return LiloResult.Failure(error = LiloExceptionMessage("Op `%` is unsupported between lhs & rhs"))
     }
 }
+
+private object IntRightShift : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloInt(value = lhs.value shr rhs.value))
+        }
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `>>` is unsupported between lhs & rhs"))
+    }
+}
+
+private object IntLeftShift : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) {
+            return LiloResult.Success(data = LiloInt(value = lhs.value shl rhs.value))
+        }
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `<<` is unsupported between lhs & rhs"))
+    }
+}
+
 private object IntEq : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,

@@ -62,7 +62,7 @@ val liloShippedExamples = listOf(
         """.trimIndent()
     ),
     LiloFileEntity(
-        name = "TurtleStar",
+        name = "TurtleStarWhile",
         sourceCode = """
         import turtle
 
@@ -72,6 +72,17 @@ val liloShippedExamples = listOf(
             t.forward(200.0)
             t.right(144.0)
             i = i + 1
+        """.trimIndent()
+    ),
+    LiloFileEntity(
+        name = "TurtleStarFor",
+        sourceCode = """
+        import turtle
+
+        t = turtle.Turtle()
+        for i in range(5):
+            t.forward(200.0)
+            t.right(144.0)
         """.trimIndent()
     ),
     LiloFileEntity(

@@ -284,4 +284,24 @@ val liloShippedExamples = listOf(
         print(c)
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "GPU_VecAddSugarWithPow",
+        sourceCode = """
+        from gpu import (gpu, Dim)
+                
+        @gpu
+        def vec_add(a, b, out c):
+          i = gpu.block_dim.x * gpu.block_idx.x + gpu.thread_idx.x
+          c[i] = a[i] + b[i] ** 2
+        
+        a = [1.0, 2.0, 3.0, 4.0]
+        b = [5.0, 6.0, 7.0, 8.0]
+        c = [0.0, 0.0, 0.0, 0.0]
+                
+        blocks = Dim(1, 1, 1)
+        threads = Dim(4, 1, 1)
+        vec_add[blocks, threads](a, b, c)
+        print(c)
+        """.trimIndent()
+    ),
 )

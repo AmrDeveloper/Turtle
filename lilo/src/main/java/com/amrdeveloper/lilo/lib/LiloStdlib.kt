@@ -31,17 +31,19 @@ import com.amrdeveloper.lilo.lib.math.liloMathModule
 import com.amrdeveloper.lilo.lib.random.liloRandomModule
 import com.amrdeveloper.lilo.lib.time.liloTimeModule
 import com.amrdeveloper.lilo.lib.turtle.liloTurtleModule
+import com.amrdeveloper.lilo.objects.liloComplexType
 
 fun registerLiloAutoImportedModule() {
     // Builtin types
-    LiloEnvironment.builtins["bool"]   = liloBoolType
-    LiloEnvironment.builtins["int"]    = liloIntType
-    LiloEnvironment.builtins["float"]  = liloFloatType
-    LiloEnvironment.builtins["str"]    = liloStrType
-    LiloEnvironment.builtins["tuple"]  = liloTupleType
-    LiloEnvironment.builtins["list"]   = liloListType
-    LiloEnvironment.builtins["set"]    = liloSetType
-    LiloEnvironment.builtins["dict"]   = liloDictType
+    LiloEnvironment.builtins["bool"]    = liloBoolType
+    LiloEnvironment.builtins["int"]     = liloIntType
+    LiloEnvironment.builtins["float"]   = liloFloatType
+    LiloEnvironment.builtins["str"]     = liloStrType
+    LiloEnvironment.builtins["tuple"]   = liloTupleType
+    LiloEnvironment.builtins["list"]    = liloListType
+    LiloEnvironment.builtins["set"]     = liloSetType
+    LiloEnvironment.builtins["dict"]    = liloDictType
+    LiloEnvironment.builtins["complex"] = liloComplexType
 
     // Builtin exception types
     LiloEnvironment.builtins["BaseException"]  = liloBaseExceptionType

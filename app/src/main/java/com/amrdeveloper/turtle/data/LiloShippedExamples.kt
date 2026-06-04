@@ -315,4 +315,14 @@ val liloShippedExamples = listOf(
         print(c)
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "GPU_DeviceInfo",
+        sourceCode = """
+        import gpu
+                
+        print("Max Threads Dim: ", gpu.max_threads_dim())
+        print("Max Threads per block: ", gpu.max_threads_per_block())
+        print("Wrap size: ", gpu.wrap_size())
+        """.trimIndent()
+    ),
 )

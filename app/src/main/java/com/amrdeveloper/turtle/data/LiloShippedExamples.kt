@@ -8,6 +8,16 @@ val liloShippedExamples = listOf(
         print("Hello, World")
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "Inspect",
+        sourceCode = """
+        import inspect
+        
+        print(inspect.ismodule(inspect))
+        print(inspect.isfunction(list.append))
+        print(inspect.ismethod([1].append))
+        """.trimIndent()
+    ),
     // Turtle Examples
     LiloFileEntity(
         name = "TurtleSquare",

@@ -32,6 +32,10 @@ object LiloMagicMethod {
     const val SET_ITEM = "__setitem__"
     const val GET_ITEM = "__getitem__"
 
+    // Iterator
+    const val ITER = "__iter__"
+    const val NEXT = "__next__"
+
     const val BOOL = "__bool__"
 
     const val CALL = "__call__"

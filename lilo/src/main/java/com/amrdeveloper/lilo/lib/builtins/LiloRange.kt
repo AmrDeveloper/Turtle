@@ -14,10 +14,32 @@ object LiloRangeFunction : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val stop = args[0]
-        if (stop !is LiloInt) {
-            return LiloResult.Failure(error = LiloExceptionMessage(message = "Expect `Int` as `range` argument"))
+        if (args.size > 3) {
+            return LiloResult.Failure(error = LiloExceptionMessage(message = "TypeError: range expected at most 3 arguments, got ${args.size}"))
         }
-        return LiloResult.Success(data = LiloRange(stop = stop.value))
+
+        var start = 0
+        var stop = 0
+        var step = 1
+        if (args.size == 1) {
+            if (args[0] !is LiloInt) {
+                return LiloResult.Failure(error = LiloExceptionMessage(message = "TypeError: range arg 0 object cannot be interpreted as an integer"))
+            }
+            stop = (args[0] as LiloInt).value
+        } else {
+            for ((index, arg) in args.iterator().withIndex()) {
+                if (arg !is LiloInt) {
+                    return LiloResult.Failure(error = LiloExceptionMessage(message = "TypeError: range arg $index object cannot be interpreted as an integer"))
+                }
+
+                when (index) {
+                    0 -> start = arg.value
+                    1 -> stop = arg.value
+                    2 -> step = arg.value
+                    else -> {}
+                }
+            }
+        }
+        return LiloResult.Success(data = LiloRange(start, stop, step))
     }
 }

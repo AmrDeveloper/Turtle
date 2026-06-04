@@ -78,6 +78,7 @@ import com.amrdeveloper.lilo.lib.registerLiloAutoImportedModule
 import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.liloModuleType
+import com.amrdeveloper.lilo.objects.liloStopIteratorType
 import kotlin.collections.set
 
 class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
@@ -212,8 +213,35 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitForStmt(stmt: ForStmt): LiloResult<Unit> {
-        // TODO: For Statement Not yet implemented
-        return runtimeException("For statement Not yet implemented")
+        val target = (stmt.target as NameExpr).value.lexeme!!
+        val iter = visit(expr = stmt.iter).valueOr { return it.toFailure() }
+        val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
+        if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
+            return runtimeException("TypeError: '${iter.type}' object is not iterable")
+        }
+
+        val iterator =
+            iteratorFunc.invoke(interpreter = this, args = listOf(iter)).valueOr { return it.toFailure() }
+        val nextFunc = iterator.getAttr(name = LiloMagicMethod.NEXT)
+        if (nextFunc == null || nextFunc !is LiloCallable) {
+            return runtimeException("TypeError: '${iterator.type}' object has no `__next__`")
+        }
+
+        while (true) {
+            try {
+                val value = nextFunc.invoke(interpreter = this, args = listOf(iterator))
+                    .valueOr { return it.toFailure() }
+                environment.set(target, value)
+                visit(stmt = stmt.body).valueOr { return it.toFailure() }
+            } catch (e: LiloRaise) {
+                if (liloStopIteratorType == e.exception || liloStopIteratorType == e.exception.type) {
+                    break
+                }
+                throw e
+            }
+        }
+
+        return LiloResult.Success(data = Unit)
     }
 
     override fun visitWhileStmt(stmt: WhileStmt): LiloResult<Unit> {

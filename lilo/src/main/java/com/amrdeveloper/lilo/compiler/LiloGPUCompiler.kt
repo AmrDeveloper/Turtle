@@ -52,7 +52,7 @@ import com.amrdeveloper.lilo.parser.LiloTokenKind
 
 class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResult<String>, LiloResult<String>> {
 
-    private val definedVariables = mutableSetOf<String>()
+    private val definedVariables = mutableSetOf("gpu")
 
     override fun visitProgram(program: LiloProgram): LiloResult<String> {
         val builder = StringBuilder()
@@ -134,25 +134,35 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): LiloResult<String> {
-        val target = visit(stmt.target).valueOr { return it.toFailure() }
         val value = visit(stmt.value).valueOr { return it.toFailure() }
-        if (stmt.target is NameExpr && definedVariables.add(target)) {
-            val result = "var $target = $value;"
-            return LiloResult.Success(result)
+        if (stmt.target is NameExpr ) {
+            val targetName = stmt.target.value.lexeme!!
+            if (definedVariables.contains(targetName)) {
+                return LiloResult.Success(data = "$targetName = $value;")
+            }
+            definedVariables.add(targetName)
+            return LiloResult.Success(data = "var $targetName = $value;")
         }
-        val result = "$target = $value;"
-        return LiloResult.Success(result)
+
+        // Target is not NameExpr, can be `vec[i]` or any other expr else
+        val target = visit(expr = stmt.target).valueOr { return it.toFailure() }
+        return LiloResult.Success(data = "$target = $value;")
     }
 
     override fun visitAssignStmt(stmt: AssignStmt): LiloResult<String> {
-        val target = visit(stmt.target).valueOr { return it.toFailure() }
         val value = visit(stmt.value).valueOr { return it.toFailure() }
-        if (stmt.target is NameExpr && definedVariables.add(target)) {
-            val result = "var $target = $value;"
-            return LiloResult.Success(result)
+        if (stmt.target is NameExpr) {
+            val targetName = stmt.target.value.lexeme!!
+            if (definedVariables.contains(targetName)) {
+                return LiloResult.Success(data = "$targetName = $value;")
+            }
+            definedVariables.add(targetName)
+            return LiloResult.Success(data = "var $targetName = $value;")
         }
-        val result = "$target = $value;"
-        return LiloResult.Success(result)
+
+        // Target is not NameExpr, can be `vec[i]` or any other expr else
+        val target = visit(expr = stmt.target).valueOr { return it.toFailure() }
+        return LiloResult.Success(data = "$target = $value;")
     }
 
     override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<String> {
@@ -189,9 +199,9 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitGetExpr(expr: GetExpr): LiloResult<String> {
-        val obj = visit(expr.obj).valueOr { return it.toFailure() }
+        val exprObj = expr.obj
         val attr = (expr.name).value.lexeme
-        if (obj == "gpu") {
+        if (exprObj is NameExpr && exprObj.value.lexeme == "gpu") {
             when (attr) {
                 "block_dim" -> return LiloResult.Success("block_dim")
                 "block_idx" -> return LiloResult.Success("block_idx")
@@ -199,6 +209,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
                 "global_id" -> return LiloResult.Success("global_id")
             }
         }
+        val obj = visit(expr.obj).valueOr { return it.toFailure() }
         return LiloResult.Success("$obj.$attr")
     }
 

@@ -284,7 +284,11 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitNameExpr(expr: NameExpr): LiloResult<String> {
-        return LiloResult.Success(data = expr.value.lexeme!!)
+        val name = expr.value.lexeme!!
+        if (!definedVariables.contains(name)) {
+            return LiloResult.Failure(error = "Name '${name}' is not defined")
+        }
+        return LiloResult.Success(data = name)
     }
 
     override fun visitStrExpr(expr: StrExpr): LiloResult<String> {

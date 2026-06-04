@@ -14,6 +14,10 @@ val liloComplexType =
 
         // Binary
         it.setAttr(name = LiloMagicMethod.ADD, value = ComplexAdd)
+        it.setAttr(name = LiloMagicMethod.SUB, value = ComplexSub)
+
+        it.setAttr(name = "real", value = ComplexReal)
+        it.setAttr(name = "imag", value = ComplexImag)
     }
 
 private object ComplexInit : LiloObject(liloFunctionType), LiloCallable {
@@ -67,6 +71,51 @@ private object ComplexAdd : LiloObject(liloFunctionType), LiloCallable {
         val lhs = args[0] as LiloComplex
         val rhs = args[1] as LiloComplex
         return LiloResult.Success(data = LiloComplex(lhs.real + rhs.real, lhs.imag + rhs.imag))
+    }
+}
+
+private object ComplexSub : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 arguments, got ${args.size}"))
+        }
+
+        if (args[0] !is LiloComplex || args[1] !is LiloComplex) {
+            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 complex arguments, got ${args[0].type} and ${args[1].type}"))
+        }
+
+        val lhs = args[0] as LiloComplex
+        val rhs = args[1] as LiloComplex
+        return LiloResult.Success(data = LiloComplex(lhs.real - rhs.real, lhs.imag - rhs.imag))
+    }
+}
+
+private object ComplexReal : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1 || args[0] !is LiloComplex) {
+            return LiloResult.Failure(error = LiloExceptionMessage("complex real expects 0 arguments, got ${args.size - 1}"))
+        }
+        val lhs = args[0] as LiloComplex
+        return LiloResult.Success(data = LiloFloat(value = lhs.real))
+    }
+}
+
+private object ComplexImag : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1 || args[0] !is LiloComplex) {
+            return LiloResult.Failure(error = LiloExceptionMessage("complex real expects 0 arguments, got ${args.size - 1}"))
+        }
+        val lhs = args[0] as LiloComplex
+        return LiloResult.Success(data = LiloFloat(value = lhs.imag))
     }
 }
 

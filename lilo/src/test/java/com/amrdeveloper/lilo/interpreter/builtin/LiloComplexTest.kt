@@ -27,6 +27,7 @@ class LiloComplexTest {
             "print(complex(1))",
             "print(complex(1, 2))",
             "print(complex(1, 2) + complex(2, 1))",
+            "print(complex(3, 1) - complex(2, 0))",
         )
 
         val expectedOutput = listOf(
@@ -35,6 +36,46 @@ class LiloComplexTest {
             "(1.0+0.0j)",
             "(1.0+2.0j)",
             "(3.0+3.0j)",
+            "(1.0+1.0j)",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine = liloMachine)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloResult.Failure<LiloExceptionMessage>>().error.message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assert(value = liloMachine.getHost().buffer.toString() == expectedOutput[index]) {
+                print((liloMachine.getHost().buffer.toString()))
+            }
+        }
+    }
+
+    @Test
+    fun complex_methods_test() {
+        val sourceCodes = mutableListOf(
+            "print(complex(1, 2).real())",
+            "print(complex(2, 1).imag())",
+        )
+
+        val expectedOutput = listOf(
+            "1.0",
+            "1.0",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

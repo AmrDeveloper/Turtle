@@ -20,8 +20,14 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     it.setAttr(name = LiloMagicMethod.FLOOR_DIV, value = IntFloorDiv)
     it.setAttr(name = LiloMagicMethod.MOD, value = IntMod)
     it.setAttr(name = LiloMagicMethod.POW, value = IntPow)
+
+    // Shifts
     it.setAttr(name = LiloMagicMethod.RIGHT_SHIFT, value = IntRightShift)
     it.setAttr(name = LiloMagicMethod.LEFT_SHIFT, value = IntLeftShift)
+
+    it.setAttr(name = LiloMagicMethod.BIT_AND, value = IntBitAnd)
+    it.setAttr(name = LiloMagicMethod.BIT_OR, value = IntBitOr)
+    it.setAttr(name = LiloMagicMethod.BIT_XOR, value = IntBitXor)
 
     // Comparisons
     it.setAttr(name = LiloMagicMethod.EQ, value = IntEq)
@@ -192,6 +198,42 @@ private object IntLeftShift : LiloObject(liloFunctionType), LiloCallable {
             return LiloResult.Success(data = LiloInt(value = lhs.value shl rhs.value))
         }
         return LiloResult.Failure(error = LiloExceptionMessage("Op `<<` is unsupported between lhs & rhs"))
+    }
+}
+
+private object IntBitAnd : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) return LiloResult.Success(data = LiloInt(value = lhs.value and rhs.value))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `&` is unsupported between lhs & rhs"))
+    }
+}
+
+private object IntBitOr : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) return LiloResult.Success(data = LiloInt(value = lhs.value or rhs.value))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `|` is unsupported between lhs & rhs"))
+    }
+}
+
+private object IntBitXor : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloInt && rhs is LiloInt) return LiloResult.Success(data = LiloInt(value = lhs.value xor rhs.value))
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `^` is unsupported between lhs & rhs"))
     }
 }
 

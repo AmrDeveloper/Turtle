@@ -704,10 +704,10 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun parseComparisonsExpr(): LiloResult<LiloExpr> {
-        var lhs = parseShiftExpr().valueOr { return it.toFailure() }
+        var lhs = parseBitwiseOrExpr().valueOr { return it.toFailure() }
         while (!isAtEnd() && peek().kind.isComparisonOperator()) {
             val op = advance()
-            val rhs = parseShiftExpr().valueOr { return it.toFailure() }
+            val rhs = parseBitwiseOrExpr().valueOr { return it.toFailure() }
             val compOp = comparisonOpFromTokenKind(op.kind)
             lhs = ComparisonOpExpr(lhs = lhs, op = compOp, rhs = rhs)
         }
@@ -725,8 +725,50 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.PERCENT -> BinaryOp.MOD
             LiloTokenKind.RIGHT_SHIFT -> BinaryOp.RIGHT_SHIFT
             LiloTokenKind.LEFT_SHIFT -> BinaryOp.LEFT_SHIFT
+            LiloTokenKind.AMPER -> BinaryOp.BIT_AND
+            LiloTokenKind.V_BAR -> BinaryOp.BIT_OR
+            LiloTokenKind.CIRCUMFLEX -> BinaryOp.BIT_XOR
             else -> TODO(reason = "Unreachable BinaryOp")
         }
+    }
+
+    // bitwise_or:
+    //    | bitwise_or '|' bitwise_xor
+    //    | bitwise_xor
+    private fun parseBitwiseOrExpr() :  LiloResult<LiloExpr> {
+        var lhs = parseBitwiseXorExpr().valueOr { return it.toFailure() }
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.V_BAR)) {
+            val op = binaryOpFromTokenKind(advance().kind)
+            val rhs = parseBitwiseXorExpr().valueOr { return it.toFailure() }
+            lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
+        }
+        return LiloResult.Success(data = lhs)
+    }
+
+    // bitwise_xor:
+    //    | bitwise_xor '^' bitwise_and
+    //    | bitwise_and
+    private fun parseBitwiseXorExpr() :  LiloResult<LiloExpr> {
+        var lhs = parseBitwiseAndExpr().valueOr { return it.toFailure() }
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.CIRCUMFLEX)) {
+            val op = binaryOpFromTokenKind(advance().kind)
+            val rhs = parseBitwiseAndExpr().valueOr { return it.toFailure() }
+            lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
+        }
+        return LiloResult.Success(data = lhs)
+    }
+
+    // bitwise_and:
+    //    | bitwise_and '&' shift_expr
+    //    | shift_expr
+    private fun parseBitwiseAndExpr() :  LiloResult<LiloExpr> {
+        var lhs = parseShiftExpr().valueOr { return it.toFailure() }
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.AMPER)) {
+            val op = binaryOpFromTokenKind(advance().kind)
+            val rhs = parseShiftExpr().valueOr { return it.toFailure() }
+            lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
+        }
+        return LiloResult.Success(data = lhs)
     }
 
     // shift_expr:

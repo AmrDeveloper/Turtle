@@ -243,6 +243,9 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
             BinaryOp.POW -> "pow($lhs, $rhs)"
             BinaryOp.RIGHT_SHIFT -> "$lhs >> $rhs"
             BinaryOp.LEFT_SHIFT -> "$lhs << $rhs"
+            BinaryOp.BIT_AND -> "$lhs & $rhs"
+            BinaryOp.BIT_OR -> "$lhs | $rhs"
+            BinaryOp.BIT_XOR -> "$lhs ^ $rhs"
         }
         return LiloResult.Success(data = result)
     }

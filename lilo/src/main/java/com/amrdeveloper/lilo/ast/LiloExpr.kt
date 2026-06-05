@@ -24,6 +24,9 @@ enum class BinaryOp {
     POW,
     RIGHT_SHIFT,
     LEFT_SHIFT,
+    BIT_AND,
+    BIT_OR,
+    BIT_XOR,
 }
 
 data class BinaryOpExpr(val lhs: LiloExpr, val op: BinaryOp, val rhs: LiloExpr) : LiloExpr

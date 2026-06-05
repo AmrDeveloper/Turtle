@@ -500,6 +500,9 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             BinaryOp.POW -> LiloMagicMethod.POW
             BinaryOp.RIGHT_SHIFT -> LiloMagicMethod.RIGHT_SHIFT
             BinaryOp.LEFT_SHIFT -> LiloMagicMethod.LEFT_SHIFT
+            BinaryOp.BIT_AND -> LiloMagicMethod.BIT_AND
+            BinaryOp.BIT_OR -> LiloMagicMethod.BIT_OR
+            BinaryOp.BIT_XOR -> LiloMagicMethod.BIT_XOR
         }
 
         val method = lhs.getAttr(methodName)

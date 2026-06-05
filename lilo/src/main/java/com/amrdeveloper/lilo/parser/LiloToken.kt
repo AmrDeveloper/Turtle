@@ -47,6 +47,10 @@ enum class LiloTokenKind {
     RIGHT_SHIFT,         // >>
     LEFT_SHIFT,          // <<
 
+    AMPER,               // &
+    V_BAR,               // |
+    CIRCUMFLEX,          // ^
+
     L_PAR,               // (
     R_PAR,               // )
     L_SQB,               // [
@@ -127,6 +131,10 @@ val liloOneCharTokenMap = mapOf(
     '*' to LiloTokenKind.STAR,
     '/' to LiloTokenKind.SLASH,
     '%' to LiloTokenKind.PERCENT,
+
+    '&' to LiloTokenKind.AMPER,
+    '|' to LiloTokenKind.V_BAR,
+    '^' to LiloTokenKind.CIRCUMFLEX,
 
     '(' to LiloTokenKind.L_PAR,
     ')' to LiloTokenKind.R_PAR,

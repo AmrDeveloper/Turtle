@@ -3,7 +3,7 @@ package com.amrdeveloper.lilo.common
 object LiloMagicMethod {
     const val INIT = "__init__"
 
-    // Binary expr
+    // Arithmetic Op
     const val ADD = "__add__"
     const val SUB = "__sub__"
     const val MUL = "__mul__"
@@ -11,10 +11,17 @@ object LiloMagicMethod {
     const val FLOOR_DIV = "__floordiv__"
     const val MOD = "__mod__"
     const val POW = "__pow__"
+
+    // Shift Op
     const val RIGHT_SHIFT = "__rshift__"
     const val LEFT_SHIFT = "__lshift__"
 
-    // Comparison op
+    // Bitwise Op
+    const val BIT_AND = "__and__"
+    const val BIT_OR = "__or__"
+    const val BIT_XOR = "__xor__"
+
+    // Comparison Op
     const val EQ = "__eq__"
     const val NE = "__ne__"
     const val GT = "__gt__"
@@ -22,7 +29,7 @@ object LiloMagicMethod {
     const val LT = "__lt__"
     const val LE = "__le__"
 
-    // Unary op
+    // Unary Op
     const val POS = "__pos__"
     const val NEG = "__neg__"
     const val NOT = "__not__"
@@ -30,7 +37,7 @@ object LiloMagicMethod {
     const val SET_ITEM = "__setitem__"
     const val GET_ITEM = "__getitem__"
 
-    // Iterator
+    // Iterator Op
     const val ITER = "__iter__"
     const val NEXT = "__next__"
 

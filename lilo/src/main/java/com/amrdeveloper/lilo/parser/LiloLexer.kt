@@ -126,6 +126,10 @@ class LiloLexer(val source: String) {
                     tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
                 }
 
+                '&', '|', '^' -> {
+                    tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
+                }
+
                 '\'', '"' -> {
                     val stringToken = consumeStringLiteral().valueOr { return it }
                     tokens.add(stringToken)

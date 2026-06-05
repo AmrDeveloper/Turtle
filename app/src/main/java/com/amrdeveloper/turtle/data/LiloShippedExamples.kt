@@ -18,6 +18,19 @@ val liloShippedExamples = listOf(
         print(inspect.ismethod([1].append))
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "ListComprehension",
+        sourceCode = """
+        l = [x for x in range(3)]
+        print(l)
+        
+        l2 = [x for x in range(3) for x in range(3)]
+        print(l2)
+        
+        l3 = [x for x in range(3) if x > 0]
+        print(l3)
+        """.trimIndent()
+    ),
     // Turtle Examples
     LiloFileEntity(
         name = "TurtleSquare",

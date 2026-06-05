@@ -18,6 +18,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
+import com.amrdeveloper.lilo.ast.ForIfClause
 import com.amrdeveloper.lilo.ast.ForStmt
 import com.amrdeveloper.lilo.ast.FromImportStmt
 import com.amrdeveloper.lilo.ast.FunctionStmt
@@ -33,6 +34,7 @@ import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloStmt
+import com.amrdeveloper.lilo.ast.ListCompExpr
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NonLocalStmt
 import com.amrdeveloper.lilo.ast.NoneExpr
@@ -949,9 +951,61 @@ class LiloParser(val tokens: List<LiloToken>) {
         advance()
 
         val list = mutableListOf<LiloExpr>()
+        if (!isAtEnd() && isPeek(kind = LiloTokenKind.R_SQB).not()) {
+            list.add(parseExpr().valueOr { return it.toFailure() })
+        }
+
+        // List comprehension
+
+        // listcomp:
+        //   | '[' star_named_expression for_if_clauses ']'
+        // for_if_clause
+        //   'for' star_targets 'in' ~ disjunction ('if' disjunction )*
+        if (isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
+            val forIfClauses = mutableListOf<ForIfClause>()
+            while (!isAtEnd() && isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
+                // Advance 'for'
+                advance()
+
+                // Parse for target
+                val target = parseExpr().valueOr { return it.toFailure() }
+
+                expectAndConsume(
+                    kind = LiloTokenKind.IN_KEYWORD,
+                    message = "expected 'in' after `for` target"
+                ).valueOr { return it.toFailure() }
+
+                // Parse for iterator
+                val iter = parseDisjunctionExpr().valueOr { return it.toFailure() }
+
+                // If <condition>
+                var filter : LiloExpr? = null
+                if (match(kind = LiloTokenKind.IF_KEYWORD)) {
+                    filter = parseDisjunctionExpr().valueOr { return it.toFailure() }
+                }
+
+                val forIfClause = ForIfClause(target, iter, filter)
+                forIfClauses.add(forIfClause)
+            }
+
+            expectAndConsume(
+                kind = LiloTokenKind.R_SQB,
+                message = "expected ']' at end of list"
+            ).valueOr { return it.toFailure() }
+
+            val listCmp = ListCompExpr(elt = list[0], generator = forIfClauses)
+            return LiloResult.Success(data = listCmp)
+        }
+
+        if (isPeek(kind = LiloTokenKind.R_SQB).not()) {
+            expectAndConsume(
+                kind = LiloTokenKind.COMMA,
+                message = "expected ',' between list elements"
+            ).valueOr { return it.toFailure() }
+        }
+
         loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_SQB).not()) {
-            val expr = parseExpr().valueOr { return it.toFailure() }
-            list.add(expr)
+            list.add(parseExpr().valueOr { return it.toFailure() })
             consumeCommaOr { break@loop }
         }
 

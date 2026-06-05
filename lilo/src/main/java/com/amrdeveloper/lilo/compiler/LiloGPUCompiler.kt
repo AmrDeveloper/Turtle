@@ -31,6 +31,7 @@ import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
+import com.amrdeveloper.lilo.ast.ListCompExpr
 import com.amrdeveloper.lilo.ast.ListExpr
 import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.NonLocalStmt
@@ -285,6 +286,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
 
     override fun visitListExpr(expr: ListExpr): LiloResult<String> {
         return LiloResult.Failure(error = "List NYI on GPU")
+    }
+
+    override fun visitListCompExpr(expr: ListCompExpr): LiloResult<String> {
+        return LiloResult.Failure(error = "ListComp NYI on GPU")
     }
 
     override fun visitSetExpr(expr: SetExpr): LiloResult<String> {

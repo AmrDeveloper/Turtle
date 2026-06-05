@@ -59,6 +59,14 @@ data class UnaryOpExpr(val op: UnaryOp, val operand: LiloExpr) : LiloExpr
 
 data class GroupExpr(val expr: LiloExpr) : LiloExpr
 
+data class ForIfClause(
+    val target: LiloExpr,
+    val iter: LiloExpr,
+    val filter: LiloExpr? = null,
+)
+
+data class ListCompExpr(val elt: LiloExpr, val generator: List<ForIfClause>) : LiloExpr
+
 data class ListExpr(val values: List<LiloExpr>) : LiloExpr
 
 data class SetExpr(val values: List<LiloExpr>) : LiloExpr

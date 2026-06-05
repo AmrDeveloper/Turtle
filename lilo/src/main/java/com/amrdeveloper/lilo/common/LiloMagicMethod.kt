@@ -27,10 +27,6 @@ object LiloMagicMethod {
     const val NEG = "__neg__"
     const val NOT = "__not__"
 
-    // Boolean op
-    const val AND = "__and__"
-    const val OR = "__or__"
-
     const val SET_ITEM = "__setitem__"
     const val GET_ITEM = "__getitem__"
 

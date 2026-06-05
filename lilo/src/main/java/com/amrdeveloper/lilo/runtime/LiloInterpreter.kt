@@ -535,20 +535,22 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitBoolOpExpr(expr: BoolOpExpr): LiloResult<LiloObject> {
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
-        val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
+        val isLhsTrue = isLiloObjectEvalToTrue(obj = lhs).valueOr { return it.toFailure() }
 
-        val methodName = when (expr.op) {
-            BoolOp.AND -> LiloMagicMethod.AND
-            BoolOp.OR -> LiloMagicMethod.OR
+        // Short-circuit evaluation
+        val isOrOperand = expr.op == BoolOp.OR
+        if (isOrOperand && isLhsTrue) return LiloResult.Success(data = lhs)
+        if (!isOrOperand && !isLhsTrue) return LiloResult.Success(data = lhs)
+
+        val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
+        val isRhsTrue = isLiloObjectEvalToTrue(obj = rhs).valueOr { return it.toFailure() }
+
+        val result = when (expr.op) {
+            BoolOp.AND -> isLhsTrue.and(other = isRhsTrue)
+            BoolOp.OR -> isLhsTrue.or(other = isRhsTrue)
         }
 
-        val method = lhs.getAttr(methodName)
-            ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
-
-        if (method !is LiloCallable)
-            return runtimeException("Op `${lhs.type}` has no $methodName attribute")
-
-        return method.invoke(interpreter = this, args = listOf(lhs, rhs))
+        return LiloResult.Success(data = LiloBool(value = result))
     }
 
     override fun visitUnaryExpr(expr: UnaryOpExpr): LiloResult<LiloObject> {

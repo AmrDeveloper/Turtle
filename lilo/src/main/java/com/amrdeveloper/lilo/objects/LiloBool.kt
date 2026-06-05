@@ -10,9 +10,6 @@ val liloBoolType = LiloType(name = "bool", bases = listOf(LiloBaseType.LILO_OBJE
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
     it.setAttr(name = LiloMagicMethod.BOOL, value = BoolBool)
-
-    it.setAttr(name = LiloMagicMethod.AND, value = BoolAnd)
-    it.setAttr(name = LiloMagicMethod.OR, value = BoolOr)
     it.setAttr(name = LiloMagicMethod.NOT, value = BoolNot)
 }
 

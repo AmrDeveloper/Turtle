@@ -19,23 +19,28 @@ height="80">](https://play.google.com/store/apps/details?id=com.amrdeveloper.tur
 ## Screenshots
 
 <p align="center">
-  <img src="media/screenshots/screenshot_code.png" width="23%" height="500">
-  <img src="media/screenshots/screenshot_gpu.png" width="23%" height="500">
-  <img src="media/screenshots/screenshot_preview.png" width="23%" height="500">
-  <img src="media/screenshots/screenshot_terminal.png" width="23%" height="500">
+  <img src="media/screenshots/screenshot_code_2.png" width="30%">
+  <img src="media/screenshots/screenshot_gpu.png" width="30%">
+  <img src="media/screenshots/screenshot_preview_1.png" width="30%">
 </p>
+
+<p align="center">
+  <img src="media/screenshots/screenshot_code_2.png" width="30%">
+  <img src="media/screenshots/screenshot_preview_2.png" width="30%">
+  <img src="media/screenshots/screenshot_terminal.png" width="30%">
+</p>
+
+## GPU Sample
 
 ```py
 from gpu import (
     gpu,
     Dim,
-    LaunchConfig,
-    ConfiguredKernal
 )
 
 @gpu
 def vec_add(a, b, out c):
-  i = gpu.global_id.x
+  i = gpu.block_dim.x * gpu.block_idx.x + gpu.thread_idx.x
   c[i] = a[i] + b[i]
 
 a = [1.0, 2.0, 3.0, 4.0]
@@ -44,9 +49,7 @@ c = [0.0, 0.0, 0.0, 0.0]
 
 blocks = Dim(1, 1, 1)
 threads = Dim(4, 1, 1)
-config = LaunchConfig(blocks, threads)
-kernal = ConfiguredKernal(vec_add, config)
-kernal(a, b, c)
+vec_add[blocks, threads](a, b, c)
 print("Output: ", c)
 ```
 

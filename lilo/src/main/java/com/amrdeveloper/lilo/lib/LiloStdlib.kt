@@ -31,7 +31,14 @@ import com.amrdeveloper.lilo.lib.math.liloMathModule
 import com.amrdeveloper.lilo.lib.random.liloRandomModule
 import com.amrdeveloper.lilo.lib.time.liloTimeModule
 import com.amrdeveloper.lilo.lib.turtle.liloTurtleModule
+import com.amrdeveloper.lilo.objects.liloAttributeErrorType
 import com.amrdeveloper.lilo.objects.liloComplexType
+import com.amrdeveloper.lilo.objects.liloImportErrorType
+import com.amrdeveloper.lilo.objects.liloModuleNotFoundErrorType
+import com.amrdeveloper.lilo.objects.liloNameErrorType
+import com.amrdeveloper.lilo.objects.liloNotImplementedError
+import com.amrdeveloper.lilo.objects.liloSyntaxErrorType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 
 fun registerLiloAutoImportedModule() {
     // Builtin types
@@ -46,11 +53,18 @@ fun registerLiloAutoImportedModule() {
     LiloEnvironment.builtins["complex"] = liloComplexType
 
     // Builtin exception types
-    LiloEnvironment.builtins["BaseException"]  = liloBaseExceptionType
-    LiloEnvironment.builtins["Exception"]      = liloExceptionType
-    LiloEnvironment.builtins["RuntimeError"]   = liloRuntimeErrorType
-    LiloEnvironment.builtins["AssertionError"] = liloAssertionErrorType
-    LiloEnvironment.builtins["StopIteration"]   = liloStopIterationType
+    LiloEnvironment.builtins["BaseException"]           = liloBaseExceptionType
+    LiloEnvironment.builtins["Exception"]               = liloExceptionType
+    LiloEnvironment.builtins["AttributeError"]          = liloAttributeErrorType
+    LiloEnvironment.builtins["SyntaxError"]             = liloSyntaxErrorType
+    LiloEnvironment.builtins["NameError"]               = liloNameErrorType
+    LiloEnvironment.builtins["ImportError"]             = liloImportErrorType
+    LiloEnvironment.builtins["ModuleNotFoundError"]     = liloModuleNotFoundErrorType
+    LiloEnvironment.builtins["TypeError"]               = liloTypeErrorType
+    LiloEnvironment.builtins["RuntimeError"]            = liloRuntimeErrorType
+    LiloEnvironment.builtins["AssertionError"]          = liloAssertionErrorType
+    LiloEnvironment.builtins["StopIteration"]           = liloStopIterationType
+    LiloEnvironment.builtins["NotImplementedError"]     = liloNotImplementedError
 }
 
 fun registerLiloStandardLibrary() {

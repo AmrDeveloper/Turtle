@@ -52,6 +52,30 @@ val liloExceptionType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
+val liloSyntaxErrorType =
+    LiloType(name = "SyntaxError", bases = listOf(liloBaseExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
+val liloAttributeErrorType =
+    LiloType(name = "AttributeError", bases = listOf(liloBaseExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
+val liloNameErrorType =
+    LiloType(name = "NameError", bases = listOf(liloBaseExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
+val liloImportErrorType = LiloType(name = "ImportError", bases = listOf(liloBaseExceptionType)).also {
+    it.type = LiloBaseType.LILO_TYPE_TYPE
+}
+
+val liloModuleNotFoundErrorType =
+    LiloType(name = "ModuleNotFoundError", bases = listOf(liloBaseExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
 val liloTypeErrorType =
     LiloType(name = "TypeError", bases = listOf(liloBaseExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
@@ -67,12 +91,17 @@ val liloAssertionErrorType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
+val liloNotImplementedError =
+    LiloType(name = "NotImplementedError", bases = listOf(liloExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
 val liloStopIterationType =
     LiloType(name = "StopIteration", bases = listOf(liloExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
-fun createLiloException(type: LiloType, vararg args: String) : LiloRaise {
+fun createLiloException(type: LiloType, vararg args: String): LiloRaise {
     val exceptionOjb = LiloObject(type)
     val exceptionArgs = mutableListOf<LiloObject>()
     exceptionArgs.add(LiloStr(value = type.name + ":"))
@@ -82,7 +111,7 @@ fun createLiloException(type: LiloType, vararg args: String) : LiloRaise {
     return LiloRaise(exceptionOjb)
 }
 
-fun createLiloException(type: LiloType, vararg args: LiloObject) : LiloRaise {
+fun createLiloException(type: LiloType, vararg args: LiloObject): LiloRaise {
     val exceptionOjb = LiloObject(type)
     val exceptionArgs = mutableListOf<LiloObject>()
     exceptionArgs.add(LiloStr(value = type.name + ":"))
@@ -92,7 +121,7 @@ fun createLiloException(type: LiloType, vararg args: LiloObject) : LiloRaise {
     return LiloRaise(exceptionOjb)
 }
 
-fun createLiloException(exceptionOjb: LiloObject) : LiloRaise {
+fun createLiloException(exceptionOjb: LiloObject): LiloRaise {
     val exceptionArgs = mutableListOf<LiloObject>()
     exceptionArgs.add(LiloStr(value = exceptionOjb.type?.name + ":"))
     return LiloRaise(exceptionOjb)

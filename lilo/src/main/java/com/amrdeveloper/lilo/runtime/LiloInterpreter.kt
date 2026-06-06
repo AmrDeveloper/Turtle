@@ -80,8 +80,14 @@ import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.isTrue
+import com.amrdeveloper.lilo.objects.liloAttributeErrorType
+import com.amrdeveloper.lilo.objects.liloImportErrorType
+import com.amrdeveloper.lilo.objects.liloModuleNotFoundErrorType
 import com.amrdeveloper.lilo.objects.liloModuleType
+import com.amrdeveloper.lilo.objects.liloNameErrorType
+import com.amrdeveloper.lilo.objects.liloNotImplementedError
 import com.amrdeveloper.lilo.objects.liloStopIterationType
+import com.amrdeveloper.lilo.objects.liloSyntaxErrorType
 import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.objects.str
 import kotlin.collections.set
@@ -123,23 +129,27 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         alias: String? = null,
         shouldDefine: Boolean = false
     ): LiloResult<LiloObject> {
-        var liloModule = LiloEnvironment.builtins.get(names[0])
-            ?: return runtimeException("No module named `${names[0]}`")
-        if (liloModule !is LiloModule) return runtimeException("`${names[0]}` is not module")
+        var liloModule = LiloEnvironment.builtins[names[0]]
+        if (liloModule == null)
+            throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")
+
+        if (liloModule !is LiloModule)
+            throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")
         if (shouldDefine && (names.size == 1 || alias == null)) {
             environment.set(name = alias ?: names[0], value = liloModule)
         }
 
         for (name in names.drop(n = 1)) {
-            liloModule = liloModule.getAttr(name)
-                ?: return runtimeException("No module named `${name}` inside ${names[0]}")
-            if (liloModule !is LiloModule) return runtimeException("`${name}` is not module")
+            liloModule = liloModule?.getAttr(name)
+                ?: throw createLiloException(liloModuleNotFoundErrorType, "No module named `${name}` inside ${names[0]}")
+            if (liloModule !is LiloModule) {
+                throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")
+            }
         }
 
         if (shouldDefine && names.size > 1 && alias != null) {
             environment.set(name = alias, value = liloModule)
         }
-
         return LiloResult.Success(data = liloModule)
     }
 
@@ -150,7 +160,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         if (stmt.symbols != null) {
             for ((symbolName, alias) in stmt.symbols) {
                 val symbol = module.getAttr(symbolName)
-                    ?: return runtimeException("No element named `$symbolName` in module `${stmt.module}`")
+                    ?: throw createLiloException(liloImportErrorType, "cannot import name '$symbolName' from '${stmt.module}'")
                 environment.set(name = alias ?: symbolName, value = symbol)
             }
             return LiloResult.Success(data = Unit)
@@ -179,7 +189,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         for (decorator in stmt.decorators.reversed()) {
             val decoratorObject = visit(expr = decorator).valueOr { return it.toFailure() }
             if (decoratorObject !is LiloCallable) {
-                return runtimeException("Decorator `$decorator` must be callable")
+                throw createLiloException(liloTypeErrorType, "Decorator `$decorator` must be callable")
             }
             function = decoratorObject.invoke(interpreter = this, args = listOf(function))
                 .valueOr { return it.toFailure() }
@@ -195,8 +205,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitNonLocalStmt(stmt: NonLocalStmt): LiloResult<Unit> {
-        // TODO: NonLocal Statement Not yet implemented
-        return runtimeException("NonLocal statement Not yet implemented")
+        // FIXME: NonLocal Statement Not yet implemented
+        throw createLiloException(liloNotImplementedError, "NonLocal Statement Not yet implemented")
     }
 
     override fun visitIfStmt(stmt: IfStmt): LiloResult<Unit> {
@@ -223,14 +233,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val iter = visit(expr = stmt.iter).valueOr { return it.toFailure() }
         val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
         if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
-            return runtimeException("TypeError: '${iter.type}' object is not iterable")
+            throw createLiloException(liloTypeErrorType, "`${iter.type}` is not iterable")
         }
 
         val iterator =
             iteratorFunc.invoke(interpreter = this, args = listOf(iter)).valueOr { return it.toFailure() }
         val nextFunc = iterator.getAttr(name = LiloMagicMethod.NEXT)
         if (nextFunc == null || nextFunc !is LiloCallable) {
-            return runtimeException("TypeError: '${iterator.type}' object has no `__next__`")
+            throw createLiloException(liloTypeErrorType, "${iter.type}' object is not an iterator")
         }
 
         while (true) {
@@ -263,6 +273,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 try {
                     visit(stmt = stmt.body).valueOr { return it.toFailure() }
                 } catch (_: LiloContinueSignal) {
+
                 }
 
                 // Execute the condition for the next run
@@ -303,7 +314,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
                 val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
                 if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
-                    return runtimeException("`${obj}` support item assignment")
+                    throw createLiloException(liloTypeErrorType, "Object $obj doesn't support item assignment")
                 }
 
                 val invokeResult =
@@ -312,7 +323,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 LiloResult.Success(data = Unit)
             }
 
-            else -> runtimeException("Invalid `lvalue` for assign expr")
+            else -> throw createLiloException(liloSyntaxErrorType, "cannot assign to literal here. Maybe you meant '==' instead of '='?")
         }
     }
 
@@ -331,7 +342,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
                 val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
                 if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
-                    return runtimeException("`${obj}` support item assignment")
+                    throw createLiloException(liloTypeErrorType, "Object $obj doesn't support item assignment")
                 }
 
                 val invokeResult =
@@ -340,7 +351,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 LiloResult.Success(data = Unit)
             }
 
-            else -> runtimeException("Invalid `lvalue` for assign expr")
+            else -> throw createLiloException(liloSyntaxErrorType, "cannot assign to literal here. Maybe you meant '==' instead of '='?")
         }
     }
 
@@ -440,7 +451,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             return runtimeObject(obj = typeAttr)
         }
 
-        return runtimeException("Invalid `.` expression on $liloObj.${attribute}")
+        throw createLiloException(liloAttributeErrorType, "'${liloObj.type}' object has no attribute '${attribute}'")
     }
 
     override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {
@@ -459,12 +470,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitGetItemExpr(expr: GetItemExpr): LiloResult<LiloObject> {
         val liloObj = visit(expr.obj).valueOr { return it.toFailure() }
         val slice = visit(expr.index).valueOr { return it.toFailure() }
-
         val liloGetItemMethod = liloObj.getAttr(name = LiloMagicMethod.GET_ITEM)
         if (liloGetItemMethod == null || liloGetItemMethod !is LiloCallable) {
-            return runtimeException("`${liloObj}` object is not subscriptable")
+            throw createLiloException(liloTypeErrorType, "'${liloObj.type}' object is not subscriptable")
         }
-
         return liloGetItemMethod.invoke(interpreter = this, args = listOf(liloObj, slice))
     }
 
@@ -483,7 +492,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         if (callee is LiloType) {
             val initFunction = callee.getAttr(name = LiloMagicMethod.INIT)
             if (initFunction == null || initFunction !is LiloCallable) {
-                return runtimeException("`${callee.type}` has no `__init__` attribute")
+                throw createLiloException(liloTypeErrorType, "`${callee.type}` has no `__init__` attribute")
             }
             return initFunction.invoke(interpreter = this, args = args)
         }
@@ -497,7 +506,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         // In case of function call
         if (callee is LiloCallable) return callee.invoke(interpreter = this, args)
-        return runtimeException("`$callee` is not callable")
+        throw createLiloException(liloTypeErrorType, "`${callee.type}` is not callable")
     }
 
     override fun visitBinaryExpr(expr: BinaryOpExpr): LiloResult<LiloObject> {
@@ -519,10 +528,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         }
 
         val method = lhs.getAttr(methodName)
-            ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
+            ?: throw createLiloException(liloTypeErrorType, "unsupported operand type(s) for ${methodName}: '${lhs.type}' and '${rhs.type}'")
 
         if (method !is LiloCallable)
-            return runtimeException("Op `${lhs.type}` has no $methodName attribute")
+            throw createLiloException(liloTypeErrorType, "$method in `${lhs.type}` must be a callable")
 
         return method.invoke(interpreter = this, args = listOf(lhs, rhs))
     }
@@ -541,10 +550,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         }
 
         val method = lhs.getAttr(methodName)
-            ?: return runtimeException("Method `${methodName}` unsupported between ${lhs.type} & ${rhs.type}")
+            ?: throw createLiloException(liloTypeErrorType, "unsupported operand type(s) for ${methodName}: '${lhs.type}' and '${rhs.type}'")
 
         if (method !is LiloCallable)
-            return runtimeException("Op `${lhs.type}` has no $methodName attribute")
+            throw createLiloException(liloTypeErrorType, "$method in `${lhs.type}` must be a callable")
 
         return method.invoke(interpreter = this, args = listOf(lhs, rhs))
     }
@@ -574,10 +583,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         }
 
         val method = operand.getAttr(methodName)
-            ?: return runtimeException("Method `${methodName}` unsupported from ${operand.type}")
+            ?: throw createLiloException(liloTypeErrorType, "unsupported operand type(s) for ${methodName}: '${operand.type}'")
 
         if (method !is LiloCallable)
-            return runtimeException("Op `${operand.type}` has no $methodName attribute")
+            throw createLiloException(liloTypeErrorType, "$method in `${operand}` must be a callable")
 
         return method.invoke(interpreter = this, args = listOf(operand))
     }
@@ -600,19 +609,21 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val element = (expr.elt as NameExpr).value.lexeme!!
         for (forIfClause in expr.generator) {
             val target = (forIfClause.target as NameExpr).value.lexeme!!
-            if (element != target) return runtimeException("Name '${element}' is not defined")
+            if (element != target) {
+                throw createLiloException(liloNameErrorType, "Name '${element}' is not defined")
+            }
 
             val iter = visit(expr = forIfClause.iter).valueOr { return it.toFailure() }
             val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
             if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
-                return runtimeException("TypeError: '${iter.type}' object is not iterable")
+                throw createLiloException(liloTypeErrorType, "'${iter.type}' object is not iterable")
             }
 
             val iterator =
                 iteratorFunc.invoke(interpreter = this, args = listOf(iter)).valueOr { return it.toFailure() }
             val nextFunc = iterator.getAttr(name = LiloMagicMethod.NEXT)
             if (nextFunc == null || nextFunc !is LiloCallable) {
-                return runtimeException("TypeError: '${iterator.type}' object has no `__next__`")
+                throw createLiloException(liloTypeErrorType, "${iter.type}' object is not an iterator")
             }
 
             val previous = environment
@@ -678,7 +689,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         if (value != null) return runtimeObject(obj = value)
         val builtin = LiloEnvironment.builtins[name]
         if (builtin != null) return runtimeObject(obj = builtin)
-        return runtimeException("Name '${name}' is not defined")
+        throw createLiloException(liloNameErrorType, "Name '${name}' is not defined")
     }
 
     override fun visitStrExpr(expr: StrExpr): LiloResult<LiloObject> {
@@ -712,9 +723,5 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     private fun runtimeObject(obj: LiloObject): LiloResult.Success<LiloObject> {
         return LiloResult.Success(data = obj)
-    }
-
-    private fun runtimeException(message: String): LiloResult.Failure<LiloExceptionMessage> {
-        return LiloResult.Failure(error = LiloExceptionMessage(message))
     }
 }

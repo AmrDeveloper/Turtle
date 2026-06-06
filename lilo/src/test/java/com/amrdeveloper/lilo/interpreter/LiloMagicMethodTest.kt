@@ -372,7 +372,10 @@ class LiloMagicMethodTest {
                 println("Error[RT]: " + interpreterResult.toFailureError<LiloExceptionMessage>().message)
             }
             assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assertTrue(liloMachine.getHost().buffer.toString() == expectedOutput[index])
+            assert(liloMachine.getHost().buffer.toString() == expectedOutput[index]) {
+                println("Interpreter Idx ${index}, expected ${expectedOutput[index]}, got ${liloMachine.getHost().buffer.toString()}")
+            }
+
             liloMachine.getHost().clear()
         }
     }

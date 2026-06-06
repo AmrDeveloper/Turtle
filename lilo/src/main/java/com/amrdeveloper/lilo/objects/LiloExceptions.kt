@@ -4,6 +4,7 @@ import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import com.amrdeveloper.lilo.runtime.LiloRaise
 
 const val EXCEPTION_CAUSE_FIELD = "__cause__"
 
@@ -26,6 +27,11 @@ val liloExceptionType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
+val liloTypeErrorType =
+    LiloType(name = "TypeError", bases = listOf(liloBaseExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
 val liloRuntimeErrorType =
     LiloType(name = "RuntimeError", bases = listOf(liloBaseExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
@@ -40,3 +46,10 @@ val liloStopIteratorType =
     LiloType(name = "StopIterator", bases = listOf(liloExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
+
+fun createLiloException(type: LiloType, vararg args: String) : LiloRaise {
+    val exceptionOjb = LiloObject(type)
+    val argsTuple = LiloTuple(values = args.map { LiloStr(value = it) })
+    exceptionOjb.setAttr(name = "args", value = argsTuple)
+    return LiloRaise(exceptionOjb)
+}

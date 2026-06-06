@@ -78,6 +78,7 @@ import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.lib.registerLiloAutoImportedModule
 import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.isTrue
 import com.amrdeveloper.lilo.objects.liloModuleType
 import com.amrdeveloper.lilo.objects.liloStopIteratorType
 import kotlin.collections.set
@@ -197,7 +198,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitIfStmt(stmt: IfStmt): LiloResult<Unit> {
         for ((expr, body) in stmt.ifs) {
             val condition = visit(expr = expr).valueOr { return it.toFailure() }
-            val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+            val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
             if (isTruth) {
                 visit(stmt = body).valueOr { return it.toFailure() }
                 return LiloResult.Success(data = Unit)
@@ -247,7 +248,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitWhileStmt(stmt: WhileStmt): LiloResult<Unit> {
         val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
-        var isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+        var isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
         if (!isTruth && stmt.elseBlock != null) {
             visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
             return LiloResult.Success(data = Unit)
@@ -262,7 +263,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
                 // Execute the condition for the next run
                 val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
-                isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+                isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
             } while (isTruth)
         } catch (_: LiloBreakSignal) {
             return LiloResult.Success(data = Unit)
@@ -382,7 +383,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitAssertStmt(stmt: AssertStmt): LiloResult<Unit> {
         val condition = visit(expr = stmt.test).valueOr { return it.toFailure() }
-        val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
 
         if (isTruth) return LiloResult.Success(data = Unit)
         val exception = LiloObject(type = liloAssertionErrorType)
@@ -433,7 +434,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {
         val condition = visit(expr.condition).valueOr { return it.toFailure() }
-        val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
         if (isTruth) {
             val thenValueResult = visit(expr.thenValue)
             if (thenValueResult.isFailure()) return thenValueResult.toFailure()
@@ -539,22 +540,18 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitBoolOpExpr(expr: BoolOpExpr): LiloResult<LiloObject> {
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
-        val isLhsTrue = isLiloObjectEvalToTrue(obj = lhs).valueOr { return it.toFailure() }
+        val isLhsTrue = lhs.isTrue(this).valueOr { return it.toFailure() }
 
         // Short-circuit evaluation
         val isOrOperand = expr.op == BoolOp.OR
-        if (isOrOperand && isLhsTrue) return LiloResult.Success(data = lhs)
-        if (!isOrOperand && !isLhsTrue) return LiloResult.Success(data = lhs)
+        // Tautology v Any -> Tautology
+        if (isOrOperand && isLhsTrue) return LiloResult.Success(data = TRUE)
+        // Inconsistent ^ Any -> Inconsistent
+        if (!isOrOperand && !isLhsTrue) return LiloResult.Success(data = FALSE)
 
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
-        val isRhsTrue = isLiloObjectEvalToTrue(obj = rhs).valueOr { return it.toFailure() }
-
-        val result = when (expr.op) {
-            BoolOp.AND -> isLhsTrue.and(other = isRhsTrue)
-            BoolOp.OR -> isLhsTrue.or(other = isRhsTrue)
-        }
-
-        return LiloResult.Success(data = LiloBool(value = result))
+        val isRhsTrue = rhs.isTrue(this).valueOr { return it.toFailure() }
+        return LiloResult.Success(data = LiloBool(value = isRhsTrue))
     }
 
     override fun visitUnaryExpr(expr: UnaryOpExpr): LiloResult<LiloObject> {
@@ -617,7 +614,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                     environment.set(name = target, value = value)
                     if (forIfClause.filter != null) {
                         val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
-                        val isTruth = isLiloObjectEvalToTrue(obj = condition).valueOr { return it.toFailure() }
+                        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
                         if (!isTruth) continue
                     }
 
@@ -700,29 +697,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitNoneExpr(expr: NoneExpr): LiloResult<LiloObject> {
         return runtimeObject(obj = LiloNone)
-    }
-
-    private fun isLiloObjectEvalToTrue(obj: LiloObject): LiloResult<Boolean> {
-        val magicMethod = obj.getAttr(name = LiloMagicMethod.BOOL)
-        // If object has no __bool__, we will assume it has content and can eval to true
-        if (magicMethod == null) {
-            return LiloResult.Success(data = true)
-        }
-
-        // __bool__ must be callable
-        if (magicMethod !is LiloCallable) {
-            return runtimeException("`${obj}` object has no attribute '__bool__'")
-        }
-
-        // Call `obj.__bool__` and make sure result is boolean
-        val callable = magicMethod as LiloCallable
-        val condBool = callable.invoke(interpreter = this, args = listOf(obj))
-            .valueOr { return it.toFailure() }
-        if (condBool !is LiloBool) {
-            return runtimeException("Expects bool from calling `__bool__`")
-        }
-
-        return LiloResult.Success(data = condBool.value)
     }
 
     private fun runtimeObject(obj: LiloObject): LiloResult.Success<LiloObject> {

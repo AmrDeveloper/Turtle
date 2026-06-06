@@ -348,4 +348,36 @@ val liloShippedExamples = listOf(
         print("Wrap size: ", gpu.wrap_size())
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "GPUvsCPU",
+        sourceCode = """
+        from gpu import (gpu, Dim, LaunchConfig, ConfiguredKernal)
+        import time
+                        
+        @gpu
+        def vec_add(a, b, out c):
+          i = gpu.block_dim.x * gpu.block_idx.x + gpu.thread_idx.x
+          c[i] = a[i] + b[i] ** 2
+          
+        def normal_vec_add(a, b, c):
+            size = len(a)
+            for i in range(size):
+                c[i] = a[i] + b[i] ** 2
+        
+        a = [1.0 for x in range(1048576)]
+        b = [1.0 for x in range(1048576)]
+        c = [0.0 for x in range(1048576)]
+                
+        blocks = Dim(4096, 1, 1)
+        threads = Dim(256, 1, 1)
+        
+        start = time.time()
+        vec_add[blocks, threads](a, b, c)
+        print("GPU Time ", time.time() - start)
+        
+        start2 = time.time()
+        normal_vec_add(a, b, c)
+        print("CPU Time ", time.time() - start2)    
+        """.trimIndent()
+    )
 )

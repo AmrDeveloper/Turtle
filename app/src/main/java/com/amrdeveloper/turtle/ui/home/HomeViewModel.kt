@@ -83,9 +83,8 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
             val interpreter = LiloInterpreter(liloMachine = liloMachine)
             val result = interpreter.evaluate(programResult.toSuccessData())
             if (result.isFailure()) {
-                val lexerError = result.toFailureError<LiloExceptionMessage>()
-                val errorMessage = "Exception: ${lexerError.message}"
-                terminalOutput.add(TerminalLine.Error(text = errorMessage))
+                val runtimeError = result.toFailureError<LiloExceptionMessage>()
+                terminalOutput.add(TerminalLine.Error(text = runtimeError.message))
                 return@launch
             }
 

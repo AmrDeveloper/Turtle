@@ -10,7 +10,7 @@ import com.amrdeveloper.lilo.objects.liloIntType
 import com.amrdeveloper.lilo.objects.liloListType
 import com.amrdeveloper.lilo.objects.liloRuntimeErrorType
 import com.amrdeveloper.lilo.objects.liloSetType
-import com.amrdeveloper.lilo.objects.liloStopIteratorType
+import com.amrdeveloper.lilo.objects.liloStopIterationType
 import com.amrdeveloper.lilo.objects.liloStrType
 import com.amrdeveloper.lilo.objects.liloTupleType
 import com.amrdeveloper.lilo.runtime.LiloEnvironment
@@ -50,7 +50,7 @@ fun registerLiloAutoImportedModule() {
     LiloEnvironment.builtins["Exception"]      = liloExceptionType
     LiloEnvironment.builtins["RuntimeError"]   = liloRuntimeErrorType
     LiloEnvironment.builtins["AssertionError"] = liloAssertionErrorType
-    LiloEnvironment.builtins["StopIterator"]   = liloStopIteratorType
+    LiloEnvironment.builtins["StopIteration"]   = liloStopIterationType
 }
 
 fun registerLiloStandardLibrary() {

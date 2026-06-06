@@ -508,15 +508,15 @@ class LiloInterpreterTest {
         val sourceCodes = mutableListOf(
             "raise BaseException",
             "raise Exception",
-            "raise StopIterator",
-            "raise BaseException from StopIterator",
+            "raise StopIteration",
+            "raise BaseException from StopIteration",
         )
 
         val expectedOutput = listOf(
-            "raise BaseException",
-            "raise Exception",
-            "raise StopIterator",
-            "raise BaseException from StopIterator",
+            "BaseException",
+            "Exception",
+            "StopIteration",
+            "BaseException from StopIteration",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
@@ -538,7 +538,9 @@ class LiloInterpreterTest {
             val interpreterResult = interpreter.evaluate(program = liloTree)
             assert(interpreterResult.isFailure())
             val message = interpreterResult.toFailureError<LiloExceptionMessage>().message
-            assertTrue(message == expectedOutput[index])
+            assert(message == expectedOutput[index]) {
+                println("Interpreter Idx ${index}, expected ${expectedOutput[index]}, got $message")
+            }
         }
     }
 

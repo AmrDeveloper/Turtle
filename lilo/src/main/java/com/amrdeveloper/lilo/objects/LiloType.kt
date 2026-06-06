@@ -6,7 +6,7 @@ import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 data class LiloType(
-    val name: String,
+    var name: String,
     val bases: List<LiloType> = mutableListOf()
 ) : LiloObject() {
 

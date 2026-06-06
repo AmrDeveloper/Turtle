@@ -2,6 +2,8 @@ package com.amrdeveloper.lilo.objects
 
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.common.toFailure
+import com.amrdeveloper.lilo.common.valueOr
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.runtime.LiloRaise
@@ -13,6 +15,7 @@ val liloBaseExceptionType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
 
         it.setAttr(name = LiloMagicMethod.INIT, value = BaseExceptionInit)
+        it.setAttr(name = LiloMagicMethod.STR, value = BaseExceptionStr)
     }
 
 private object BaseExceptionInit : LiloObject(liloFunctionType), LiloCallable {
@@ -20,6 +23,28 @@ private object BaseExceptionInit : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> = LiloResult.Success(data = LiloObject(liloBaseExceptionType))
+}
+
+private object BaseExceptionStr : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val self = args[0]
+        val exceptionArgs =
+            self.getAttr("args") ?: return LiloResult.Success(data = LiloStr(value = ""))
+        if (exceptionArgs is LiloTuple) {
+            val argsList = exceptionArgs.values
+            val stringBuilder = StringBuilder()
+            for (arg in argsList) {
+                val string = arg.str(interpreter).valueOr { return it.toFailure() }
+                stringBuilder.append(string)
+            }
+            return LiloResult.Success(data = LiloStr(value = stringBuilder.toString()))
+        }
+        val string = exceptionArgs.str(interpreter).valueOr { return it.toFailure() }
+        return LiloResult.Success(data = LiloStr(value = string))
+    }
 }
 
 val liloExceptionType =
@@ -42,14 +67,33 @@ val liloAssertionErrorType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
-val liloStopIteratorType =
-    LiloType(name = "StopIterator", bases = listOf(liloExceptionType)).also {
+val liloStopIterationType =
+    LiloType(name = "StopIteration", bases = listOf(liloExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
 fun createLiloException(type: LiloType, vararg args: String) : LiloRaise {
     val exceptionOjb = LiloObject(type)
-    val argsTuple = LiloTuple(values = args.map { LiloStr(value = it) })
+    val exceptionArgs = mutableListOf<LiloObject>()
+    exceptionArgs.add(LiloStr(value = type.name + ":"))
+    for (arg in args) exceptionArgs.add(LiloStr(value = arg))
+    val argsTuple = LiloTuple(values = exceptionArgs)
     exceptionOjb.setAttr(name = "args", value = argsTuple)
+    return LiloRaise(exceptionOjb)
+}
+
+fun createLiloException(type: LiloType, vararg args: LiloObject) : LiloRaise {
+    val exceptionOjb = LiloObject(type)
+    val exceptionArgs = mutableListOf<LiloObject>()
+    exceptionArgs.add(LiloStr(value = type.name + ":"))
+    for (arg in args) exceptionArgs.add(arg)
+    val argsTuple = LiloTuple(values = exceptionArgs)
+    exceptionOjb.setAttr(name = "args", value = argsTuple)
+    return LiloRaise(exceptionOjb)
+}
+
+fun createLiloException(exceptionOjb: LiloObject) : LiloRaise {
+    val exceptionArgs = mutableListOf<LiloObject>()
+    exceptionArgs.add(LiloStr(value = exceptionOjb.type?.name + ":"))
     return LiloRaise(exceptionOjb)
 }

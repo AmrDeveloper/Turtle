@@ -42,7 +42,7 @@ fun LiloObject.isTrue(interpreter: LiloInterpreter) : LiloResult<Boolean> {
         val boolRet = boolMethod.invoke(interpreter = interpreter, args = listOf(this))
             .valueOr { return it.toFailure() }
         if (boolRet !is LiloBool) {
-            throw createLiloException(liloTypeErrorType, "TypeError: __bool__ should return bool, returned ${boolRet.type}")
+            throw createLiloException(liloTypeErrorType, "__bool__ should return bool, returned ${boolRet.type}")
         }
         return LiloResult.Success(data = boolRet.value)
     }
@@ -52,10 +52,25 @@ fun LiloObject.isTrue(interpreter: LiloInterpreter) : LiloResult<Boolean> {
         val lenRet = lenMethod.invoke(interpreter = interpreter, args = listOf(this))
             .valueOr { return it.toFailure() }
         if (lenRet !is LiloInt) {
-            throw createLiloException(liloTypeErrorType, "TypeError: '${lenRet.type}' object cannot be interpreted as an integer")
+            throw createLiloException(liloTypeErrorType, "'${lenRet.type}' object cannot be interpreted as an integer")
         }
         return LiloResult.Success(data = lenRet.value > 0)
     }
 
     return LiloResult.Success(data = true)
+}
+
+// Return the string representation of the LiloObject
+fun LiloObject.str(interpreter: LiloInterpreter) : LiloResult<String> {
+    val boolMethod = getAttr(name = LiloMagicMethod.STR)
+    if (boolMethod != null && boolMethod is LiloCallable) {
+        val boolRet = boolMethod.invoke(interpreter = interpreter, args = listOf(this))
+            .valueOr { return it.toFailure() }
+        if (boolRet !is LiloStr) {
+            throw createLiloException(liloTypeErrorType, "__str__ should return str, returned ${boolRet.type}")
+        }
+        return LiloResult.Success(data = boolRet.value)
+    }
+
+    return LiloResult.Success(data = toString())
 }

@@ -25,7 +25,7 @@ private object RangeIterNext : LiloObject(liloFunctionType), LiloCallable {
             self.len--
             return LiloResult.Success(data = LiloInt(value = result))
         }
-        throw LiloRaise(exception = liloStopIteratorType)
+        throw LiloRaise(exception = liloStopIterationType)
     }
 }
 

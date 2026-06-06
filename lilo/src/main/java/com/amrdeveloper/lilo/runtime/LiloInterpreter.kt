@@ -78,9 +78,12 @@ import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.lib.registerLiloAutoImportedModule
 import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.isTrue
 import com.amrdeveloper.lilo.objects.liloModuleType
-import com.amrdeveloper.lilo.objects.liloStopIteratorType
+import com.amrdeveloper.lilo.objects.liloStopIterationType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
+import com.amrdeveloper.lilo.objects.str
 import kotlin.collections.set
 
 class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
@@ -101,7 +104,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         try {
             visitProgram(program).valueOr { return it.toFailure() }
         } catch (e: LiloRaise) {
-            return LiloResult.Failure(error = LiloExceptionMessage(e.toString()))
+            val exceptionMessage = e.exception.str(this).valueOr { return it.toFailure() }
+            return LiloResult.Failure(error = LiloExceptionMessage(exceptionMessage))
         }
         return LiloResult.Success(data = Unit)
     }
@@ -236,7 +240,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 environment.set(target, value)
                 visit(stmt = stmt.body).valueOr { return it.toFailure() }
             } catch (e: LiloRaise) {
-                if (liloStopIteratorType == e.exception || liloStopIteratorType == e.exception.type) {
+                if (liloStopIterationType == e.exception || liloStopIterationType == e.exception.type) {
                     break
                 }
                 throw e
@@ -342,15 +346,18 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<Unit> {
         if (stmt.exc == null) {
-            val exception = LiloObject(type = liloRuntimeErrorType)
-            throw LiloRaise(exception = exception)
+            // FIXME: Implement tracking for Active Exception
+            throw createLiloException(liloRuntimeErrorType, "No active exception to reraise")
         }
 
         val exc = visit(expr = stmt.exc).valueOr { return it.toFailure() }
         val type = exc as? LiloType ?: exc.type
         if (type?.isSubclass(parent = liloBaseExceptionType) == false) {
-            return runtimeException("exceptions must derive from BaseException")
+            throw createLiloException(liloTypeErrorType, "exceptions must derive from BaseException")
         }
+
+        val exceptionArgs = mutableListOf<LiloObject>()
+        exceptionArgs.add(LiloStr(value = type!!.name))
 
         var cause: LiloObject? = null
         stmt.cause?.let {
@@ -358,19 +365,23 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             val isCauseType = cause is LiloType
             val causeType = cause as? LiloType ?: cause.type
             if (causeType?.isSubclass(parent = liloBaseExceptionType) == false) {
-                return runtimeException("exceptions cause must derive from BaseException")
+                throw createLiloException(liloTypeErrorType, "exceptions cause must derive from BaseException")
             }
 
-            if (isCauseType) cause = LiloObject(type = cause)
+            if (isCauseType) {
+                cause = LiloObject(type = cause)
+                exceptionArgs.add(LiloStr(value = " from ${causeType!!.name}"))
+            } else {
+                exceptionArgs.add(LiloStr(value = " from ${causeType!!.type?.name}"))
+            }
         }
 
         var exception = exc
         if (exc is LiloType) exception = LiloObject(type = exc)
-        if (cause != null) {
-            exception.setAttr(name = EXCEPTION_CAUSE_FIELD, value = cause)
-        }
-
-        throw LiloRaise(exception = exception)
+        if (cause != null) exception.setAttr(name = EXCEPTION_CAUSE_FIELD, value = cause)
+        val argsTuple = LiloTuple(values = exceptionArgs)
+        exception.setAttr(name = "args", value = argsTuple)
+        throw createLiloException(exceptionOjb = exception)
     }
 
     override fun visitReturnStmt(stmt: ReturnStmt): LiloResult<Unit> {
@@ -384,14 +395,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitAssertStmt(stmt: AssertStmt): LiloResult<Unit> {
         val condition = visit(expr = stmt.test).valueOr { return it.toFailure() }
         val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
-
         if (isTruth) return LiloResult.Success(data = Unit)
-        val exception = LiloObject(type = liloAssertionErrorType)
+        val args = mutableListOf<LiloObject>()
+        args.add(LiloStr(value = liloAssertionErrorType.name))
         if (stmt.msg != null) {
-            // TODO: Assert with message Not yet implemented
-            return runtimeException("Assert message Not yet implemented")
+            val assertMsg = visit(expr = stmt.msg).valueOr { return it.toFailure() }
+            args.add(assertMsg)
         }
-        throw LiloRaise(exception = exception)
+        throw createLiloException(liloAssertionErrorType, *args.toTypedArray())
     }
 
     override fun visitBreakStmt(stmt: BreakStmt): LiloResult<Unit> {
@@ -620,7 +631,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
                     list.add(value)
                 } catch (e: LiloRaise) {
-                    if (liloStopIteratorType == e.exception || liloStopIteratorType == e.exception.type) {
+                    if (liloStopIterationType == e.exception || liloStopIterationType == e.exception.type) {
                         break
                     }
                     environment = previous

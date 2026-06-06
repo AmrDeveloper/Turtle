@@ -56,7 +56,9 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
     }
 
     fun runLiloCode(source: String) {
+        screenUpdate.longValue = 0
         liloScreen.clearScreen()
+        liloScreen.update()
 
         terminalOutput.add(TerminalLine.Start(text = "liloc main.lilo"))
         viewModelScope.launch(context = Dispatchers.IO) {

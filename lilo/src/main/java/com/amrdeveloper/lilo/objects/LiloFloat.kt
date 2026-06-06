@@ -5,6 +5,7 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import kotlin.math.pow
 
 val liloFloatType = LiloType(name = "float", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
@@ -14,6 +15,7 @@ val liloFloatType = LiloType(name = "float", bases = listOf(LiloBaseType.LILO_OB
     it.setAttr(name = LiloMagicMethod.SUB, value = FloatSub)
     it.setAttr(name = LiloMagicMethod.MUL, value = FloatMul)
     it.setAttr(name = LiloMagicMethod.TRUE_DIV, value = FloatDiv)
+    it.setAttr(name = LiloMagicMethod.POW, value = FloatPow)
 
     // Comparisons
     it.setAttr(name = LiloMagicMethod.GT, value = FloatGT)
@@ -94,6 +96,24 @@ private object FloatDiv : LiloObject(liloFunctionType), LiloCallable {
             }
         }
         return LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
+    }
+}
+
+private object FloatPow : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        val lhs = args[0]
+        val rhs = args[1]
+        if (lhs is LiloFloat && (rhs is LiloInt || rhs is LiloFloat)) {
+            return when (rhs) {
+                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value.pow( rhs.value)))
+                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.pow(rhs.value)))
+                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
+            }
+        }
+        return LiloResult.Failure(error = LiloExceptionMessage("Op `%` is unsupported between lhs & rhs"))
     }
 }
 

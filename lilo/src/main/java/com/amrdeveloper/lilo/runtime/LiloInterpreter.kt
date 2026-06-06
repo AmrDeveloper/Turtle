@@ -408,7 +408,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
         if (isTruth) return LiloResult.Success(data = Unit)
         val args = mutableListOf<LiloObject>()
-        args.add(LiloStr(value = liloAssertionErrorType.name))
         if (stmt.msg != null) {
             val assertMsg = visit(expr = stmt.msg).valueOr { return it.toFailure() }
             args.add(assertMsg)

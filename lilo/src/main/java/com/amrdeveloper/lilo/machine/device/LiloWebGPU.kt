@@ -57,8 +57,7 @@ class LiloWebGPU : LiloAbstractGPU {
         args.forEachIndexed { index, arg ->
             // TODO: This part should be converted to function to calculate type
             val data = when (arg) {
-                is LiloList -> arg.values.map { (it as? LiloFloat)?.value?.toFloat() ?: 0f }
-                    .toFloatArray()
+                is LiloList -> arg.values.map { (it as? LiloFloat)?.value?.toFloat() ?: 0f }.toFloatArray()
                 is LiloFloat -> floatArrayOf(arg.value.toFloat())
                 is LiloInt -> floatArrayOf(arg.value.toFloat())
                 else -> floatArrayOf(0f)
@@ -122,40 +121,42 @@ class LiloWebGPU : LiloAbstractGPU {
 
         // Read back results
         buffers.forEach { (argIndex, buffer, byteSize) ->
-            val readStagingBuffer = device.createBuffer(
-                GPUBufferDescriptor(
-                    size = byteSize,
-                    usage = BufferUsage.MapRead or BufferUsage.CopyDst
-                )
-            )
-
-            device.createCommandEncoder().use { readEncoder ->
-                readEncoder.copyBufferToBuffer(buffer, 0, readStagingBuffer, 0, byteSize)
-                device.queue.submit(arrayOf(readEncoder.finish()))
-            }
-
-            readStagingBuffer.mapAndAwait(MapMode.Read, 0, byteSize)
-
-            val mappedRange = readStagingBuffer.getConstMappedRange(0, byteSize)
-            mappedRange.order(ByteOrder.nativeOrder())
-            val floatBuffer = mappedRange.asFloatBuffer()
-
-            val resultData = FloatArray((byteSize / 4).toInt())
-            floatBuffer.get(resultData)
-
-            readStagingBuffer.unmap()
-
-            // Update LiloList parameter if it has `out` keyword
+            // Sync only out parameter
             if (kernal.definition.parameters[argIndex].isOut) {
-                val liloList = args[argIndex] as LiloList
-                resultData.forEachIndexed { i, value ->
-                    if (i < liloList.values.size) {
-                        liloList.values[i] = LiloFloat(value.toDouble())
+                val readStagingBuffer = device.createBuffer(
+                    GPUBufferDescriptor(
+                        size = byteSize,
+                        usage = BufferUsage.MapRead or BufferUsage.CopyDst
+                    )
+                )
+
+                device.createCommandEncoder().use { readEncoder ->
+                    readEncoder.copyBufferToBuffer(buffer, 0, readStagingBuffer, 0, byteSize)
+                    device.queue.submit(arrayOf(readEncoder.finish()))
+                }
+
+                readStagingBuffer.mapAndAwait(MapMode.Read, 0, byteSize)
+
+                val mappedRange = readStagingBuffer.getConstMappedRange(0, byteSize)
+                mappedRange.order(ByteOrder.nativeOrder())
+                val floatBuffer = mappedRange.asFloatBuffer()
+
+                val resultData = FloatArray((byteSize / 4).toInt())
+                floatBuffer.get(resultData)
+
+                readStagingBuffer.unmap()
+
+                // Update LiloList parameter if it has `out` keyword
+                if (kernal.definition.parameters[argIndex].isOut) {
+                    val liloList = args[argIndex] as LiloList
+                    resultData.forEachIndexed { i, value ->
+                        if (i < liloList.values.size) {
+                            liloList.values[i] = LiloFloat(value.toDouble())
+                        }
                     }
                 }
+                readStagingBuffer.close()
             }
-
-            readStagingBuffer.close()
         }
 
         // Clean up

@@ -605,13 +605,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitListCompExpr(expr: ListCompExpr): LiloResult<LiloObject> {
         val list = mutableListOf<LiloObject>()
-        val element = (expr.elt as NameExpr).value.lexeme!!
         for (forIfClause in expr.generator) {
             val target = (forIfClause.target as NameExpr).value.lexeme!!
-            if (element != target) {
-                throw createLiloException(liloNameErrorType, "Name '${element}' is not defined")
-            }
-
             val iter = visit(expr = forIfClause.iter).valueOr { return it.toFailure() }
             val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
             if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
@@ -639,7 +634,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                         if (!isTruth) continue
                     }
 
-                    list.add(value)
+                    val element = visit(expr.elt).valueOr { return it.toFailure() }
+                    list.add(element)
                 } catch (e: LiloRaise) {
                     if (liloStopIterationType == e.exception || liloStopIterationType == e.exception.type) {
                         break

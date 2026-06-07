@@ -1,6 +1,15 @@
 Change Log
 ==========
 
+Version 2.0.0 *(2026-06-07)*
+-----------------------------
+
+* Implement Subset of python from the Python 3.15 reference.
+* Support GPU Programming.
+* Support up to 8 themes.
+* Add shipped samples and remove saving files to be able to update GPU syntax easily.
+* Update SDK to 37.
+
 Version 1.6.2 *(2024-07-17)*
 -----------------------------
 

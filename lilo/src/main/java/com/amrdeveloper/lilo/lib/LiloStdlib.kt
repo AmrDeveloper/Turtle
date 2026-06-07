@@ -18,6 +18,7 @@ import com.amrdeveloper.lilo.lib.builtins.LiloBinFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloHasAttrFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloHexFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloIdFunction
+import com.amrdeveloper.lilo.lib.builtins.LiloIterFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloLenFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloOctFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloPrintFunction
@@ -88,4 +89,5 @@ fun registerLiloStandardLibrary() {
     LiloEnvironment.builtins["oct"]      = LiloOctFunction
     LiloEnvironment.builtins["hex"]      = LiloHexFunction
     LiloEnvironment.builtins["range"]    = LiloRangeFunction
+    LiloEnvironment.builtins["iter"]     = LiloIterFunction
 }

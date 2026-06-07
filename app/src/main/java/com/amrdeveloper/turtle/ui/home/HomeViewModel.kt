@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewModel() {
 
-    val colorSchema : StateFlow<String> = uiConfig.selectedColorSchema
+    val colorSchema: StateFlow<String> = uiConfig.selectedColorSchema
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
@@ -62,36 +62,41 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
 
         terminalOutput.add(TerminalLine.Start(text = "liloc main.lilo"))
         viewModelScope.launch(context = Dispatchers.IO) {
-            val lexer = LiloLexer(source)
-            val tokensResult = lexer.tokenize()
-            if (tokensResult.isFailure()) {
-                val lexerError =
-                    tokensResult.toFailureError<LiloDiagnostic>()
-                val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
-                terminalOutput.add(TerminalLine.Error(text = errorMessage))
-                return@launch
-            }
+            try {
+                val lexer = LiloLexer(source)
+                val tokensResult = lexer.tokenize()
+                if (tokensResult.isFailure()) {
+                    val lexerError =
+                        tokensResult.toFailureError<LiloDiagnostic>()
+                    val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
+                    terminalOutput.add(TerminalLine.Error(text = errorMessage))
+                    return@launch
+                }
 
-            val parser = LiloParser(tokensResult.toSuccessData())
-            val programResult = parser.parse()
-            if (programResult.isFailure()) {
-                val lexerError =
-                    programResult.toFailureError<LiloDiagnostic>()
-                val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
-                terminalOutput.add(TerminalLine.Error(text = errorMessage))
-                return@launch
-            }
+                val parser = LiloParser(tokensResult.toSuccessData())
+                val programResult = parser.parse()
+                if (programResult.isFailure()) {
+                    val lexerError =
+                        programResult.toFailureError<LiloDiagnostic>()
+                    val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
+                    terminalOutput.add(TerminalLine.Error(text = errorMessage))
+                    return@launch
+                }
 
-            val interpreter = LiloInterpreter(liloMachine = liloMachine)
-            val result = interpreter.evaluate(programResult.toSuccessData())
-            if (result.isFailure()) {
-                val runtimeError = result.toFailureError<LiloExceptionMessage>()
-                terminalOutput.add(TerminalLine.Error(text = runtimeError.message))
-                return@launch
-            }
+                val interpreter = LiloInterpreter(liloMachine = liloMachine)
+                val result = interpreter.evaluate(programResult.toSuccessData())
+                if (result.isFailure()) {
+                    val runtimeError = result.toFailureError<LiloExceptionMessage>()
+                    terminalOutput.add(TerminalLine.Error(text = runtimeError.message))
+                    return@launch
+                }
 
-            terminalOutput.add(TerminalLine.Exit(text = "Exit: 0"))
+                terminalOutput.add(TerminalLine.Exit(text = "Exit: 0"))
+            } catch (e: Exception) {
+                terminalOutput.add(TerminalLine.Exit(text = "Unhandled Exception, Please report to Github"))
+            }
         }
+
     }
 
     fun getLiloMachine() = liloMachine

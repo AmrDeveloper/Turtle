@@ -4,9 +4,11 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.objects.LiloFloat
 import com.amrdeveloper.lilo.objects.LiloModule
 import com.amrdeveloper.lilo.objects.LiloObject
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 
 private const val MODULE_NAME = "time"
 
@@ -19,6 +21,9 @@ object LiloTime : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.isNotEmpty()) {
+            throw createLiloException(liloTypeErrorType, "time expected 0 argument, got ${args.size}")
+        }
         val currentTime = System.currentTimeMillis() / 1000.0
         return LiloResult.Success(data = LiloFloat(value = currentTime))
     }

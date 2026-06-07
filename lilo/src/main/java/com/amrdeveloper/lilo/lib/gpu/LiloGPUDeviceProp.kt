@@ -4,15 +4,21 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.objects.LiloInt
 import com.amrdeveloper.lilo.objects.LiloList
 import com.amrdeveloper.lilo.objects.LiloObject
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 
 object LiloGPUMaxThreadsPerBlock : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.isNotEmpty()) {
+            throw createLiloException(liloTypeErrorType, "`gpu.max_threads_dim` expects 0 argument but got ${args.size}")
+        }
+
         val gpu = interpreter.liloMachine.getGPU()
             ?: return LiloResult.Failure(error = RuntimeException("No GPU found"))
         val maxThreadsPerBlock = gpu.getGPUDevice().getLimits().maxComputeInvocationsPerWorkgroup
@@ -25,6 +31,10 @@ object LiloGPUMaxThreadsDim : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.isNotEmpty()) {
+            throw createLiloException(liloTypeErrorType, "`gpu.max_threads_per_block` expects 0 argument but got ${args.size}")
+        }
+
         val gpu = interpreter.liloMachine.getGPU()
             ?: return LiloResult.Failure(error = RuntimeException("No GPU found"))
         val gpuLimits = gpu.getGPUDevice().getLimits()
@@ -46,6 +56,10 @@ object LiloGPUWrapSize : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.isNotEmpty()) {
+            throw createLiloException(liloTypeErrorType, "`gpu.wrap_size` expects 0 argument but got ${args.size}")
+        }
+
         val gpu = interpreter.liloMachine.getGPU()
             ?: return LiloResult.Failure(error = RuntimeException("No GPU found"))
         val wrapSize = gpu.getGPUDevice().getAdapterInfo().subgroupMaxSize

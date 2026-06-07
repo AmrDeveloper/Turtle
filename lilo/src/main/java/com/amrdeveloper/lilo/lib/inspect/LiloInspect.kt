@@ -4,9 +4,11 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.objects.LiloBool
 import com.amrdeveloper.lilo.objects.LiloModule
 import com.amrdeveloper.lilo.objects.LiloObject
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
 import com.amrdeveloper.lilo.objects.liloMethodType
 import com.amrdeveloper.lilo.objects.liloModuleType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
@@ -25,10 +27,9 @@ object LiloIsModule : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 1) {
-            return LiloResult.Failure(error = RuntimeException("`inspect.ismodule` one argument"))
+            throw createLiloException(liloTypeErrorType, "`inspect.ismodule` one argument")
         }
-        val isModule = args[0].type == liloModuleType
-        return LiloResult.Success(data = LiloBool(value = isModule))
+        return LiloResult.Success(data = LiloBool(value = args[0].type == liloModuleType))
     }
 }
 
@@ -38,10 +39,9 @@ object LiloIsMethod : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 1) {
-            return LiloResult.Failure(error = RuntimeException("`inspect.ismethod` one argument"))
+            throw createLiloException(liloTypeErrorType, "`inspect.ismethod` one argument")
         }
-        val isModule = args[0].type == liloMethodType
-        return LiloResult.Success(data = LiloBool(value = isModule))
+        return LiloResult.Success(data = LiloBool(value = args[0].type == liloMethodType))
     }
 }
 
@@ -51,9 +51,8 @@ object LiloIsFunction : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 1) {
-            return LiloResult.Failure(error = RuntimeException("`inspect.isfunction` one argument"))
+            throw createLiloException(liloTypeErrorType, "`inspect.isfunction` one argument")
         }
-        val isModule = args[0].type == liloFunctionType
-        return LiloResult.Success(data = LiloBool(value = isModule))
+        return LiloResult.Success(data = LiloBool(value = args[0].type == liloFunctionType))
     }
 }

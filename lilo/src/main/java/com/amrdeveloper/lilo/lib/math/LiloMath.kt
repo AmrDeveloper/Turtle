@@ -5,9 +5,11 @@ import com.amrdeveloper.lilo.objects.LiloFloat
 import com.amrdeveloper.lilo.objects.LiloInt
 import com.amrdeveloper.lilo.objects.LiloModule
 import com.amrdeveloper.lilo.objects.LiloObject
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import kotlin.math.PI
 import kotlin.math.ceil
 import kotlin.math.cos
@@ -44,10 +46,15 @@ object LiloMathSin : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.sin` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if (argument !is LiloFloat) {
-            return LiloResult.Failure(error = RuntimeException("`math.sin` expect `float` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.sin` expect `float` type but got `${argument.type.toString()}`")
         }
+
         val sin = sin(argument.value)
         return LiloResult.Success(data = LiloFloat(value = sin))
     }
@@ -58,10 +65,15 @@ object LiloMathCos : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.cos` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if (argument !is LiloFloat) {
-            return LiloResult.Failure(error = RuntimeException("`math.cos` expect `float` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.cos` expect `float` type but got `${argument.type.toString()}`")
         }
+
         val sin = cos(argument.value)
         return LiloResult.Success(data = LiloFloat(value = sin))
     }
@@ -72,9 +84,13 @@ object LiloMathTan : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.tan` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if (argument !is LiloFloat) {
-            return LiloResult.Failure(error = RuntimeException("`math.tan` expect `float` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.tan` expect `float` type but got `${argument.type.toString()}`")
         }
         val sin = tan(argument.value)
         return LiloResult.Success(data = LiloFloat(value = sin))
@@ -87,10 +103,15 @@ object LiloMathTanh : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.tanh` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if (argument !is LiloFloat) {
-            return LiloResult.Failure(error = RuntimeException("`math.tanh` expect `float` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.tanh` expect `float` type but got `${argument.type.toString()}`")
         }
+
         val sin = tanh(argument.value)
         return LiloResult.Success(data = LiloFloat(value = sin))
     }
@@ -101,9 +122,13 @@ object LiloMathSqrt : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.sqrt` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if ((argument !is LiloFloat) && (argument !is LiloInt)) {
-            return LiloResult.Failure(error = RuntimeException("`math.sqrt` expect `float` or `int` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.sqrt` expect `float` or `int` type but got `${argument.type.toString()}`")
         }
 
         val radians = when (argument) {
@@ -120,9 +145,13 @@ object LiloMathFloor : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.floor` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if ((argument !is LiloFloat) && argument !is LiloInt) {
-            return LiloResult.Failure(error = RuntimeException("`math.floor` expect must be real number, not `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.floor` expect must be real number, not `${argument.type.toString()}`")
         }
 
         if (argument is LiloInt) return LiloResult.Success(data = argument)
@@ -136,9 +165,13 @@ object LiloMathCeil : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.ceil` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if ((argument !is LiloFloat) && argument !is LiloInt) {
-            return LiloResult.Failure(error = RuntimeException("`math.ceil` expect must be real number, not `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.ceil` expect must be real number, not `${argument.type.toString()}`")
         }
 
         if (argument is LiloInt) return LiloResult.Success(data = argument)
@@ -153,9 +186,13 @@ object LiloMathRadians : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`math.radians` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if ((argument !is LiloFloat) && argument !is LiloInt) {
-            return LiloResult.Failure(error = RuntimeException("`math.radians` expect `float` or `int` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`math.radians` expect `float` or `int` type but got `${argument.type.toString()}`")
         }
 
         val radians = when (argument) {

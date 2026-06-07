@@ -6,9 +6,11 @@ import com.amrdeveloper.lilo.objects.LiloInt
 import com.amrdeveloper.lilo.objects.LiloModule
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloTuple
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import kotlin.math.truncate
 
 private const val MODULE_NAME = "colorsys"
@@ -29,7 +31,7 @@ object LiloColorSysHSVToRGB : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 3) {
-            return LiloResult.Failure(error = RuntimeException("`hsv_to_rgb` expect 3 arguments (h, s, v) but got ${args.size}`"))
+            throw createLiloException(liloTypeErrorType, "`hsv_to_rgb` expect 3 arguments (h, s, v) but got ${args.size}`")
         }
 
         val hArg = args[0]
@@ -39,7 +41,7 @@ object LiloColorSysHSVToRGB : LiloObject(liloFunctionType), LiloCallable {
             || (sArg !is LiloInt && sArg !is LiloFloat)
             || (vArg !is LiloInt && vArg !is LiloFloat)
         ) {
-            return LiloResult.Failure(error = RuntimeException("`hsv_to_rgb` expect 3 arguments (h, s, v) with float type"))
+            throw createLiloException(liloTypeErrorType, "`hsv_to_rgb` expect 3 arguments (h, s, v) with float type")
         }
 
         val h = if (hArg is LiloInt) hArg.value.toDouble() else (hArg as LiloFloat).value
@@ -87,6 +89,6 @@ object LiloColorSysHSVToRGB : LiloObject(liloFunctionType), LiloCallable {
                 return LiloResult.Success(data = LiloTuple(values = rgb))
             }
         }
-        return LiloResult.Failure(error = RuntimeException("`hsv_to_rgb` unexpected values"))
+        throw createLiloException(liloTypeErrorType, "`hsv_to_rgb` unexpected values")
     }
 }

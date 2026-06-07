@@ -8,7 +8,9 @@ import com.amrdeveloper.lilo.objects.LiloFunction
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloTuple
 import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
@@ -27,7 +29,7 @@ private object KernalInit : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 1 || args[0] !is LiloFunction) {
-            return LiloResult.Failure(error = RuntimeException("`gpu.Kernal` expects one argument which is function"))
+            throw createLiloException(liloTypeErrorType, "`gpu.Kernal` expects one argument which is function")
         }
         val function = args[0] as LiloFunction
         return LiloResult.Success(data = LiloKernal(definition = function.definition))
@@ -40,13 +42,13 @@ private object KernalConfig : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || args[0] !is LiloKernal || args[1] !is LiloTuple) {
-            return LiloResult.Failure(error = RuntimeException("Kernal `[]` self, (blocks, threads)"))
+            throw createLiloException(liloTypeErrorType, "Kernal `[]` self, (blocks, threads)")
         }
 
         val config = args[1] as LiloTuple
         val values = config.values
         if (values.size != 2 || values[0] !is LiloGPUDim || values[1] !is LiloGPUDim) {
-            return LiloResult.Failure(error = RuntimeException("Kernal config expected (blocks: gpu.Dim, threads: gpu.Dim)"))
+            throw createLiloException(liloTypeErrorType, "Kernal config expected (blocks: gpu.Dim, threads: gpu.Dim)")
         }
 
         val kernal = args[0] as LiloKernal
@@ -60,7 +62,7 @@ private object KernalCall : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        return LiloResult.Failure(error = RuntimeException("`gpu.Kernal` is not callable, use `gpu.launch` or `kernal[config]` to get callable kernal"))
+        throw createLiloException(liloTypeErrorType, "`gpu.Kernal` is not callable, use `gpu.launch` or `kernal[config]` to get callable kernal")
     }
 }
 

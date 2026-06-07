@@ -6,7 +6,9 @@ import com.amrdeveloper.lilo.objects.LiloList
 import com.amrdeveloper.lilo.objects.LiloModule
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloStr
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
@@ -75,10 +77,15 @@ object LiloIsKeyword : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`keyword.iskeyword` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if (argument !is LiloStr) {
-            return LiloResult.Failure(error = RuntimeException("`keyword.iskeyword` expect `string` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`keyword.iskeyword` expect `string` type but got `${argument.type.toString()}`")
         }
+
         return LiloResult.Success(data = LiloBool(value = liloKeywords.contains(argument.value)))
     }
 }
@@ -88,10 +95,15 @@ object LiloIsSoftKeyword : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`keyword.issoftkeyword` expected 1 argument, got ${args.size}")
+        }
+
         val argument = args[0]
         if (argument !is LiloStr) {
-            return LiloResult.Failure(error = RuntimeException("`keyword.issoftkeyword` expect `string` type but got `${argument.type.toString()}`"))
+            throw createLiloException(liloTypeErrorType, "`keyword.issoftkeyword` expect `string` type but got `${argument.type.toString()}`")
         }
+
         return LiloResult.Success(data = LiloBool(value = liloSoftKeywords.contains(argument.value)))
     }
 }

@@ -6,8 +6,10 @@ import com.amrdeveloper.lilo.objects.LiloBaseType
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloStr
 import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
 import com.amrdeveloper.lilo.objects.liloMethodType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
@@ -26,7 +28,7 @@ private object GPULaunchConfigInitInit : LiloObject(liloFunctionType), LiloCalla
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2 || args[0] !is LiloGPUDim || args[1] !is LiloGPUDim) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`gpu.LaunchConfig` expects 2 arguments (blocks=gpu.Dim, threads=gpu.Dim)"))
+            throw createLiloException(liloTypeErrorType, "`gpu.LaunchConfig` expects 2 arguments (blocks=gpu.Dim, threads=gpu.Dim)")
         }
         val launchConfig = LiloLaunchConfig(
             blocksDim = args[0] as LiloGPUDim,
@@ -41,6 +43,9 @@ private object GPULaunchConfigStr : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1 || args[0] !is LiloLaunchConfig) {
+            throw createLiloException(liloTypeErrorType, "`gpu.LaunchConfig.str` expects 1 arguments but got ${args.size}")
+        }
         val self = args[0] as LiloLaunchConfig
         val str = "(blocks=${self.blocksDim}, threads=${self.threadsDim})"
         return LiloResult.Success(data = LiloStr(value = str))

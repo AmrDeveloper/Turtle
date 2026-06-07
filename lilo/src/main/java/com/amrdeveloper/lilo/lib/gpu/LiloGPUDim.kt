@@ -11,7 +11,9 @@ import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.LiloBaseType
 import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 
 val liloDimType = LiloType(name = "gpu.Dim", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE))
     .also {
@@ -27,7 +29,7 @@ private object GPUDimInit : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size !in 1..3) {
-            return LiloResult.Failure(error = LiloExceptionMessage("Dim expects 1 to 3 args not ${args.size}"))
+            throw createLiloException(liloTypeErrorType, "Dim expects 1 to 3 args not ${args.size}")
         }
 
         var x = 0
@@ -35,7 +37,7 @@ private object GPUDimInit : LiloObject(liloFunctionType), LiloCallable {
         var z = 0
         for ((index, arg) in args.withIndex()) {
             if (arg !is LiloInt)
-                return LiloResult.Failure(error = LiloExceptionMessage("Dim arg $index expected to be Int but got ${arg.type}"))
+                throw createLiloException(liloTypeErrorType, "Dim arg $index expected to be Int but got ${arg.type}")
             when (index) {
                 0 -> x = arg.value
                 1 -> y = arg.value
@@ -51,6 +53,10 @@ private object GPUDimStr : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "Dim.str expects 1args not ${args.size}")
+        }
+
         val dim = args[0] as LiloGPUDim
         val dim3 = dim.dim
         val str = "(x=${dim3.x}, y=${dim3.y}, z=${dim3.z})"

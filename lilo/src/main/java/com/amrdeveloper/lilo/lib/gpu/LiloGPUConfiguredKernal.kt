@@ -10,7 +10,9 @@ import com.amrdeveloper.lilo.objects.LiloBaseType
 import com.amrdeveloper.lilo.objects.LiloNone
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import kotlinx.coroutines.runBlocking
@@ -29,7 +31,7 @@ private object LiloConfiguredKernalInit : LiloObject(liloFunctionType), LiloCall
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if ((args.size != 2) || (args[0] !is LiloKernal) || (args[1] !is LiloLaunchConfig)) {
-            return LiloResult.Failure(error = RuntimeException("`gpu.Kernal` expects two argument (launch_config, kernal)"))
+            throw createLiloException(liloTypeErrorType, "`gpu.Kernal` expects two argument (launch_config, kernal)")
         }
 
         val kernal = args[0] as LiloKernal

@@ -102,15 +102,15 @@ fun SettingsScreen(
                     }
                 )
 
-                DropdownSettingOption(
-                    text = "Font family",
-                    icon = R.drawable.ic_dark_mode,
-                    defaultSelectedIndex = 0,
-                    options = supportedFontFamiliesMap().keys.toList(),
-                    onOptionSelected = { font ->
-
-                    }
-                )
+                //                DropdownSettingOption(
+                //                    text = "Font family",
+                //                    icon = R.drawable.ic_dark_mode,
+                //                    defaultSelectedIndex = 0,
+                //                    options = supportedFontFamiliesMap().keys.toList(),
+                //                    onOptionSelected = { font ->
+                //
+                //                    }
+                //                )
 
                 SettingSectionDivider(text = "Open source")
 

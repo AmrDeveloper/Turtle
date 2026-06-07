@@ -12,9 +12,15 @@ Influenced by Python, Mojo and CUDA.
 
 # Download
 
-[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-alt="Get it on Google Play"
-height="80">](https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle)
+<p align="center">
+
+<a href='https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle'><img alt='Get it on Google Play' 
+src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' 
+width="auto" height="80"/></a>
+<a href='https://github.com/AmrDeveloper/Turtle/releases'><img alt='Get it on Google Play' 
+src='media/badges/get_on_github.png' 
+width="auto" height="80"/></a>
+</p>
 
 ## Screenshots
 

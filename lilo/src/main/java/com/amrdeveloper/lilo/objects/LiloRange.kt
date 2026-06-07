@@ -16,6 +16,14 @@ private object RangeIter : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "range.__iter__ expected 1 arguments but got ${args.size}")
+        }
+
+        if (args[0] !is LiloRange) {
+            throw createLiloException(liloTypeErrorType, "range.__iter__ expected 1 arguments `range` but got ${args[0].type}")
+        }
+
         val self = args[0] as LiloRange
         val len = (self.stop - self.start) / self.step
         val rangeIter = LiloRangeIter(self.start, self.stop, self.step, len)

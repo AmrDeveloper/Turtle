@@ -8,10 +8,8 @@ import com.amrdeveloper.lilo.objects.LiloStr
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
-import com.amrdeveloper.lilo.objects.liloMethodType
 import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 val liloLaunchConfigType = LiloType(name = "gpu.LaunchConfig", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE))

@@ -3,7 +3,6 @@ package com.amrdeveloper.lilo.objects
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 val liloDictType = LiloType(name = "dict", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
@@ -17,8 +16,15 @@ private object DictLen : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val self = args[0]
-        if (self !is LiloDict) return LiloResult.Failure(error = LiloExceptionMessage("Expected type to be Dict"))
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`dict.__init__` Expect 1 arguments but got `${args.size}`")
+        }
+
+        if (args[0] !is LiloDict) {
+            throw createLiloException(liloTypeErrorType, "`dict.__init__` Expect 1 arguments dict but got `${args[0].type}`")
+        }
+
+        val self = args[0] as LiloDict
         return LiloResult.Success(data = LiloInt(value = self.values.size))
     }
 }

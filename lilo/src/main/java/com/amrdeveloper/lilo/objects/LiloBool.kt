@@ -17,6 +17,9 @@ private object BoolBool : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1 || args[0] !is LiloBool) {
+            throw createLiloException(liloTypeErrorType, "`bool.__bool__` Expect 1 arguments but got `${args.size}`")
+        }
         val self = args[0] as LiloBool
         return LiloResult.Success(data = self)
     }
@@ -27,6 +30,9 @@ private object BoolNot : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1 || args[0] !is LiloBool) {
+            throw createLiloException(liloTypeErrorType, "`bool.__not__` Expect 1 arguments but got `${args.size}`")
+        }
         val self = args[0] as LiloBool
         return LiloResult.Success(data = LiloBool(value = self.value.not()))
     }

@@ -18,6 +18,14 @@ private object RangeIterNext : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "range_iterator.__next__ expected 1 arguments but got ${args.size}")
+        }
+
+        if (args[0] !is LiloRangeIter) {
+            throw createLiloException(liloTypeErrorType, "range_iterator.__next__ expected 1 arguments `range_iterator` but got ${args[0].type}")
+        }
+
         val self = args[0] as LiloRangeIter
         if (self.len > 0) {
             val result = self.start

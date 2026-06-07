@@ -7,7 +7,6 @@ import com.amrdeveloper.lilo.objects.LiloInt
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloStr
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.LiloBaseType
 import com.amrdeveloper.lilo.objects.LiloType

@@ -3,7 +3,6 @@ package com.amrdeveloper.lilo.objects
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 val liloBoolType = LiloType(name = "bool", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
@@ -20,35 +19,6 @@ private object BoolBool : LiloObject(liloFunctionType), LiloCallable {
     ): LiloResult<LiloObject> {
         val self = args[0] as LiloBool
         return LiloResult.Success(data = self)
-    }
-}
-
-private object BoolAnd : LiloObject(liloFunctionType), LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[0] !is LiloBool || args[1] !is LiloBool) {
-            LiloResult.Failure(error = LiloExceptionMessage("Op `AND` expects rhs and lhs to be Bool"))
-        }
-        val self = args[0] as LiloBool
-        val other = args[1] as LiloBool
-        return LiloResult.Success(data = LiloBool(value = self.value.and(other.value)))
-    }
-}
-
-
-private object BoolOr : LiloObject(liloFunctionType), LiloCallable {
-    override fun invoke(
-        interpreter: LiloInterpreter,
-        args: List<LiloObject>
-    ): LiloResult<LiloObject> {
-        if (args.size != 2 || args[0] !is LiloBool || args[1] !is LiloBool) {
-            LiloResult.Failure(error = LiloExceptionMessage("Op `OR` expects rhs and lhs to be Bool"))
-        }
-        val self = args[0] as LiloBool
-        val other = args[1] as LiloBool
-        return LiloResult.Success(data = LiloBool(value = self.value.or(other.value)))
     }
 }
 

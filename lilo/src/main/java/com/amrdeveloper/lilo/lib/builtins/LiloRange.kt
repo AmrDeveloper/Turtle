@@ -4,9 +4,10 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.objects.LiloInt
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloRange
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 object LiloRangeFunction : LiloObject(liloFunctionType), LiloCallable {
@@ -15,7 +16,7 @@ object LiloRangeFunction : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size > 3) {
-            return LiloResult.Failure(error = LiloExceptionMessage(message = "TypeError: range expected at most 3 arguments, got ${args.size}"))
+            throw createLiloException(liloTypeErrorType, "range expected at most 3 arguments, got ${args.size}")
         }
 
         var start = 0
@@ -23,13 +24,13 @@ object LiloRangeFunction : LiloObject(liloFunctionType), LiloCallable {
         var step = 1
         if (args.size == 1) {
             if (args[0] !is LiloInt) {
-                return LiloResult.Failure(error = LiloExceptionMessage(message = "TypeError: range arg 0 object cannot be interpreted as an integer"))
+                throw createLiloException(liloTypeErrorType, "range arg 0 object cannot be interpreted as an integer")
             }
             stop = (args[0] as LiloInt).value
         } else {
             for ((index, arg) in args.iterator().withIndex()) {
                 if (arg !is LiloInt) {
-                    return LiloResult.Failure(error = LiloExceptionMessage(message = "TypeError: range arg $index object cannot be interpreted as an integer"))
+                    throw createLiloException(liloTypeErrorType, "range arg $index object cannot be interpreted as an integer")
                 }
 
                 when (index) {

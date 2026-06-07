@@ -5,10 +5,10 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.objects.LiloObject
-import com.amrdeveloper.lilo.objects.LiloStr
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 object LiloLenFunction : LiloObject(liloFunctionType), LiloCallable {
@@ -19,12 +19,12 @@ object LiloLenFunction : LiloObject(liloFunctionType), LiloCallable {
         val collection = args[0]
         val magicLenFunction = collection.getAttr(name = LiloMagicMethod.LEN)
         if ((magicLenFunction == null) || magicLenFunction !is LiloCallable) {
-            return LiloResult.Failure(error = LiloExceptionMessage(message = "`${collection}` doesn't support __len__"))
+            throw createLiloException(liloTypeErrorType, "`${collection}` doesn't support __len__")
         }
 
         val lengthResult = magicLenFunction.invoke(interpreter, args = listOf(collection))
         if (lengthResult.isFailure()) {
-            return LiloResult.Failure<LiloObject>(error = LiloStr(value = "Len function failed with input `${collection}"))
+            throw createLiloException(liloTypeErrorType, "Len function failed with input `${collection}")
         }
         val len = lengthResult.toSuccessData()
         return LiloResult.Success(data = len)

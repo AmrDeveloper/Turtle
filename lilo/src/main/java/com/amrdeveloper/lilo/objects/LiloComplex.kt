@@ -3,7 +3,6 @@ package com.amrdeveloper.lilo.objects
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 val liloComplexType =
@@ -26,7 +25,7 @@ private object ComplexInit : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size > 2) {
-            return LiloResult.Failure(error = LiloExceptionMessage("complex() takes at most 2 arguments (${args.size} given)"))
+            throw createLiloException(liloTypeErrorType, "`complex.__init__` Expect at most 2 arguments got ${args.size}")
         }
 
         var real = 0.0
@@ -35,7 +34,7 @@ private object ComplexInit : LiloObject(liloFunctionType), LiloCallable {
                 args[0] is LiloInt -> (args[0] as LiloInt).value.toDouble()
                 args[0] is LiloFloat -> (args[0] as LiloFloat).value
                 else -> {
-                    return LiloResult.Failure(error = LiloExceptionMessage("complex() argument 1 must be a number"))
+                    throw createLiloException(liloTypeErrorType, "`complex.__init__` Expect first argument to be number, got ${args[0].type}")
                 }
             }
         }
@@ -46,7 +45,7 @@ private object ComplexInit : LiloObject(liloFunctionType), LiloCallable {
                 args[1] is LiloInt -> (args[1] as LiloInt).value.toDouble()
                 args[1] is LiloFloat -> (args[1] as LiloFloat).value
                 else -> {
-                    return LiloResult.Failure(error = LiloExceptionMessage(" argument 'imag' must be a real number, not ${args[1].type}"))
+                    throw createLiloException(liloTypeErrorType, "`complex.__init__` Expect second argument to be number, got ${args[0].type}")
                 }
             }
         }
@@ -61,11 +60,15 @@ private object ComplexAdd : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2) {
-            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 arguments, got ${args.size}"))
+            throw createLiloException(liloTypeErrorType, "`complex.__add__` Expects 2 arguments got ${args.size}")
         }
 
-        if (args[0] !is LiloComplex || args[1] !is LiloComplex) {
-            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 complex arguments, got ${args[0].type} and ${args[1].type}"))
+        if (args[0] !is LiloComplex) {
+            throw createLiloException(liloTypeErrorType, "`complex.__add__` Expect first argument to be complex, got ${args[1].type}")
+        }
+
+        if (args[1] !is LiloComplex) {
+            throw createLiloException(liloTypeErrorType, "`complex.__add__` Expect second argument to be complex, got ${args[1].type}")
         }
 
         val lhs = args[0] as LiloComplex
@@ -80,11 +83,15 @@ private object ComplexSub : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 2) {
-            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 arguments, got ${args.size}"))
+            throw createLiloException(liloTypeErrorType, "`complex.__sub__` Expects 2 arguments got ${args.size}")
         }
 
-        if (args[0] !is LiloComplex || args[1] !is LiloComplex) {
-            return LiloResult.Failure(error = LiloExceptionMessage("complex add expects 2 complex arguments, got ${args[0].type} and ${args[1].type}"))
+        if (args[0] !is LiloComplex) {
+            throw createLiloException(liloTypeErrorType, "`complex.__sub__` Expect first argument to be complex, got ${args[1].type}")
+        }
+
+        if (args[1] !is LiloComplex) {
+            throw createLiloException(liloTypeErrorType, "`complex.__sub__` Expect second argument to be complex, got ${args[1].type}")
         }
 
         val lhs = args[0] as LiloComplex
@@ -98,9 +105,14 @@ private object ComplexReal : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 1 || args[0] !is LiloComplex) {
-            return LiloResult.Failure(error = LiloExceptionMessage("complex real expects 0 arguments, got ${args.size - 1}"))
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`complex.real` Expects 1 arguments got ${args.size}")
         }
+
+        if (args[0] !is LiloComplex) {
+            throw createLiloException(liloTypeErrorType, "`complex.real` Expects first argument to be complex, got ${args[0].type}")
+        }
+
         val lhs = args[0] as LiloComplex
         return LiloResult.Success(data = LiloFloat(value = lhs.real))
     }
@@ -111,9 +123,14 @@ private object ComplexImag : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 1 || args[0] !is LiloComplex) {
-            return LiloResult.Failure(error = LiloExceptionMessage("complex real expects 0 arguments, got ${args.size - 1}"))
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`complex.imag` Expects 1 arguments got ${args.size}")
         }
+
+        if (args[0] !is LiloComplex) {
+            throw createLiloException(liloTypeErrorType, "`complex.imag` Expects first argument to be complex, got ${args[0].type}")
+        }
+
         val lhs = args[0] as LiloComplex
         return LiloResult.Success(data = LiloFloat(value = lhs.imag))
     }

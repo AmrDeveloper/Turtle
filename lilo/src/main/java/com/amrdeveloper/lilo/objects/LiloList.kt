@@ -3,7 +3,6 @@ package com.amrdeveloper.lilo.objects
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
@@ -35,11 +34,21 @@ private object ListExtend : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val self = args[0]
-        val other = args[1]
-        val list = self as LiloList
-        if (other !is LiloList) return LiloResult.Failure(error = LiloExceptionMessage("invalid parameter for `list.extend`"))
-        list.values.addAll(other.values)
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`list.extend` Expect 2 arguments but got `${args.size}`")
+        }
+
+        if (args[0] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.extend` Expect first argument to be list, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.extend` Expect second argument to be list, got ${args[1].type}")
+        }
+
+        val self = args[0] as LiloList
+        val other = args[1] as LiloList
+        self.values.addAll(elements = other.values)
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -49,9 +58,20 @@ private object ListSetItem : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val index = args[1]
-        if (index !is LiloInt) return LiloResult.Failure(error = LiloExceptionMessage("List key must be int"))
+        if (args.size != 3) {
+            throw createLiloException(liloTypeErrorType, "`list.__setitem__` Expect 3 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.__setitem__` Expect first argument to be list, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`list.__setitem__` Expect second argument to be int, got ${args[1].type}")
+        }
+
         val self = args[0] as LiloList
+        val index = args[1] as LiloInt
         val value = args[2]
         self.values[index.value] = value
         return LiloResult.Success(data = LiloNone)
@@ -64,9 +84,16 @@ private object ListGetItem : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val index = args[1]
-        if (index !is LiloInt) return LiloResult.Failure(error = LiloExceptionMessage("List index must be int"))
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`list.__getitem__` Expect 2 arguments got ${args.size}")
+        }
+
+        if (args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`list.__getitem__` Expect second argument to be int, got ${args[1].type}")
+        }
+
         val self = args[0] as LiloList
+        val index = args[1] as LiloInt
         val item = self.values[index.value]
         return LiloResult.Success(data = item)
     }
@@ -77,8 +104,15 @@ private object ListLen : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val self = args[0]
-        if (self !is LiloList) return LiloResult.Failure(error = LiloExceptionMessage("Expected type to be List"))
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`list.__len__` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.__len__` Expect first argument to be list, got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloList
         return LiloResult.Success(data = LiloInt(value = self.values.size))
     }
 }

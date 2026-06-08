@@ -32,6 +32,10 @@ private object FloatAdd : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__add__` Expect at most 2 arguments got ${args.size}")
+        }
+
         val lhs = args[0]
         val rhs = args[1]
         if (lhs is LiloFloat && (rhs is LiloInt || rhs is LiloFloat)) {
@@ -50,16 +54,24 @@ private object FloatSub : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloFloat && (rhs is LiloInt || rhs is LiloFloat)) {
-            return when (rhs) {
-                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value - rhs.value))
-                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value - rhs.value))
-                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `-` is unsupported between lhs & rhs"))
-            }
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__sub__` Expect at most 2 arguments got ${args.size}")
         }
-        return LiloResult.Failure(error = LiloExceptionMessage("Op `-` is unsupported between lhs & rhs"))
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__sub__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__sub__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        return when (val rhs = args[1]) {
+            is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value - rhs.value))
+            is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value - rhs.value))
+            else -> LiloResult.Success(data = LiloFloat(value = 0.0))
+        }
     }
 }
 
@@ -68,16 +80,24 @@ private object FloatMul : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloFloat && (rhs is LiloInt || rhs is LiloFloat)) {
-            return when (rhs) {
-                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value * rhs.value))
-                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value * rhs.value))
-                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `*` is unsupported between lhs & rhs"))
-            }
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__mul__` Expect at most 2 arguments got ${args.size}")
         }
-        return LiloResult.Failure(error = LiloExceptionMessage("Op `*` is unsupported between lhs & rhs"))
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__mul__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__mul__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        return when (val rhs = args[1]) {
+            is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value * rhs.value))
+            is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value * rhs.value))
+            else -> LiloResult.Success(data = LiloFloat(value = 0.0))
+        }
     }
 }
 
@@ -86,16 +106,24 @@ private object FloatDiv : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloFloat && (rhs is LiloInt || rhs is LiloFloat)) {
-            return when (rhs) {
-                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
-                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
-                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
-            }
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__div__` Expect at most 2 arguments got ${args.size}")
         }
-        return LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__div__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__div__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        return when (val rhs = args[1]) {
+            is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
+            is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
+            else -> LiloResult.Success(data = LiloFloat(value = 0.0))
+        }
     }
 }
 
@@ -104,16 +132,24 @@ private object FloatPow : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloFloat && (rhs is LiloInt || rhs is LiloFloat)) {
-            return when (rhs) {
-                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value.pow( rhs.value)))
-                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.pow(rhs.value)))
-                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `/` is unsupported between lhs & rhs"))
-            }
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__pow__` Expect at most 2 arguments got ${args.size}")
         }
-        return LiloResult.Failure(error = LiloExceptionMessage("Op `%` is unsupported between lhs & rhs"))
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__pow__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__pow__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        return when (val rhs = args[1]) {
+            is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value.pow(rhs.value)))
+            is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.pow(rhs.value)))
+            else -> LiloResult.Success(data = LiloFloat(value = 0.0))
+        }
     }
 }
 
@@ -122,6 +158,18 @@ private object FloatGT : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__gt__` Expect at most 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__gt__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__gt__` Expect second argument to be number, got ${args[0].type}")
+        }
+
         val lhs = args[0] as LiloFloat
         val rhsValue = when (val rhs = args[1]) {
             is LiloFloat -> rhs.value
@@ -138,11 +186,16 @@ private object FloatPos : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val operand = args[0]
-        if (operand is LiloFloat) {
-            return LiloResult.Success(data = operand)
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`float.__pos__` Expect at most 1 arguments got ${args.size}")
         }
-        return LiloResult.Failure(error = LiloExceptionMessage("descriptor '__pos__' requires a 'float' object but received a '${operand.type}'"))
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__pos__` Expect argument to be float, got ${args[0].type}")
+        }
+
+        val operand = args[0] as LiloFloat
+        return LiloResult.Success(data = operand)
     }
 }
 
@@ -151,11 +204,16 @@ private object FloatNeg : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val operand = args[0]
-        if (operand is LiloFloat) {
-            return LiloResult.Success(data = LiloFloat(value = -operand.value))
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`float.__neg__` Expect at most 1 arguments got ${args.size}")
         }
-        return LiloResult.Failure(error = LiloExceptionMessage("descriptor '__neg__' requires a 'float' object but received a '${operand.type}'"))
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__neg__` Expect argument to be float, got ${args[0].type}")
+        }
+
+        val operand = args[0] as LiloFloat
+        return LiloResult.Success(data = LiloFloat(value = -operand.value))
     }
 }
 
@@ -164,6 +222,14 @@ private object FloatBool : LiloObject(liloFloatType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`float.__bool__` Expect at most 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__bool__` Expect argument to be float, got ${args[0].type}")
+        }
+
         val self = args[0] as LiloFloat
         return LiloResult.Success(data = LiloBool(value = self.value != 0.0))
     }

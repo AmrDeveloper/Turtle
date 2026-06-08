@@ -15,10 +15,10 @@ import com.amrdeveloper.lilo.objects.LiloNone
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloTuple
 import com.amrdeveloper.lilo.objects.LiloType
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
-import com.amrdeveloper.lilo.objects.liloMethodType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import kotlin.math.cos
 import kotlin.math.sin
@@ -78,18 +78,25 @@ private object TurtleInit : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.isNotEmpty()) {
+            throw createLiloException(liloTypeErrorType, "`turtle.__init__` Expect no arguments got ${args.size}")
+        }
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         return LiloResult.Success(data = LiloTurtle(id = screen.initPointer()))
     }
 }
 
-private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
+private object TurtleForward : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.forward` expect 1 number as distance"))
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`turtle.forward` Expect 2 arguments got ${args.size}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`turtle.forward` Expect second argument expected number, got ${args[1].type}")
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -117,13 +124,17 @@ private object TurtleForward : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleBackward : LiloObject(liloMethodType), LiloCallable {
+private object TurtleBackward : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.backward` expect 1 number as distance"))
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`turtle.backward` Expect 2 arguments got ${args.size}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`turtle.backward` Expect second argument expected number, got ${args[1].type}")
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -152,13 +163,17 @@ private object TurtleBackward : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleLeft : LiloObject(liloMethodType), LiloCallable {
+private object TurtleLeft : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.left` expect 1 number as degree"))
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`turtle.left` Expect 2 arguments got ${args.size}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`turtle.left` Expect second argument expected number, got ${args[1].type}")
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -176,13 +191,17 @@ private object TurtleLeft : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleRight : LiloObject(liloMethodType), LiloCallable {
+private object TurtleRight : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.right` expect 1 number as degree"))
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`turtle.right` Expect 2 arguments got ${args.size}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`turtle.right` Expect second argument expected number, got ${args[1].type}")
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -200,13 +219,17 @@ private object TurtleRight : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
+private object TurtleCircle : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        if (args.size != 2 || ((args[1] !is LiloFloat) && (args[1] !is LiloInt))) {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.circle` expect 1 number as radius"))
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`turtle.circle` Expect 2 arguments got ${args.size}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`turtle.circle` Expect second argument expected number, got ${args[1].type}")
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -237,11 +260,19 @@ private object TurtleCircle : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleShowTurtle : LiloObject(liloMethodType), LiloCallable {
+private object TurtleShowTurtle : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.show` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle) {
+            throw createLiloException(liloTypeErrorType, "`turtle.show` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -251,11 +282,19 @@ private object TurtleShowTurtle : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleHideTurtle : LiloObject(liloMethodType), LiloCallable {
+private object TurtleHideTurtle : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.hide` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle) {
+            throw createLiloException(liloTypeErrorType, "`turtle.hide` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -265,11 +304,19 @@ private object TurtleHideTurtle : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleIsVisible : LiloObject(liloMethodType), LiloCallable {
+private object TurtleIsVisible : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.visible` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle) {
+            throw createLiloException(liloTypeErrorType, "`turtle.visible` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -277,11 +324,19 @@ private object TurtleIsVisible : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtlePenUp : LiloObject(liloMethodType), LiloCallable {
+private object TurtlePenUp : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.penup` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle) {
+            throw createLiloException(liloTypeErrorType, "`turtle.penup` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -291,11 +346,19 @@ private object TurtlePenUp : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtlePenDown : LiloObject(liloMethodType), LiloCallable {
+private object TurtlePenDown : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.pendown` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle  ) {
+            throw createLiloException(liloTypeErrorType, "`turtle.pendown` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -305,11 +368,19 @@ private object TurtlePenDown : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleIsDown : LiloObject(liloMethodType), LiloCallable {
+private object TurtleIsDown : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.isdown` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle  ) {
+            throw createLiloException(liloTypeErrorType, "`turtle.isdown` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -317,11 +388,19 @@ private object TurtleIsDown : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtlePos : LiloObject(liloMethodType), LiloCallable {
+private object TurtlePos : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.pos` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle  ) {
+            throw createLiloException(liloTypeErrorType, "`turtle.pos` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -333,11 +412,19 @@ private object TurtlePos : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleClear : LiloObject(liloMethodType), LiloCallable {
+private object TurtleClear : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`turtle.clear` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloTurtle  ) {
+            throw createLiloException(liloTypeErrorType, "`turtle.clear` Expect argument to be Turtle, got ${args[0].type}")
+        }
+
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
         val self = args[0] as LiloTurtle
         val pointer = screen.getPointerAt(idx = self.id)!!
@@ -347,7 +434,7 @@ private object TurtleClear : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
+private object TurtleGoto : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -357,7 +444,7 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
         if (args.size == 2 && args[1] is LiloTuple) {
             val tuple = args[1] as LiloTuple
             if (tuple.values.size != 2 || tuple.values[0] !is LiloFloat || tuple.values[1] !is LiloFloat) {
-                return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect floats x, y or (x, y)"))
+                throw createLiloException(liloTypeErrorType, "`turtle.goto` expect floats x, y or (x, y)")
             }
             x = (tuple.values[0] as LiloFloat).value.toFloat()
             y = (tuple.values[1] as LiloFloat).value.toFloat()
@@ -373,7 +460,7 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
                 else -> 0.0f
             }
         } else {
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.goto` expect floats x, y or (x, y)"))
+            throw createLiloException(liloTypeErrorType, "`turtle.goto` expect floats x, y or (x, y)")
         }
 
         val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -393,7 +480,7 @@ private object TurtleGoto : LiloObject(liloMethodType), LiloCallable {
     }
 }
 
-private object TurtlePenColor : LiloObject(liloMethodType), LiloCallable {
+private object TurtlePenColor : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
         interpreter: LiloInterpreter,
         args: List<LiloObject>
@@ -405,7 +492,7 @@ private object TurtlePenColor : LiloObject(liloMethodType), LiloCallable {
         if (args.size == 2 && args[1] is LiloTuple) {
             val rgb = args[1] as LiloTuple
             if (rgb.values.size != 3) {
-                return LiloResult.Failure(error = LiloExceptionMessage("`turtle.pencolor` expects tuple of floats or ints as (r, g, b)"))
+                throw createLiloException(liloTypeErrorType, "`turtle.pencolor` expects tuple of floats or ints as (r, g, b)")
             }
 
             val screen = interpreter.liloMachine.getScreen()!! as LiloScreen
@@ -428,9 +515,9 @@ private object TurtlePenColor : LiloObject(liloMethodType), LiloCallable {
                 return LiloResult.Success(data = LiloNone)
             }
 
-            return LiloResult.Failure(error = LiloExceptionMessage("`turtle.pencolor` expects tuple of floats or ints as (r, g, b)"))
+            throw createLiloException(liloTypeErrorType, "`turtle.pencolor` expects tuple of floats or ints as (r, g, b)")
         }
 
-        return LiloResult.Failure(error = LiloExceptionMessage("`turtle.pencolor` expects tuple of floats or ints as (r, g, b)"))
+        throw createLiloException(liloTypeErrorType, "`turtle.pencolor` expects tuple of floats or ints as (r, g, b)")
     }
 }

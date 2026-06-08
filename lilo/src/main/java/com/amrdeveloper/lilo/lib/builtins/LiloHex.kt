@@ -4,9 +4,10 @@ import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.objects.LiloInt
 import com.amrdeveloper.lilo.objects.LiloObject
 import com.amrdeveloper.lilo.objects.LiloStr
+import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.liloFunctionType
+import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
 object LiloHexFunction : LiloObject(liloFunctionType), LiloCallable {
@@ -14,10 +15,15 @@ object LiloHexFunction : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val argument = args[0]
-        if (argument !is LiloInt) {
-            return LiloResult.Failure(error = LiloExceptionMessage(message = "Expect `Int` but got `${argument.type}`"))
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`hex` Expect 1 arguments got ${args.size}")
         }
+
+        if (args[0] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`hex` Expect argument to be int, got ${args[0].type}")
+        }
+
+        val argument = args[0] as LiloInt
         return LiloResult.Success(data = LiloStr(value = "0x" + argument.value.toString(radix = 16)))
     }
 }

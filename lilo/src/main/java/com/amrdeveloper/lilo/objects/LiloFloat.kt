@@ -3,7 +3,6 @@ package com.amrdeveloper.lilo.objects
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
-import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import kotlin.math.pow
 
@@ -36,16 +35,20 @@ private object FloatAdd : LiloObject(liloFunctionType), LiloCallable {
             throw createLiloException(liloTypeErrorType, "`float.__add__` Expect at most 2 arguments got ${args.size}")
         }
 
-        val lhs = args[0]
-        val rhs = args[1]
-        if (lhs is LiloFloat && (rhs is LiloInt || rhs is LiloFloat)) {
-            return when (rhs) {
-                is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value + rhs.value))
-                is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value + rhs.value))
-                else -> LiloResult.Failure(error = LiloExceptionMessage("Op `+` is unsupported between lhs & rhs"))
-            }
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__add__` Expect first argument to be float, got ${args[0].type}")
         }
-        return LiloResult.Failure(error = LiloExceptionMessage("Op `+` is unsupported between lhs & rhs"))
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__add__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        return when (val rhs = args[1]) {
+            is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value + rhs.value))
+            is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value + rhs.value))
+            else -> LiloResult.Success(data = LiloFloat(value = 0.0))
+        }
     }
 }
 

@@ -33,6 +33,7 @@ import com.amrdeveloper.lilo.lib.math.liloMathModule
 import com.amrdeveloper.lilo.lib.random.liloRandomModule
 import com.amrdeveloper.lilo.lib.time.liloTimeModule
 import com.amrdeveloper.lilo.lib.turtle.liloTurtleModule
+import com.amrdeveloper.lilo.objects.liloArithmeticErrorType
 import com.amrdeveloper.lilo.objects.liloAttributeErrorType
 import com.amrdeveloper.lilo.objects.liloComplexType
 import com.amrdeveloper.lilo.objects.liloImportErrorType
@@ -41,6 +42,7 @@ import com.amrdeveloper.lilo.objects.liloNameErrorType
 import com.amrdeveloper.lilo.objects.liloNotImplementedError
 import com.amrdeveloper.lilo.objects.liloSyntaxErrorType
 import com.amrdeveloper.lilo.objects.liloTypeErrorType
+import com.amrdeveloper.lilo.objects.liloZeroDivisionErrorType
 
 fun registerLiloAutoImportedModule() {
     // Builtin types
@@ -64,9 +66,11 @@ fun registerLiloAutoImportedModule() {
     LiloEnvironment.builtins["ModuleNotFoundError"]     = liloModuleNotFoundErrorType
     LiloEnvironment.builtins["TypeError"]               = liloTypeErrorType
     LiloEnvironment.builtins["RuntimeError"]            = liloRuntimeErrorType
+    LiloEnvironment.builtins["ArithmeticError"]         = liloArithmeticErrorType
     LiloEnvironment.builtins["AssertionError"]          = liloAssertionErrorType
     LiloEnvironment.builtins["StopIteration"]           = liloStopIterationType
     LiloEnvironment.builtins["NotImplementedError"]     = liloNotImplementedError
+    LiloEnvironment.builtins["ZeroDivisionError"]       = liloZeroDivisionErrorType
 }
 
 fun registerLiloStandardLibrary() {

@@ -86,6 +86,11 @@ val liloRuntimeErrorType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
+val liloArithmeticErrorType =
+    LiloType(name = "ArithmeticError", bases = listOf(liloExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
 val liloAssertionErrorType =
     LiloType(name = "AssertionError", bases = listOf(liloExceptionType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
@@ -98,6 +103,11 @@ val liloNotImplementedError =
 
 val liloStopIterationType =
     LiloType(name = "StopIteration", bases = listOf(liloExceptionType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
+val liloZeroDivisionErrorType =
+    LiloType(name = "ZeroDivisionError", bases = listOf(liloArithmeticErrorType)).also {
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 

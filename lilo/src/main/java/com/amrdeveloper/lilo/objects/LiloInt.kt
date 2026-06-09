@@ -158,8 +158,18 @@ private object IntTrueDiv : LiloObject(liloFunctionType), LiloCallable {
 
         val lhs = args[0] as LiloInt
         return when (val rhs = args[1]) {
-            is LiloInt -> LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
-            is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
+            is LiloInt -> {
+                if (rhs.value == 0) {
+                    throw createLiloException(liloZeroDivisionErrorType, "division by zero")
+                }
+                LiloResult.Success(data = LiloInt(value = lhs.value / rhs.value))
+            }
+            is LiloFloat -> {
+                if (rhs.value == 0.0) {
+                    throw createLiloException(liloZeroDivisionErrorType, "division by zero")
+                }
+                LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
+            }
             else -> LiloResult.Success(data = LiloInt(value = 0))
         }
     }
@@ -184,8 +194,18 @@ private object IntFloorDiv : LiloObject(liloFunctionType), LiloCallable {
 
         val lhs = args[0] as LiloInt
         return when (val rhs = args[1]) {
-            is LiloInt -> LiloResult.Success(data = LiloInt(value = lhs.value.floorDiv(rhs.value)))
-            is LiloFloat -> LiloResult.Success(data = LiloInt(value = lhs.value.floorDiv( rhs.value.toInt())))
+            is LiloInt -> {
+                if (rhs.value == 0) {
+                    throw createLiloException(liloZeroDivisionErrorType, "division by zero")
+                }
+                LiloResult.Success(data = LiloInt(value = lhs.value.floorDiv(rhs.value)))
+            }
+            is LiloFloat -> {
+                if (rhs.value == 0.0) {
+                    throw createLiloException(liloZeroDivisionErrorType, "division by zero")
+                }
+                LiloResult.Success(data = LiloInt(value = lhs.value.floorDiv( rhs.value.toInt())))
+            }
             else -> LiloResult.Success(data = LiloInt(value = 0))
         }
     }

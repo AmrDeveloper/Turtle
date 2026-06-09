@@ -31,6 +31,26 @@ val liloShippedExamples = listOf(
         print(l3)
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "ListIterator",
+        sourceCode = """
+        print("Iterator")
+        for i in iter(range(10)):
+            print(i)
+        """.trimIndent()
+    ),
+    LiloFileEntity(
+        name = "ListIteratorAndReversed",
+        sourceCode = """
+        print("Iterator")
+        for i in iter(range(10)):
+            print(i)
+            
+        print("Reversed")
+        for i in reversed(range(10)):
+            print(i)
+        """.trimIndent()
+    ),
     // Turtle Examples
     LiloFileEntity(
         name = "TurtleSquare",

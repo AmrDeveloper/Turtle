@@ -24,6 +24,7 @@ import com.amrdeveloper.lilo.lib.builtins.LiloNextFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloOctFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloPrintFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloRangeFunction
+import com.amrdeveloper.lilo.lib.builtins.LiloReversedFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloTypeFunction
 import com.amrdeveloper.lilo.lib.colorsys.liloColorSysModule
 import com.amrdeveloper.lilo.lib.gpu.liloGPUModule
@@ -85,15 +86,16 @@ fun registerLiloStandardLibrary() {
     LiloEnvironment.builtins["inspect"]   = liloInspectModule
 
     // Register Stdlib functions
-    LiloEnvironment.builtins["print"]    = LiloPrintFunction
-    LiloEnvironment.builtins["len"]      = LiloLenFunction
-    LiloEnvironment.builtins["type"]     = LiloTypeFunction
-    LiloEnvironment.builtins["id"]       = LiloIdFunction
-    LiloEnvironment.builtins["hasattr"]  = LiloHasAttrFunction
-    LiloEnvironment.builtins["bin"]      = LiloBinFunction
-    LiloEnvironment.builtins["oct"]      = LiloOctFunction
-    LiloEnvironment.builtins["hex"]      = LiloHexFunction
-    LiloEnvironment.builtins["range"]    = LiloRangeFunction
-    LiloEnvironment.builtins["iter"]     = LiloIterFunction
-    LiloEnvironment.builtins["next"]     = LiloNextFunction
+    LiloEnvironment.builtins["print"]     = LiloPrintFunction
+    LiloEnvironment.builtins["len"]       = LiloLenFunction
+    LiloEnvironment.builtins["type"]      = LiloTypeFunction
+    LiloEnvironment.builtins["id"]        = LiloIdFunction
+    LiloEnvironment.builtins["hasattr"]   = LiloHasAttrFunction
+    LiloEnvironment.builtins["bin"]       = LiloBinFunction
+    LiloEnvironment.builtins["oct"]       = LiloOctFunction
+    LiloEnvironment.builtins["hex"]       = LiloHexFunction
+    LiloEnvironment.builtins["range"]     = LiloRangeFunction
+    LiloEnvironment.builtins["iter"]      = LiloIterFunction
+    LiloEnvironment.builtins["next"]      = LiloNextFunction
+    LiloEnvironment.builtins["reversed"]  = LiloReversedFunction
 }

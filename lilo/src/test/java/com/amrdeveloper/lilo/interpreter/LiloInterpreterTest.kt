@@ -432,11 +432,21 @@ class LiloInterpreterTest {
             for i in range(5, 0, -1):
                 print(i)
             """,
+            """
+            for i in iter(range(5, 0, -1)):
+                print(i)
+            """,
+            """
+            for i in reversed(range(5, 0, -1)):
+                print(i)
+            """,
         )
 
         val expectedOutput = listOf(
             "01234",
             "54321",
+            "54321",
+            "12345",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

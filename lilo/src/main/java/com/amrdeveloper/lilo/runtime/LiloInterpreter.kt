@@ -231,6 +231,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitForStmt(stmt: ForStmt): LiloResult<Unit> {
         val target = (stmt.target as NameExpr).value.lexeme!!
         val iter = visit(expr = stmt.iter).valueOr { return it.toFailure() }
+
+        // Technically, an iterator is any object that implements two special methods: .__iter__()
+        // which returns the iterator object itself, and .__next__() which returns the next value
+        // and raises a StopIteration exception when there are no more items to return.
         val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
         if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
             throw createLiloException(liloTypeErrorType, "`${iter.type}` is not iterable")

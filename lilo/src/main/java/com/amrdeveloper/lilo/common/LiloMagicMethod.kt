@@ -39,6 +39,7 @@ object LiloMagicMethod {
 
     // Iterator Op
     const val ITER = "__iter__"
+    const val REVERSED = "__reversed__"
     const val NEXT = "__next__"
 
     const val BOOL = "__bool__"

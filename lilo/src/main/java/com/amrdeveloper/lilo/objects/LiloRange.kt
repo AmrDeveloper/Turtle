@@ -9,6 +9,7 @@ val liloRangeType = LiloType(name = "range", bases = listOf(LiloBaseType.LILO_OB
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
     it.setAttr(name = LiloMagicMethod.ITER, value = RangeIter)
+    it.setAttr(name = LiloMagicMethod.REVERSED, value = RangeReversedIter)
 }
 
 private object RangeIter : LiloObject(liloFunctionType), LiloCallable {
@@ -26,8 +27,34 @@ private object RangeIter : LiloObject(liloFunctionType), LiloCallable {
 
         val self = args[0] as LiloRange
         val len = (self.stop - self.start) / self.step
-        val rangeIter = LiloRangeIter(self.start, self.stop, self.step, len)
-        return LiloResult.Success(data = rangeIter)
+        return LiloResult.Success(data = LiloRangeIter(self.start, self.stop, self.step, len))
+    }
+}
+
+private object RangeReversedIter : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "range.__reversed__ expected 1 arguments but got ${args.size}")
+        }
+
+        if (args[0] !is LiloRange) {
+            throw createLiloException(liloTypeErrorType, "range.__reversed__ expected 1 arguments `range` but got ${args[0].type}")
+        }
+
+        // From CPython 3.15
+        //   reversed(range(start, stop, step)) can be expressed as
+        //   range(start+(n-1)*step, start-step, -step), where n is the number of
+        //   integers in the range.
+        //
+        val self = args[0] as LiloRange
+        val n = (self.stop - self.start) / self.step
+        val start = self.start + (n - 1) * self.step
+        val stop = self.start - self.step
+        val step = -self.step
+        return LiloResult.Success(data = LiloRangeIter(start, stop, step, len = n))
     }
 }
 

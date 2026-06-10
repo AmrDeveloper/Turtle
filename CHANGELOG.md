@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 2.0.1 *(2026-06-10)*
+-----------------------------
+
+* Replace returning str error with exception to be able to catch them at user level.
+* Implement ArithmeticError and ZeroDivisionError.
+* Implement reversed and improve iter.
+
 Version 2.0.0 *(2026-06-07)*
 -----------------------------
 

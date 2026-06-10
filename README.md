@@ -6,7 +6,7 @@
 
 <p align="center">
 Turtle started as a re-implementation of TurtleGraphics on Android OS with simple language, but then that simple language `Lilo`
-turned into a A platform with Heterogeneous Pythonic like language to practice targeting CPU & GPU in the same program
+turned into a platform with Heterogeneous Pythonic like language to practice targeting CPU & GPU in the same program
 Influenced by Python, Mojo and CUDA.
 </p>
 

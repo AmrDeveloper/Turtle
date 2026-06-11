@@ -15,15 +15,14 @@ android {
         applicationId = "com.amrdeveloper.turtle"
         minSdk = libs.versions.minSdk.get().toInt()
 
-        versionCode = 22
-        versionName = "2.0.1"
+        versionCode = 23
+        versionName = "2.0.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

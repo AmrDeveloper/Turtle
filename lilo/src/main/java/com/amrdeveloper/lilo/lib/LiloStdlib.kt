@@ -15,6 +15,7 @@ import com.amrdeveloper.lilo.objects.liloStrType
 import com.amrdeveloper.lilo.objects.liloTupleType
 import com.amrdeveloper.lilo.runtime.LiloEnvironment
 import com.amrdeveloper.lilo.lib.builtins.LiloBinFunction
+import com.amrdeveloper.lilo.lib.builtins.LiloCallableFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloHasAttrFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloHexFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloIdFunction
@@ -98,4 +99,5 @@ fun registerLiloStandardLibrary() {
     LiloEnvironment.builtins["iter"]      = LiloIterFunction
     LiloEnvironment.builtins["next"]      = LiloNextFunction
     LiloEnvironment.builtins["reversed"]  = LiloReversedFunction
+    LiloEnvironment.builtins["callable"]  = LiloCallableFunction
 }

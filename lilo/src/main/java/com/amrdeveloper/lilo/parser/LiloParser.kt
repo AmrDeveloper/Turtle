@@ -792,13 +792,22 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | sum '-' term
     //    | term
     private fun parseSumExpr(): LiloResult<LiloExpr> {
-        var lhs = parseTermExpr().valueOr { return it.toFailure() }
+        var lhs = parseInvertExpr().valueOr { return it.toFailure() }
         while (!isAtEnd() && peek().kind.isSumOperator()) {
             val op = binaryOpFromTokenKind(advance().kind)
-            val rhs = parseTermExpr().valueOr { return it.toFailure() }
+            val rhs = parseInvertExpr().valueOr { return it.toFailure() }
             lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
         }
         return LiloResult.Success(data = lhs)
+    }
+
+    private fun parseInvertExpr(): LiloResult<LiloExpr> {
+        if (match(kind = LiloTokenKind.TILDE)) {
+            val op = unaryOpFromTokenKind(previous().kind)
+            val operand = parseTermExpr().valueOr { return it.toFailure() }
+            return LiloResult.Success(data = UnaryOpExpr(op = op, operand = operand))
+        }
+        return parseTermExpr()
     }
 
     //  term:

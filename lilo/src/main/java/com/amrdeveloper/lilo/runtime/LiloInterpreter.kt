@@ -583,6 +583,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             UnaryOp.PLUS -> LiloMagicMethod.POS
             UnaryOp.MINUS -> LiloMagicMethod.NEG
             UnaryOp.NOT -> LiloMagicMethod.NOT
+            UnaryOp.INVERT -> LiloMagicMethod.INVERT
         }
 
         val method = operand.getAttr(methodName)

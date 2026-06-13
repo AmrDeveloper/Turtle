@@ -24,6 +24,7 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     it.setAttr(name = LiloMagicMethod.RIGHT_SHIFT, value = IntRightShift)
     it.setAttr(name = LiloMagicMethod.LEFT_SHIFT, value = IntLeftShift)
 
+    // Bitwise
     it.setAttr(name = LiloMagicMethod.BIT_AND, value = IntBitAnd)
     it.setAttr(name = LiloMagicMethod.BIT_OR, value = IntBitOr)
     it.setAttr(name = LiloMagicMethod.BIT_XOR, value = IntBitXor)
@@ -39,6 +40,7 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     // Unary
     it.setAttr(name = LiloMagicMethod.POS, value = IntPos)
     it.setAttr(name = LiloMagicMethod.NEG, value = IntNeg)
+    it.setAttr(name = LiloMagicMethod.INVERT, value = IntInvert)
 
     // Bool
     it.setAttr(name = LiloMagicMethod.BOOL, value = IntBool)
@@ -549,6 +551,24 @@ private object IntNeg : LiloObject(liloFunctionType), LiloCallable {
 
         val operand = args[0] as LiloInt
         return LiloResult.Success(data = LiloInt(value = -operand.value))
+    }
+}
+
+private object IntInvert : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`int.__invert__` Expect 1 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`int.__invert__` Expect argument to be int, got ${args[0].type}")
+        }
+
+        val operand = args[0] as LiloInt
+        return LiloResult.Success(data = LiloInt(value = operand.value.inv()))
     }
 }
 

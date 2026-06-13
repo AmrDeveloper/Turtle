@@ -274,6 +274,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
             UnaryOp.PLUS -> "+"
             UnaryOp.MINUS -> "-"
             UnaryOp.NOT -> "!"
+            UnaryOp.INVERT -> "~"
         }
         val operand = visit(expr.operand).valueOr { return it.toFailure() }
         return LiloResult.Success(data = "$op${operand}")

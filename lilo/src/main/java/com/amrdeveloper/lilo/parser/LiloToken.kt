@@ -50,6 +50,7 @@ enum class LiloTokenKind {
     AMPER,               // &
     V_BAR,               // |
     CIRCUMFLEX,          // ^
+    TILDE,               // ~
 
     L_PAR,               // (
     R_PAR,               // )
@@ -135,6 +136,7 @@ val liloOneCharTokenMap = mapOf(
     '&' to LiloTokenKind.AMPER,
     '|' to LiloTokenKind.V_BAR,
     '^' to LiloTokenKind.CIRCUMFLEX,
+    '~' to LiloTokenKind.TILDE,
 
     '(' to LiloTokenKind.L_PAR,
     ')' to LiloTokenKind.R_PAR,

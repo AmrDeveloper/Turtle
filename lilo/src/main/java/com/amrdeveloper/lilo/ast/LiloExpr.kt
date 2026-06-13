@@ -53,6 +53,7 @@ enum class UnaryOp {
     PLUS,
     MINUS,
     NOT,
+    INVERT,
 }
 
 data class UnaryOpExpr(val op: UnaryOp, val operand: LiloExpr) : LiloExpr

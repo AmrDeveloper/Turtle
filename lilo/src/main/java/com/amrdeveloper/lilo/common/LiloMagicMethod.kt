@@ -33,6 +33,7 @@ object LiloMagicMethod {
     const val POS = "__pos__"
     const val NEG = "__neg__"
     const val NOT = "__not__"
+    const val INVERT = "__invert__"
 
     const val SET_ITEM = "__setitem__"
     const val GET_ITEM = "__getitem__"

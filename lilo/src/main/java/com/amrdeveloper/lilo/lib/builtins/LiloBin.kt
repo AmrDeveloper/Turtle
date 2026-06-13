@@ -15,6 +15,7 @@ object LiloBinFunction : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
+        if (args.size != 1) throw createLiloException(liloTypeErrorType, "`bin` Expect argument one argument, got `${args.size}`")
         val argument = args[0]
         if (argument !is LiloInt) {
             throw createLiloException(liloTypeErrorType, "`bin` Expect argument `Int` but got `${argument.type}`")

@@ -50,6 +50,7 @@ import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.valueOr
 import com.amrdeveloper.lilo.lib.gpu.LiloLaunchConfig
 import com.amrdeveloper.lilo.parser.LiloTokenKind
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 
 class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResult<String>, LiloResult<String>> {
 
@@ -65,11 +66,11 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitFromImportStmt(stmt: FromImportStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "FromImport NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("FromImport NYI on GPU"))
     }
 
     override fun visitImportStmt(stmt: ImportStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "Import NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Import NYI on GPU"))
     }
 
     override fun visitFunctionStmt(stmt: FunctionStmt): LiloResult<String> {
@@ -99,23 +100,23 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitGlobalStmt(stmt: GlobalStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "Global NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Global NYI on GPU"))
     }
 
     override fun visitNonLocalStmt(stmt: NonLocalStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "NonLocal NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("NonLocal NYI on GPU"))
     }
 
     override fun visitIfStmt(stmt: IfStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "Import NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Import NYI on GPU"))
     }
 
     override fun visitForStmt(stmt: ForStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "Import NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Import NYI on GPU"))
     }
 
     override fun visitWhileStmt(stmt: WhileStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "While NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("While NYI on GPU"))
     }
 
     override fun visitBlockStmt(stmt: BlockStmt): LiloResult<String> {
@@ -167,7 +168,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<String> {
-        return LiloResult.Failure("Assert NYI on GPU")
+        return LiloResult.Failure(LiloExceptionMessage("Assert NYI on GPU"))
     }
 
     override fun visitReturnStmt(stmt: ReturnStmt): LiloResult<String> {
@@ -180,7 +181,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitAssertStmt(stmt: AssertStmt): LiloResult<String> {
-        return LiloResult.Failure(error = "Assert NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Assert NYI on GPU"))
     }
 
     override fun visitBreakStmt(stmt: BreakStmt): LiloResult<String> {
@@ -196,7 +197,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "Lambda NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Lambda NYI on GPU"))
     }
 
     override fun visitGetExpr(expr: GetExpr): LiloResult<String> {
@@ -228,7 +229,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "Call NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Call NYI on GPU"))
     }
 
     override fun visitBinaryExpr(expr: BinaryOpExpr): LiloResult<String> {
@@ -266,7 +267,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitBoolOpExpr(expr: BoolOpExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "BoolOp NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("BoolOp NYI on GPU"))
     }
 
     override fun visitUnaryExpr(expr: UnaryOpExpr): LiloResult<String> {
@@ -286,29 +287,29 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitListExpr(expr: ListExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "List NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("List NYI on GPU"))
     }
 
     override fun visitListCompExpr(expr: ListCompExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "ListComp NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("ListComp NYI on GPU"))
     }
 
     override fun visitSetExpr(expr: SetExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "Set NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Set NYI on GPU"))
     }
 
     override fun visitDictExpr(expr: DictExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "Dict NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Dict NYI on GPU"))
     }
 
     override fun visitTupleExpr(expr: TupleExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "Tuple NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("Tuple NYI on GPU"))
     }
 
     override fun visitNameExpr(expr: NameExpr): LiloResult<String> {
         val name = expr.value.lexeme!!
         if (!definedVariables.contains(name)) {
-            return LiloResult.Failure(error = "Name '${name}' is not defined")
+            return LiloResult.Failure(error = LiloExceptionMessage("Name '${name}' is not defined"))
         }
         return LiloResult.Success(data = name)
     }
@@ -326,7 +327,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitComplexExpr(expr: ComplexExpr): LiloResult<String> {
-        return LiloResult.Failure(error = "ComplexType NYI on GPU")
+        return LiloResult.Failure(error = LiloExceptionMessage("ComplexType NYI on GPU"))
     }
 
     override fun visitBoolExpr(expr: BoolExpr): LiloResult<String> {

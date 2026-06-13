@@ -247,18 +247,25 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             throw createLiloException(liloTypeErrorType, "${iter.type}' object is not an iterator")
         }
 
+        var hasIteratorCount = false
         while (true) {
             try {
                 val value = nextFunc.invoke(interpreter = this, args = listOf(iterator))
                     .valueOr { return it.toFailure() }
                 environment.set(target, value)
                 visit(stmt = stmt.body).valueOr { return it.toFailure() }
+                hasIteratorCount = true
             } catch (e: LiloRaise) {
                 if (liloStopIterationType == e.exception || liloStopIterationType == e.exception.type) {
                     break
                 }
                 throw e
             }
+        }
+
+        // Execute the else block if it exists and loop has 0 count
+        if (hasIteratorCount.not() && stmt.elseBlock != null) {
+            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
         }
 
         return LiloResult.Success(data = Unit)

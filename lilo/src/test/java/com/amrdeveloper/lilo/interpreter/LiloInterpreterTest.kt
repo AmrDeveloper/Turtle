@@ -440,6 +440,12 @@ class LiloInterpreterTest {
             for i in reversed(range(5, 0, -1)):
                 print(i)
             """,
+            """
+            for i in range(0):
+                print(i)
+            else:
+                print(-1)
+            """,
         )
 
         val expectedOutput = listOf(
@@ -447,6 +453,7 @@ class LiloInterpreterTest {
             "54321",
             "54321",
             "12345",
+            "-1"
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

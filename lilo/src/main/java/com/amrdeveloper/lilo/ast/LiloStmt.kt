@@ -19,7 +19,8 @@ data class FunctionStmt(
     val name: String,
     val parameters: List<Parameter>,
     val body: LiloStmt,
-    val decorators: List<LiloExpr> = emptyList()
+    val decorators: List<LiloExpr> = emptyList(),
+    val returns: LiloExpr? = null
 ) : LiloStmt
 
 data class GlobalStmt(val names: List<String>) : LiloStmt

@@ -65,6 +65,8 @@ enum class LiloTokenKind {
     COLON,               // :
     SEMI,                // ;
 
+    R_ARROW,             // ->
+
     EQ,
     EQ_EQ,
     BANG,

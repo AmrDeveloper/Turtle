@@ -41,8 +41,18 @@ class LiloLexer(val source: String) {
                     tokens.add(token)
                 }
 
-                '+', '-', '%' -> {
+                '+', '%' -> {
                     tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
+                }
+
+                '-' -> {
+                    advance()
+                    if (peek() == '>') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.R_ARROW))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.MINUS))
+                    }
                 }
 
                 '*' -> {

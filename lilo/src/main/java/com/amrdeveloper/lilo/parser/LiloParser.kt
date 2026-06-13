@@ -271,6 +271,8 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = ImportStmt(modules))
     }
 
+    // function_def_raw:
+    //    | 'def' NAME [type_params] '(' [params] ')' ['->' expression ] ':'  block
     private fun parseFunctionDefStmt(decorators: List<LiloExpr> = emptyList()): LiloResult<FunctionStmt> {
         // Advance 'def' keyword
         advance()
@@ -308,12 +310,18 @@ class LiloParser(val tokens: List<LiloToken>) {
             message = "Expect `)` after parameters"
         ).valueOr { return it.toFailure() }
 
+        // -> <Expr>
+        var returns : LiloExpr? = null
+        if (match(kind = LiloTokenKind.R_ARROW)) {
+            returns = parseExpr().valueOr { return it.toFailure() }
+        }
+
         consumeOr(kind = LiloTokenKind.COLON) {
             return createDiagnostic(peek().loc, message = "Expected `:` after function parameters")
         }
 
         val body = parseBlockStmt().valueOr { return it.toFailure() }
-        val functionStmt = FunctionStmt(name, parameters, body, decorators)
+        val functionStmt = FunctionStmt(name, parameters, body, decorators, returns)
         return LiloResult.Success(data = functionStmt)
     }
 

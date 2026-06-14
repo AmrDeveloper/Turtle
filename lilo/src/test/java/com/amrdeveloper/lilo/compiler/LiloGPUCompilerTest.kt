@@ -103,10 +103,10 @@ class LiloGPUCompilerTest {
                 println("Error[GPUCompiler]: " + gpuCodeResult.toFailureError<LiloDiagnostic>().message)
             }
 
-            assertTrue(
-                "GPU Compiler results",
-                expectedResults[index] == gpuCodeResult.toSuccessData().trimIndent()
-            )
+            val dataStr = gpuCodeResult.toSuccessData().toString()
+            assert(value = expectedResults[index] == dataStr.trimIndent()){
+                println("GPU Compiler results: ${dataStr.trimIndent()}")
+            }
         }
     }
 }

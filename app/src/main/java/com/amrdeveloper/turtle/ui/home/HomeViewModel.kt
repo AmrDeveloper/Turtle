@@ -21,13 +21,16 @@ import com.amrdeveloper.turtle.ui.config.UIConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewModel() {
+class HomeViewModel @Inject constructor(uiConfig: UIConfig) : ViewModel() {
 
     val colorSchema: StateFlow<String> = uiConfig.selectedColorSchema
         .stateIn(
@@ -39,9 +42,18 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
     val terminalOutput = mutableStateListOf<TerminalLine>()
     val screenUpdate = mutableLongStateOf(value = 0)
 
+    private val _uiState = MutableStateFlow(value = TabActiveState())
+    val uiState: StateFlow<TabActiveState> = _uiState.asStateFlow()
+
     private val liloHost = LiloHost(
         onStdout = { terminalOutput.add(TerminalLine.Normal(text = it)) })
-    private val liloScreen = LiloScreen(update = { screenUpdate.longValue++ })
+
+    private val liloScreen = LiloScreen(update = {
+        screenUpdate.longValue++
+        if (screenUpdate.longValue > 0)
+            _uiState.update { it.copy(draw = true) }
+    })
+
     private val liloGPU = LiloWebGPU()
     private val liloMachine = LiloMachine(
         liloHost = liloHost,
@@ -58,7 +70,7 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
     fun runLiloCode(source: String) {
         screenUpdate.longValue = 0
         liloScreen.clearScreen()
-        liloScreen.update()
+        _uiState.value = TabActiveState()
 
         terminalOutput.add(TerminalLine.Start(text = "liloc main.lilo"))
         viewModelScope.launch(context = Dispatchers.IO) {
@@ -70,6 +82,7 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
                         tokensResult.toFailureError<LiloDiagnostic>()
                     val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
                     terminalOutput.add(TerminalLine.Error(text = errorMessage))
+                    _uiState.update { it.copy(terminal = true) }
                     return@launch
                 }
 
@@ -80,6 +93,7 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
                         programResult.toFailureError<LiloDiagnostic>()
                     val errorMessage = "L${lexerError.loc.line}: ${lexerError.message}"
                     terminalOutput.add(TerminalLine.Error(text = errorMessage))
+                    _uiState.update { it.copy(terminal = true) }
                     return@launch
                 }
 
@@ -88,12 +102,14 @@ class HomeViewModel @Inject constructor(private val uiConfig: UIConfig) : ViewMo
                 if (result.isFailure()) {
                     val runtimeError = result.toFailureError<LiloExceptionMessage>()
                     terminalOutput.add(TerminalLine.Error(text = runtimeError.message))
+                    _uiState.update { it.copy(terminal = true) }
                     return@launch
                 }
 
                 terminalOutput.add(TerminalLine.Exit(text = "Exit: 0"))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 terminalOutput.add(TerminalLine.Exit(text = "Unhandled Exception, Please report to Github"))
+                _uiState.update { it.copy(terminal = true) }
             }
         }
 

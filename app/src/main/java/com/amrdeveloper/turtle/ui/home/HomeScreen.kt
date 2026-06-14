@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.amrdeveloper.colorschema.colorschema.colorSchemasMap
 import com.amrdeveloper.colorschema.colorschema.defaultColorSchema
@@ -42,6 +43,7 @@ fun HomeScreen(
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(value = 0) }
     val currentCodeInEditor = rememberTextFieldState(initialText = starterCode)
+    val tabActivation by viewModel.uiState.collectAsStateWithLifecycle()
 
     val currentColorSchema by viewModel.colorSchema.collectAsState()
     val colorSchema = colorSchemasMap()
@@ -66,7 +68,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues = padding)
             ) {
-                TurtleHomeTabLayout(turtleAppHomeTabs) { selectedIndex ->
+                TurtleHomeTabLayout(turtleAppHomeTabs, tabActivation) { selectedIndex ->
                     selectedTabIndex = selectedIndex
                 }
 

@@ -1,6 +1,8 @@
 package com.amrdeveloper.turtle.ui.components
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
@@ -14,12 +16,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.amrdeveloper.turtle.ui.home.TabActiveState
 
 data class TurtleTab(val title: String, val icon: Int)
 
 @Composable
-fun TurtleHomeTabLayout(tabs: List<TurtleTab>, onTabSelected: (Int) -> Unit) {
+fun TurtleHomeTabLayout(
+    tabs: List<TurtleTab>,
+    tabActivation: TabActiveState,
+    onTabSelected: (Int) -> Unit) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+
     PrimaryTabRow(
         selectedTabIndex = selectedTabIndex,
         tabs = {
@@ -31,12 +38,23 @@ fun TurtleHomeTabLayout(tabs: List<TurtleTab>, onTabSelected: (Int) -> Unit) {
                         onTabSelected(selectedTabIndex)
                     },
                     icon = {
-                        Icon(
-                            modifier = Modifier.size(18.dp),
-                            painter = painterResource(id = tab.icon),
-                            contentDescription = tab.title,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        BadgedBox(
+                            badge = {
+                                if (tabActivation.isTabActive(index)) {
+                                    Badge(
+                                        containerColor = Color.Red,
+                                        contentColor = Color.White
+                                    )
+                                }
+                            }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(18.dp),
+                                painter = painterResource(id = tab.icon),
+                                contentDescription = tab.title,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 )
             }

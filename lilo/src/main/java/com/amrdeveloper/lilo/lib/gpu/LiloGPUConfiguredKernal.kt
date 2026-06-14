@@ -45,12 +45,16 @@ private object LiloConfiguredKernalCall : LiloObject(liloFunctionType), LiloCall
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> = runBlocking {
+        if (args.isEmpty() || args[0] !is LiloConfiguredKernal) {
+            throw createLiloException(liloTypeErrorType, "`gpu.ConfiguredKernal __call__` expects at last self parameter")
+        }
+
         val gpuDevice = interpreter.liloMachine.getGPU()!!
         val self = args[0] as LiloConfiguredKernal
         val kernalArgs = args.drop(n = 1)
         val gpuCompiler = LiloGPUCompiler(self.config)
         val gpuCode = gpuCompiler.visit(stmt = self.definition).valueOr { return@runBlocking it.toFailure() }
-        gpuDevice.launchKernal(gpuCode, kernal = self, kernalArgs)
+        gpuDevice.launchKernal(gpuCode.toString(), kernal = self, kernalArgs)
         return@runBlocking LiloResult.Success(data = LiloNone)
     }
 }

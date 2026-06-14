@@ -25,11 +25,13 @@ import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.ui.components.TurtleHomeTabLayout
 import com.amrdeveloper.turtle.ui.components.TurtleTab
 import com.amrdeveloper.turtle.ui.components.TurtleToolbar
+import com.amrdeveloper.turtle.ui.files.LiloFilesScreen
 
 private val turtleAppHomeTabs = listOf(
     TurtleTab(title = "Code", icon = R.drawable.ic_code),
     TurtleTab(title = "Draw", icon = R.drawable.ic_draw),
     TurtleTab(title = "Terminal", icon = R.drawable.ic_terminal),
+    TurtleTab(title = "Files", icon = R.drawable.ic_files),
 )
 
 @Composable
@@ -74,12 +76,12 @@ fun HomeScreen(
                             editorState = currentCodeInEditor,
                             colorSchema = colorSchema.editorSchema
                         )
-
                         1 -> DrawScreen(viewModel, value = viewModel.screenUpdate)
                         2 -> Terminal(
                             colorSchema = colorSchema.terminalSchema,
                             output = viewModel.terminalOutput
                         )
+                        3 -> LiloFilesScreen(navController = navController)
                     }
                 }
             }

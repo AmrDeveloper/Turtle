@@ -22,31 +22,17 @@ fun LiloFilesScreen(
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(
-        topBar = {
-            TurtleToolbar(
-                isRunActionEnabled = false,
-                navController = navController
-            )
-        },
-        content = { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-            ) {
-                LazyColumn {
-                    items(uiState.data) { file ->
-                        LiloFile(
-                            file = file,
-                            onClick = {
-                                navController.navigate(route = AppRoute.Home(file.sourceCode))
-                            },
-                            onLongClick = {}
-                        )
-                    }
-                }
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn {
+            items(uiState.data) { file ->
+                LiloFile(
+                    file = file,
+                    onClick = {
+                        navController.navigate(route = AppRoute.Home(file.sourceCode))
+                    },
+                    onLongClick = {}
+                )
             }
         }
-    )
+    }
 }

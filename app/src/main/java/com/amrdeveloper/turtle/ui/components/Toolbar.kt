@@ -95,7 +95,6 @@ fun TurtleToolbar(
                     }
 
                     OptionsMenuWithDropDownActions(
-                        onFilesClick = { navController.navigate(route = AppRoute.Files) },
                         onSettingsClick = { navController.navigate(route = AppRoute.Settings) }
                     )
                 }
@@ -106,7 +105,6 @@ fun TurtleToolbar(
 
 @Composable
 private fun OptionsMenuWithDropDownActions(
-    onFilesClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -121,20 +119,6 @@ private fun OptionsMenuWithDropDownActions(
         }
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text("Files") },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_turtle_pack),
-                        contentDescription = "Files",
-                        tint = Color.Unspecified
-                    )
-                },
-                onClick = {
-                    expanded = false
-                    onFilesClick()
-                }
-            )
             DropdownMenuItem(
                 text = { Text("Settings") },
                 leadingIcon = {

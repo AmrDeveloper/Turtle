@@ -963,6 +963,42 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
     }
 
+    // for_if_clause
+    //   'for' star_targets 'in' ~ disjunction ('if' disjunction )*
+    private fun parseForIfClauses() : LiloResult<List<ForIfClause>> {
+        if (isPeek(kind = LiloTokenKind.FOR_KEYWORD).not()) {
+            return createDiagnostic(peek().loc, "Expected `for` at start of ForIfClause")
+        }
+
+        val forIfClauses = mutableListOf<ForIfClause>()
+        while (!isAtEnd() && isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
+            // Advance 'for'
+            advance()
+
+            // Parse for target
+            val target = parseExpr().valueOr { return it.toFailure() }
+
+            expectAndConsume(
+                kind = LiloTokenKind.IN_KEYWORD,
+                message = "expected 'in' after `for` target"
+            ).valueOr { return it.toFailure() }
+
+            // Parse for iterator
+            val iter = parseDisjunctionExpr().valueOr { return it.toFailure() }
+
+            // If <condition>
+            var filter : LiloExpr? = null
+            if (match(kind = LiloTokenKind.IF_KEYWORD)) {
+                filter = parseDisjunctionExpr().valueOr { return it.toFailure() }
+            }
+
+            val forIfClause = ForIfClause(target, iter, filter)
+            forIfClauses.add(forIfClause)
+        }
+
+        return LiloResult.Success(data = forIfClauses)
+    }
+
     private fun parseListExpr(): LiloResult<LiloExpr> {
         // Advance '['
         advance()
@@ -976,34 +1012,8 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         // listcomp:
         //   | '[' star_named_expression for_if_clauses ']'
-        // for_if_clause
-        //   'for' star_targets 'in' ~ disjunction ('if' disjunction )*
         if (isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
-            val forIfClauses = mutableListOf<ForIfClause>()
-            while (!isAtEnd() && isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
-                // Advance 'for'
-                advance()
-
-                // Parse for target
-                val target = parseExpr().valueOr { return it.toFailure() }
-
-                expectAndConsume(
-                    kind = LiloTokenKind.IN_KEYWORD,
-                    message = "expected 'in' after `for` target"
-                ).valueOr { return it.toFailure() }
-
-                // Parse for iterator
-                val iter = parseDisjunctionExpr().valueOr { return it.toFailure() }
-
-                // If <condition>
-                var filter : LiloExpr? = null
-                if (match(kind = LiloTokenKind.IF_KEYWORD)) {
-                    filter = parseDisjunctionExpr().valueOr { return it.toFailure() }
-                }
-
-                val forIfClause = ForIfClause(target, iter, filter)
-                forIfClauses.add(forIfClause)
-            }
+            val forIfClauses = parseForIfClauses().valueOr { return it.toFailure() }
 
             expectAndConsume(
                 kind = LiloTokenKind.R_SQB,

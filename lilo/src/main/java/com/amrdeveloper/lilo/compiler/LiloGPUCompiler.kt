@@ -39,6 +39,7 @@ import com.amrdeveloper.lilo.ast.NoneExpr
 import com.amrdeveloper.lilo.ast.PassStmt
 import com.amrdeveloper.lilo.ast.RaiseStmt
 import com.amrdeveloper.lilo.ast.ReturnStmt
+import com.amrdeveloper.lilo.ast.SetCompExpr
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
@@ -296,6 +297,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
 
     override fun visitSetExpr(expr: SetExpr): LiloResult<String> {
         return LiloResult.Failure(error = LiloExceptionMessage("Set NYI on GPU"))
+    }
+
+    override fun visitSetCompExpr(expr: SetCompExpr): LiloResult<String> {
+        return LiloResult.Failure(error = LiloExceptionMessage("SetComp NYI on GPU"))
     }
 
     override fun visitDictExpr(expr: DictExpr): LiloResult<String> {

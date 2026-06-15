@@ -45,6 +45,7 @@ import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.Parameter
+import com.amrdeveloper.lilo.ast.SetCompExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryOp
 import com.amrdeveloper.lilo.ast.UnaryOpExpr
@@ -288,7 +289,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         ).valueOr { return it.toFailure() }
 
         val parameters = mutableListOf<Parameter>()
-        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_PAR).not()) {
+        loop@ while (isPeek(kind = LiloTokenKind.R_PAR).not()) {
             val isOut = match(kind = LiloTokenKind.OUT_KEYWORD)
 
             val name = expectAndConsume(
@@ -747,7 +748,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | bitwise_xor
     private fun parseBitwiseOrExpr() :  LiloResult<LiloExpr> {
         var lhs = parseBitwiseXorExpr().valueOr { return it.toFailure() }
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.V_BAR)) {
+        while (isPeek(kind = LiloTokenKind.V_BAR)) {
             val op = binaryOpFromTokenKind(advance().kind)
             val rhs = parseBitwiseXorExpr().valueOr { return it.toFailure() }
             lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
@@ -760,7 +761,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | bitwise_and
     private fun parseBitwiseXorExpr() :  LiloResult<LiloExpr> {
         var lhs = parseBitwiseAndExpr().valueOr { return it.toFailure() }
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.CIRCUMFLEX)) {
+        while (isPeek(kind = LiloTokenKind.CIRCUMFLEX)) {
             val op = binaryOpFromTokenKind(advance().kind)
             val rhs = parseBitwiseAndExpr().valueOr { return it.toFailure() }
             lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
@@ -773,7 +774,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | shift_expr
     private fun parseBitwiseAndExpr() :  LiloResult<LiloExpr> {
         var lhs = parseShiftExpr().valueOr { return it.toFailure() }
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.AMPER)) {
+        while (isPeek(kind = LiloTokenKind.AMPER)) {
             val op = binaryOpFromTokenKind(advance().kind)
             val rhs = parseShiftExpr().valueOr { return it.toFailure() }
             lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
@@ -862,7 +863,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | primary
     private fun parsePowExpr() : LiloResult<LiloExpr> {
         var lhs = parseCallOrGetExpr().valueOr { return it.toFailure() }
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.DOUBLE_STAR)) {
+        while (isPeek(kind = LiloTokenKind.DOUBLE_STAR)) {
             val op = binaryOpFromTokenKind(advance().kind)
             val rhs = parseUnaryExpr().valueOr { return it.toFailure() }
             lhs = BinaryOpExpr(lhs = lhs, op = op, rhs = rhs)
@@ -876,7 +877,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         while (true) {
             if (match(kind = LiloTokenKind.L_PAR)) {
                 val args = mutableListOf<LiloExpr>()
-                loop@ while (!isAtEnd() && isPeek(LiloTokenKind.R_PAR).not()) {
+                loop@ while (isPeek(LiloTokenKind.R_PAR).not()) {
                     val expr = parseExpr().valueOr { return it.toFailure() }
                     args.add(expr)
 
@@ -971,7 +972,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
 
         val forIfClauses = mutableListOf<ForIfClause>()
-        while (!isAtEnd() && isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
+        while (isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
             // Advance 'for'
             advance()
 
@@ -1003,8 +1004,9 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance '['
         advance()
 
+        // Parse first element if exists
         val list = mutableListOf<LiloExpr>()
-        if (!isAtEnd() && isPeek(kind = LiloTokenKind.R_SQB).not()) {
+        if (isPeek(kind = LiloTokenKind.R_SQB).not()) {
             list.add(parseExpr().valueOr { return it.toFailure() })
         }
 
@@ -1012,7 +1014,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         // listcomp:
         //   | '[' star_named_expression for_if_clauses ']'
-        if (isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
+        if (list.isNotEmpty() && isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
             val forIfClauses = parseForIfClauses().valueOr { return it.toFailure() }
 
             expectAndConsume(
@@ -1031,7 +1033,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             ).valueOr { return it.toFailure() }
         }
 
-        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_SQB).not()) {
+        loop@ while (isPeek(kind = LiloTokenKind.R_SQB).not()) {
             list.add(parseExpr().valueOr { return it.toFailure() })
             consumeCommaOr { break@loop }
         }
@@ -1050,7 +1052,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         var hasComma = false
         val values = mutableListOf<LiloExpr>()
-        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_PAR).not()) {
+        loop@ while (isPeek(kind = LiloTokenKind.R_PAR).not()) {
             val expr = parseExpr().valueOr { return it.toFailure() }
             values.add(expr)
 
@@ -1072,7 +1074,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         advance()
 
         val parameters = mutableListOf<Parameter>()
-        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.COLON).not()) {
+        loop@ while (isPeek(kind = LiloTokenKind.COLON).not()) {
             if (isPeek(kind = LiloTokenKind.OUT_KEYWORD)) {
                 return createDiagnostic(
                     peek().loc,
@@ -1111,7 +1113,47 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         val setList = mutableListOf<LiloExpr>()
         val dictPairs = mutableListOf<Pair<LiloExpr, LiloExpr>>()
-        loop@ while (!isAtEnd() && isPeek(kind = LiloTokenKind.R_BRACE).not()) {
+
+        // Parse first element if exists
+        if (isPeek(kind = LiloTokenKind.R_BRACE).not()) {
+            val key = parseExpr().valueOr { return it.toFailure() }
+
+            // Parse map key and value pairs
+            if (match(kind = LiloTokenKind.COLON)) {
+                isDictionary = true
+                val value = parseExpr().valueOr { return it.toFailure() }
+                dictPairs.add(key to value)
+            }
+
+            // In case it's not dictionary, register it as set value
+            if (isDictionary.not()) setList.add(key)
+        }
+
+        val hasAtLestOneElement = setList.isNotEmpty() || dictPairs.isNotEmpty()
+        if (hasAtLestOneElement && isPeek(kind = LiloTokenKind.FOR_KEYWORD)) {
+            val forIfClauses = parseForIfClauses().valueOr { return it.toFailure() }
+
+            expectAndConsume(
+                kind = LiloTokenKind.R_BRACE,
+                message = "expected ']' at end of list"
+            ).valueOr { return it.toFailure() }
+
+            if (isDictionary) {
+                return createDiagnostic(peek().loc, "Dictionary comprehension is not supported yet")
+            }
+
+            val setComp = SetCompExpr(elt = setList[0], generator = forIfClauses)
+            return LiloResult.Success(data = setComp)
+        }
+
+        if (isPeek(kind = LiloTokenKind.R_BRACE).not()) {
+            expectAndConsume(
+                kind = LiloTokenKind.COMMA,
+                message = "expected ',' between set/dict elements"
+            ).valueOr { return it.toFailure() }
+        }
+
+        loop@ while (isPeek(kind = LiloTokenKind.R_BRACE).not()) {
             val key = parseExpr().valueOr { return it.toFailure() }
 
             // Parse map key and value pairs
@@ -1181,7 +1223,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun match(kind: LiloTokenKind): Boolean {
-        if (!isAtEnd() && isPeek(kind)) {
+        if (isPeek(kind)) {
             advance()
             return true
         }

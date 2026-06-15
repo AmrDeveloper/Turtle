@@ -42,6 +42,7 @@ import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.NameExpr
+import com.amrdeveloper.lilo.ast.SetCompExpr
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryOp
 import com.amrdeveloper.lilo.ast.UnaryOpExpr
@@ -668,6 +669,53 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             val element = visit(expr = value).valueOr { return it.toFailure() }
             set.add(element)
         }
+        return runtimeObject(obj = LiloSet(values = set))
+    }
+
+    override fun visitSetCompExpr(expr: SetCompExpr): LiloResult<LiloObject> {
+        val set = mutableSetOf<LiloObject>()
+        for (forIfClause in expr.generator) {
+            val target = (forIfClause.target as NameExpr).value.lexeme!!
+            val iter = visit(expr = forIfClause.iter).valueOr { return it.toFailure() }
+            val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
+            if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
+                throw createLiloException(liloTypeErrorType, "'${iter.type}' object is not iterable")
+            }
+
+            val iterator =
+                iteratorFunc.invoke(interpreter = this, args = listOf(iter)).valueOr { return it.toFailure() }
+            val nextFunc = iterator.getAttr(name = LiloMagicMethod.NEXT)
+            if (nextFunc == null || nextFunc !is LiloCallable) {
+                throw createLiloException(liloTypeErrorType, "${iter.type}' object is not an iterator")
+            }
+
+            val previous = environment
+            environment = LiloEnvironment(enclosing = environment)
+
+            while (true) {
+                try {
+                    val value = nextFunc.invoke(interpreter = this, args = listOf(iterator))
+                        .valueOr { return it.toFailure() }
+                    environment.set(name = target, value = value)
+                    if (forIfClause.filter != null) {
+                        val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
+                        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+                        if (!isTruth) continue
+                    }
+
+                    val element = visit(expr.elt).valueOr { return it.toFailure() }
+                    set.add(element)
+                } catch (e: LiloRaise) {
+                    if (liloStopIterationType == e.exception || liloStopIterationType == e.exception.type) {
+                        break
+                    }
+                    environment = previous
+                    throw e
+                }
+            }
+            environment = previous
+        }
+
         return runtimeObject(obj = LiloSet(values = set))
     }
 

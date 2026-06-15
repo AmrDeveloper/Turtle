@@ -41,6 +41,19 @@ val liloShippedExamples = listOf(
         """.trimIndent()
     ),
     LiloFileEntity(
+        name = "SetComprehension",
+        sourceCode = """
+        s1 = {x for x in range(3)}
+        print(s1)
+        
+        s2 = {x for x in range(3) for x in range(3)}
+        print(s2)
+        
+        s3 = {x for x in range(3) if x > 0}
+        print(s3)
+        """.trimIndent()
+    ),
+    LiloFileEntity(
         name = "ListIterator",
         sourceCode = """
         print("Iterator")

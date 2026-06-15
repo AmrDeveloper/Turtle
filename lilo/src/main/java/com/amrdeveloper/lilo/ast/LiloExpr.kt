@@ -70,6 +70,8 @@ data class ListCompExpr(val elt: LiloExpr, val generator: List<ForIfClause>) : L
 
 data class ListExpr(val values: List<LiloExpr>) : LiloExpr
 
+data class SetCompExpr(val elt: LiloExpr, val generator: List<ForIfClause>) : LiloExpr
+
 data class SetExpr(val values: List<LiloExpr>) : LiloExpr
 
 data class DictExpr(val values: List<Pair<LiloExpr, LiloExpr>>) : LiloExpr

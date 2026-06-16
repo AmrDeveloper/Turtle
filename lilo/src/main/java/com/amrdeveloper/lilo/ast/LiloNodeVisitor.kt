@@ -59,6 +59,7 @@ interface LiloExprVisitor<T> {
         is SetExpr -> visitSetExpr(expr)
         is SetCompExpr -> visitSetCompExpr(expr)
         is DictExpr -> visitDictExpr(expr)
+        is DictCompExpr -> visitDictCompExpr(expr)
         is TupleExpr -> visitTupleExpr(expr)
         is NameExpr -> visitNameExpr(expr)
         is StrExpr -> visitStrExpr(expr)
@@ -84,6 +85,7 @@ interface LiloExprVisitor<T> {
     fun visitSetExpr(expr: SetExpr): T
     fun visitSetCompExpr(expr: SetCompExpr): T
     fun visitDictExpr(expr: DictExpr): T
+    fun visitDictCompExpr(expr: DictCompExpr): T
     fun visitTupleExpr(expr: TupleExpr): T
     fun visitNameExpr(expr: NameExpr): T
     fun visitStrExpr(expr: StrExpr): T

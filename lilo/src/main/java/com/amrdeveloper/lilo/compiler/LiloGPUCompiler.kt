@@ -14,6 +14,7 @@ import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
+import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
@@ -305,6 +306,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
 
     override fun visitDictExpr(expr: DictExpr): LiloResult<String> {
         return LiloResult.Failure(error = LiloExceptionMessage("Dict NYI on GPU"))
+    }
+
+    override fun visitDictCompExpr(expr: DictCompExpr): LiloResult<String> {
+        return LiloResult.Failure(error = LiloExceptionMessage("DictComp NYI on GPU"))
     }
 
     override fun visitTupleExpr(expr: TupleExpr): LiloResult<String> {

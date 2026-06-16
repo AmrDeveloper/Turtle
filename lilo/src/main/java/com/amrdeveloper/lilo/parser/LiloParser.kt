@@ -15,6 +15,7 @@ import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
+import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
@@ -1138,12 +1139,12 @@ class LiloParser(val tokens: List<LiloToken>) {
                 message = "expected ']' at end of list"
             ).valueOr { return it.toFailure() }
 
-            if (isDictionary) {
-                return createDiagnostic(peek().loc, "Dictionary comprehension is not supported yet")
+            val compExpr = if (isDictionary) {
+                DictCompExpr(elt = dictPairs.first(), generator = forIfClauses)
+            } else {
+                SetCompExpr(elt = setList.first(), generator = forIfClauses)
             }
-
-            val setComp = SetCompExpr(elt = setList[0], generator = forIfClauses)
-            return LiloResult.Success(data = setComp)
+            return LiloResult.Success(data = compExpr)
         }
 
         if (isPeek(kind = LiloTokenKind.R_BRACE).not()) {

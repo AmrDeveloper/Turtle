@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+Version 2.xx.xx *(2026-06-16)*
+-----------------------------
+
+* Implement Set Comprehension on the interpreter target.
+* Implement Dict Comprehension on the interpreter target.
+* Add support for function return type annotations.
+* Add more arity checks to bin function.
+* Implement builtin `callable` function.
+* Implement invert operator.
+* Support for ... else stmt.
+* Move files screen to toolbar.
+* Show badge on active tab.
+
 Version 2.0.2 *(2026-06-11)*
 -----------------------------
 

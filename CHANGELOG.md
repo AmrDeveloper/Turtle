@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 2.xx.xx *(2026-06-16)*
+Version 2.0.3 *(2026-06-16)*
 -----------------------------
 
 * Implement Set Comprehension on the interpreter target.

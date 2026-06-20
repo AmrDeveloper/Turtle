@@ -15,6 +15,7 @@ import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
+import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
@@ -139,6 +140,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | return_stmt
     //    | raise_stmt
     //    | pass_stmt
+    //    | del_stmt
     //    | yield_stmt
     //    | assert_stmt
     //    | break_stmt
@@ -160,6 +162,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             LiloTokenKind.GLOBAL_KEYWORD -> parseGlobalStmt()
             LiloTokenKind.NON_LOCAL_KEYWORD -> parseNonLocalStmt()
+            LiloTokenKind.DEL_KEYWORD -> parseDelStmt()
             else -> parseAssignmentStmt()
         }
         if (simpleStmtRes.isFailure()) return simpleStmtRes
@@ -361,6 +364,24 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
         consumeOptionalSemi()
         return LiloResult.Success(data = NonLocalStmt(names))
+    }
+
+    private fun parseDelStmt() : LiloResult<DelStmt> {
+        // Advance `del` keyword
+        advance()
+
+        val names = mutableListOf<String>()
+        loop@ while (!isAtEnd()) {
+            val name = expectAndConsume(
+                kind = LiloTokenKind.NAME,
+                message = "Expect `Name` after del statement"
+            ).valueOr { return it.toFailure() }.lexeme!!
+            names.add(name)
+
+            consumeCommaOr { break@loop }
+        }
+        consumeOptionalSemi()
+        return LiloResult.Success(data = DelStmt(names))
     }
 
     // if_stmt:

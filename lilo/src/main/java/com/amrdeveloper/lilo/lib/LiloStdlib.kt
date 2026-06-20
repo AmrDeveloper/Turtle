@@ -44,6 +44,7 @@ import com.amrdeveloper.lilo.objects.liloNameErrorType
 import com.amrdeveloper.lilo.objects.liloNotImplementedError
 import com.amrdeveloper.lilo.objects.liloSyntaxErrorType
 import com.amrdeveloper.lilo.objects.liloTypeErrorType
+import com.amrdeveloper.lilo.objects.liloUnboundLocalErrorType
 import com.amrdeveloper.lilo.objects.liloZeroDivisionErrorType
 
 fun registerLiloAutoImportedModule() {
@@ -64,6 +65,7 @@ fun registerLiloAutoImportedModule() {
     LiloEnvironment.builtins["AttributeError"]          = liloAttributeErrorType
     LiloEnvironment.builtins["SyntaxError"]             = liloSyntaxErrorType
     LiloEnvironment.builtins["NameError"]               = liloNameErrorType
+    LiloEnvironment.builtins["UnboundLocalError"]       = liloUnboundLocalErrorType
     LiloEnvironment.builtins["ImportError"]             = liloImportErrorType
     LiloEnvironment.builtins["ModuleNotFoundError"]     = liloModuleNotFoundErrorType
     LiloEnvironment.builtins["TypeError"]               = liloTypeErrorType

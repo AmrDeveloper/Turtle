@@ -18,6 +18,7 @@ enum class LiloTokenKind {
 
     GLOBAL_KEYWORD,
     NON_LOCAL_KEYWORD,
+    DEL_KEYWORD,
 
     RAISE_KEYWORD,
     ASSERT_KEYWORD,
@@ -109,6 +110,7 @@ val liloKeywordsMap = mapOf(
 
     "global" to LiloTokenKind.GLOBAL_KEYWORD,
     "nonlocal" to LiloTokenKind.NON_LOCAL_KEYWORD,
+    "del" to LiloTokenKind.DEL_KEYWORD,
 
     "raise" to LiloTokenKind.RAISE_KEYWORD,
     "assert" to LiloTokenKind.ASSERT_KEYWORD,

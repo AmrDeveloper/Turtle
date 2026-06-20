@@ -14,6 +14,7 @@ import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
+import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
@@ -107,6 +108,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
 
     override fun visitNonLocalStmt(stmt: NonLocalStmt): LiloResult<String> {
         return LiloResult.Failure(error = LiloExceptionMessage("NonLocal NYI on GPU"))
+    }
+
+    override fun visitDelStmt(stmt: DelStmt): LiloResult<String> {
+        return LiloResult.Failure(error = LiloExceptionMessage("Del NYI on GPU"))
     }
 
     override fun visitIfStmt(stmt: IfStmt): LiloResult<String> {

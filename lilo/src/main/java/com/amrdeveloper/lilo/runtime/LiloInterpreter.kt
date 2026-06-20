@@ -15,6 +15,7 @@ import com.amrdeveloper.lilo.ast.ComparisonOpExpr
 import com.amrdeveloper.lilo.ast.ComparisonOp
 import com.amrdeveloper.lilo.ast.ComplexExpr
 import com.amrdeveloper.lilo.ast.ContinueStmt
+import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
@@ -91,6 +92,7 @@ import com.amrdeveloper.lilo.objects.liloNotImplementedError
 import com.amrdeveloper.lilo.objects.liloStopIterationType
 import com.amrdeveloper.lilo.objects.liloSyntaxErrorType
 import com.amrdeveloper.lilo.objects.liloTypeErrorType
+import com.amrdeveloper.lilo.objects.liloUnboundLocalErrorType
 import com.amrdeveloper.lilo.objects.str
 import kotlin.collections.set
 
@@ -209,6 +211,27 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitNonLocalStmt(stmt: NonLocalStmt): LiloResult<Unit> {
         // FIXME: NonLocal Statement Not yet implemented
         throw createLiloException(liloNotImplementedError, "NonLocal Statement Not yet implemented")
+    }
+
+    override fun visitDelStmt(stmt: DelStmt): LiloResult<Unit> {
+        for (name in stmt.names) {
+            val localDeleted = environment.delete(name)
+            if (localDeleted != null) continue
+
+            if (environment.isMarkedGlobal(name)) {
+                environment.deleteGlobal(name)
+                continue
+            }
+
+            // If not exists, report exception depending on the current scope
+            if (environment.isGlobalScope()) {
+                throw createLiloException(liloNameErrorType, "name '${name}' is not defined")
+            }
+
+            assert(environment.isLocalScope())
+            throw createLiloException(liloUnboundLocalErrorType, "local variable '${name}' referenced before assignment")
+        }
+        return LiloResult.Success(data = Unit)
     }
 
     override fun visitIfStmt(stmt: IfStmt): LiloResult<Unit> {

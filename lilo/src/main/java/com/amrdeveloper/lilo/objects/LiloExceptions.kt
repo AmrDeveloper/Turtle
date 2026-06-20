@@ -67,6 +67,11 @@ val liloNameErrorType =
         it.type = LiloBaseType.LILO_TYPE_TYPE
     }
 
+val liloUnboundLocalErrorType =
+    LiloType(name = "UnboundLocalError", bases = listOf(liloNameErrorType)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+    }
+
 val liloImportErrorType = LiloType(name = "ImportError", bases = listOf(liloBaseExceptionType)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
 }

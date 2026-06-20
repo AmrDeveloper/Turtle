@@ -16,6 +16,7 @@ val keywords = listOf(
 
     "global",
     "nonlocal",
+    "del",
 
     "raise",
     "assert",

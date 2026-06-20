@@ -44,9 +44,21 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
         return globals.contains(name)
     }
 
+    fun delete(name : String) : LiloObject? {
+        return values.remove(key = name)
+    }
+
+    fun deleteGlobal(name: String): LiloObject? {
+        val globals = globalScope()
+        return globals.values.remove(key = name)
+    }
+
     fun globalScope() : LiloEnvironment {
         var scope =  this
         while (scope.enclosing != null) scope = scope.enclosing
         return scope
     }
+
+    fun isGlobalScope() = this.enclosing == null
+    fun isLocalScope() = this.enclosing != null
 }

@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 2.0.4 *(2026-[M]-[D])*
+-----------------------------
+
+* Implement `del` statement with identifiers.
+
 Version 2.0.3 *(2026-06-16)*
 -----------------------------
 

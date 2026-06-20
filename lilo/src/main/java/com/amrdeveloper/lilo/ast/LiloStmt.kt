@@ -27,6 +27,8 @@ data class GlobalStmt(val names: List<String>) : LiloStmt
 
 data class NonLocalStmt(val names: List<String>) : LiloStmt
 
+data class DelStmt(val names: List<String>) : LiloStmt
+
 data class ForStmt(
     val target: LiloExpr,
     val iter: LiloExpr,

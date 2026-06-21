@@ -104,6 +104,8 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     private val TRUE = LiloBool(value = true)
     private val FALSE = LiloBool(value = false)
 
+    private var activeException : LiloObject? = null
+
     val globals = LiloEnvironment().also {
         // Register builtins
         registerLiloAutoImportedModule()
@@ -239,7 +241,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitIfStmt(stmt: IfStmt): LiloResult<Unit> {
         for ((expr, body) in stmt.ifs) {
             val condition = visit(expr = expr).valueOr { return it.toFailure() }
-            val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+            val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
             if (isTruth) {
                 visit(stmt = body).valueOr { return it.toFailure() }
                 return LiloResult.Success(data = Unit)
@@ -300,7 +302,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitWhileStmt(stmt: WhileStmt): LiloResult<Unit> {
         val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
-        var isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+        var isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
         if (!isTruth && stmt.elseBlock != null) {
             visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
             return LiloResult.Success(data = Unit)
@@ -308,15 +310,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         try {
             do {
-                try {
-                    visit(stmt = stmt.body).valueOr { return it.toFailure() }
-                } catch (_: LiloContinueSignal) {
-
-                }
-
+                try { visit(stmt = stmt.body).valueOr { return it.toFailure() } }
+                catch (_: LiloContinueSignal) { }
                 // Execute the condition for the next run
                 val condition = visit(expr = stmt.condition).valueOr { return it.toFailure() }
-                isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+                isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
             } while (isTruth)
         } catch (_: LiloBreakSignal) {
             return LiloResult.Success(data = Unit)
@@ -402,9 +400,9 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         var hasRTException = false
         try { visit(stmt.body).valueOr { return it.toFailure() } }
-        catch (activeException: LiloRaise) {
+        catch (raisedExn: LiloRaise) {
             hasRTException = true
-            val raisedExn = activeException.exception
+            val exception = raisedExn.exception
             var selectedHandler: ExceptHandler? = null
             for (handler in stmt.handlers) {
                 if (handler.type == null) {
@@ -417,7 +415,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                     throw createLiloException(liloTypeErrorType, "catching classes that do not inherit from BaseException is not allowed")
                 }
 
-                if (raisedExn.type == except) {
+                if (exception.type == except) {
                     selectedHandler = handler
                     break
                 }
@@ -426,12 +424,14 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             if (selectedHandler != null) {
                 // Note that except block doesn't create a new namespace to insert `as <N>`,
                 // it just define it and undefine it again at the end of scope
-                if (selectedHandler.name != null) environment.set(selectedHandler.name, raisedExn)
+                activeException = exception
+                if (selectedHandler.name != null) environment.set(selectedHandler.name, exception)
                 visit(stmt = selectedHandler.body).valueOr { return it.toFailure() }
                 if (selectedHandler.name != null) environment.delete(selectedHandler.name)
+                activeException = null
             }
 
-            else throw activeException
+            else throw raisedExn
         }
 
         if (!hasRTException && stmt.elseBlock != null) {
@@ -447,7 +447,9 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<Unit> {
         if (stmt.exc == null) {
-            // FIXME: Implement tracking for Active Exception
+            if (activeException != null) {
+                throw createLiloException(activeException!!)
+            }
             throw createLiloException(liloRuntimeErrorType, "No active exception to reraise")
         }
 
@@ -495,7 +497,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitAssertStmt(stmt: AssertStmt): LiloResult<Unit> {
         val condition = visit(expr = stmt.test).valueOr { return it.toFailure() }
-        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+        val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
         if (isTruth) return LiloResult.Success(data = Unit)
         val args = mutableListOf<LiloObject>()
         if (stmt.msg != null) {
@@ -545,7 +547,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitIfExpr(expr: IfExpr): LiloResult<LiloObject> {
         val condition = visit(expr.condition).valueOr { return it.toFailure() }
-        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+        val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
         if (isTruth) {
             val thenValueResult = visit(expr.thenValue)
             if (thenValueResult.isFailure()) return thenValueResult.toFailure()
@@ -649,7 +651,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitBoolOpExpr(expr: BoolOpExpr): LiloResult<LiloObject> {
         val lhs = visit(expr.lhs).valueOr { return it.toFailure() }
-        val isLhsTrue = lhs.isTrue(this).valueOr { return it.toFailure() }
+        val isLhsTrue = lhs.isTrue(interpreter = this).valueOr { return it.toFailure() }
 
         // Short-circuit evaluation
         val isOrOperand = expr.op == BoolOp.OR
@@ -659,7 +661,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         if (!isOrOperand && !isLhsTrue) return LiloResult.Success(data = FALSE)
 
         val rhs = visit(expr.rhs).valueOr { return it.toFailure() }
-        val isRhsTrue = rhs.isTrue(this).valueOr { return it.toFailure() }
+        val isRhsTrue = rhs.isTrue(interpreter = this).valueOr { return it.toFailure() }
         return LiloResult.Success(data = LiloBool(value = isRhsTrue))
     }
 
@@ -721,7 +723,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                     environment.set(name = target, value = value)
                     if (forIfClause.filter != null) {
                         val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
-                        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+                        val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
                         if (!isTruth) continue
                     }
 
@@ -777,7 +779,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                     environment.set(name = target, value = value)
                     if (forIfClause.filter != null) {
                         val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
-                        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+                        val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
                         if (!isTruth) continue
                     }
 
@@ -834,7 +836,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                     environment.set(name = target, value = value)
                     if (forIfClause.filter != null) {
                         val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
-                        val isTruth = condition.isTrue(this).valueOr { return it.toFailure() }
+                        val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
                         if (!isTruth) continue
                     }
 

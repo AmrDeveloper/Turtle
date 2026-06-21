@@ -18,6 +18,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
+import com.amrdeveloper.lilo.ast.ExceptHandler
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.ForIfClause
@@ -48,6 +49,7 @@ import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.Parameter
 import com.amrdeveloper.lilo.ast.SetCompExpr
+import com.amrdeveloper.lilo.ast.TryStmt
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryOp
 import com.amrdeveloper.lilo.ast.UnaryOpExpr
@@ -56,6 +58,7 @@ import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.common.isFailure
 import com.amrdeveloper.lilo.common.toFailure
+import com.amrdeveloper.lilo.common.toFailureError
 import com.amrdeveloper.lilo.common.valueOr
 
 /// Parser for the Lilo Programming Language
@@ -92,6 +95,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | function_def
     //    | if_stmt
     //    | for_stmt
+    //    | try_stmt
     //    | while_stmt
     private fun parseCompoundStmt(): LiloResult<LiloStmt> {
         return when (peek().kind) {
@@ -109,6 +113,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.DEF_KEYWORD -> parseFunctionDefStmt()
             LiloTokenKind.IF_KEYWORD -> parseIfStmt()
             LiloTokenKind.FOR_KEYWORD -> parseForStmt()
+            LiloTokenKind.TRY_KEYWORD -> parseTryStmt()
             LiloTokenKind.WHILE_KEYWORD -> parseWhileStmt()
             else -> parseSimpleStmt()
         }
@@ -116,7 +121,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
     private fun parseDecorators(): LiloResult<List<LiloExpr>> {
         val decorators = mutableListOf<LiloExpr>()
-        while (!isAtEnd() && match(kind = LiloTokenKind.AT)) {
+        while (match(kind = LiloTokenKind.AT)) {
             val name = parseExpr().valueOr { return it.toFailure() }
             if (name !is NameExpr) {
                 return createDiagnostic(
@@ -428,7 +433,8 @@ class LiloParser(val tokens: List<LiloToken>) {
         return LiloResult.Success(data = IfStmt(ifs, elseBlock))
     }
 
-    // | 'for' star_targets 'in' ~ star_expressions ':' block [else_block]
+    // for_stmt
+    //    | 'for' star_targets 'in' ~ star_expressions ':' block [else_block]
     private fun parseForStmt(): LiloResult<ForStmt> {
         // Advance 'for' keyword
         advance()
@@ -457,6 +463,94 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
 
         return LiloResult.Success(data = ForStmt(target, iter, body, elseBlock))
+    }
+
+    // try_stmt:
+    //    | 'try' ':' block finally_block
+    //    | 'try' ':' block except_block+ [else_block] [finally_block]
+    //    | 'try' ':' block except_star_block+ [else_block] [finally_block]
+    // except_block:
+    //    | 'except' expression ':' block
+    //    | 'except' expression 'as' NAME ':' block
+    //    | 'except' expressions ':' block
+    //    | 'except' ':' block
+    // finally_block:
+    //    | 'finally' ':' block
+    private fun parseTryStmt(): LiloResult<TryStmt> {
+        // Advance 'try' keyword
+        advance()
+
+        // Advance ':'
+        expectAndConsume(
+            kind = LiloTokenKind.COLON,
+            message = "expected ':' after `try` keyword"
+        ).valueOr { return it.toFailure() }
+
+        val tryBlock = parseBlockStmt().valueOr { return it.toFailureError() }
+        val handlers = parseExceptHandlers().valueOr { return it.toFailure() }
+
+        // Else block
+        var elseBlock : LiloStmt? = null
+        if (match(kind = LiloTokenKind.ELSE_KEYWORD)) {
+            // Advance ':'
+            expectAndConsume(
+                kind = LiloTokenKind.COLON,
+                message = "expected ':' after `finally` keyword"
+            ).valueOr { return it.toFailure() }
+            elseBlock = parseBlockStmt().valueOr { return it.toFailureError() }
+        }
+
+        // Finally block
+        var finallyBody : LiloStmt? = null
+        if (match(kind = LiloTokenKind.FINALLY_KEYWORD)) {
+            // Advance ':'
+            expectAndConsume(
+                kind = LiloTokenKind.COLON,
+                message = "expected ':' after `finally` keyword"
+            ).valueOr { return it.toFailure() }
+            finallyBody = parseBlockStmt().valueOr { return it.toFailureError() }
+        }
+
+        return LiloResult.Success(data = TryStmt(tryBlock, handlers, elseBlock = elseBlock, finallyBody))
+    }
+
+    // except_block:
+    //    | 'except' expression ':' block
+    //    | 'except' expression 'as' NAME ':' block
+    //    | 'except' expressions ':' block
+    //    | 'except' ':' block
+    private fun parseExceptHandlers(): LiloResult<List<ExceptHandler>> {
+        val handlers = mutableListOf<ExceptHandler>()
+        var hasCatchAllHandler = false
+        while (match(kind = LiloTokenKind.EXCEPT_KEYWORD)) {
+           // Catch all
+            if (match(kind = LiloTokenKind.COLON)) {
+                if (hasCatchAllHandler) return createDiagnostic(peek().loc, message = "Only one catch-all except clause allowed")
+                hasCatchAllHandler = true
+                val catchAllHandler = parseBlockStmt().valueOr { return it.toFailure() }
+                handlers.add(ExceptHandler(body = catchAllHandler))
+                continue
+            }
+
+            // Catch handler with type, body and optional name alias
+            val type = parseExpr().valueOr { return it.toFailure() }
+            var name : String? = null
+            if (match(kind = LiloTokenKind.AS_KEYWORD)) {
+                name = expectAndConsume(
+                    kind = LiloTokenKind.NAME,
+                    message = "expected 'name' after except `as` keyword"
+                ).valueOr { return it.toFailure() }.lexeme!!
+            }
+
+            expectAndConsume(
+                kind = LiloTokenKind.COLON,
+                message = "expected ':' before `except` body"
+            ).valueOr { return it.toFailure() }
+
+            val handlerBody = parseBlockStmt().valueOr { return it.toFailure() }
+            handlers.add(ExceptHandler(type, name, handlerBody))
+        }
+        return LiloResult.Success(data = handlers)
     }
 
     // while_stmt:
@@ -1245,7 +1339,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     }
 
     private fun match(kind: LiloTokenKind): Boolean {
-        if (isPeek(kind)) {
+        if (!isAtEnd() && isPeek(kind)) {
             advance()
             return true
         }

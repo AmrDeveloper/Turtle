@@ -39,7 +39,7 @@ data class ForStmt(
 data class WhileStmt(
     val condition: LiloExpr,
     val body: LiloStmt,
-    val elseBlock: LiloStmt?
+    val elseBlock: LiloStmt? = null
 ) : LiloStmt
 
 data class IfStmt(
@@ -62,11 +62,24 @@ data class AnnAssignStmt(
     val value: LiloExpr
 ) : LiloStmt
 
+data class ExceptHandler(
+    val type: LiloExpr? = null,
+    val name: String? = null,
+    val body: LiloStmt,
+)
+
+data class TryStmt(
+    val body: LiloStmt,
+    val handlers: List<ExceptHandler>,
+    val elseBlock: LiloStmt? = null,
+    val finallyBody: LiloStmt? = null,
+) : LiloStmt
+
 data class RaiseStmt(val exc: LiloExpr? = null, val cause: LiloExpr? = null) : LiloStmt
 
 data class ReturnStmt(val value: LiloExpr? = null) : LiloStmt
 
-data class AssertStmt(val test: LiloExpr, val msg: LiloExpr?) : LiloStmt
+data class AssertStmt(val test: LiloExpr, val msg: LiloExpr? = null) : LiloStmt
 
 class BreakStmt : LiloStmt
 

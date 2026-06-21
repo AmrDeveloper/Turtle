@@ -44,6 +44,7 @@ import com.amrdeveloper.lilo.ast.ReturnStmt
 import com.amrdeveloper.lilo.ast.SetCompExpr
 import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
+import com.amrdeveloper.lilo.ast.TryStmt
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryOp
 import com.amrdeveloper.lilo.ast.UnaryOpExpr
@@ -172,6 +173,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         // Target is not NameExpr, can be `vec[i]` or any other expr else
         val target = visit(expr = stmt.target).valueOr { return it.toFailure() }
         return LiloResult.Success(data = "$target = $value;")
+    }
+
+    override fun visitTryStmt(stmt: TryStmt): LiloResult<String> {
+        return LiloResult.Failure(error = LiloExceptionMessage("Try NYI on GPU"))
     }
 
     override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<String> {

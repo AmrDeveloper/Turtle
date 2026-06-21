@@ -15,6 +15,7 @@ interface LiloStmtVisitor<T> {
         is ExprStmt -> visitExprStmt(stmt)
         is AnnAssignStmt -> visitAnnotatedAssignStmt(stmt)
         is AssignStmt -> visitAssignStmt(stmt)
+        is TryStmt -> visitTryStmt(stmt)
         is RaiseStmt -> visitRaiseStmt(stmt)
         is ReturnStmt -> visitReturnStmt(stmt)
         is AssertStmt -> visitAssertStmt(stmt)
@@ -36,6 +37,7 @@ interface LiloStmtVisitor<T> {
     fun visitExprStmt(stmt: ExprStmt): T
     fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): T
     fun visitAssignStmt(stmt: AssignStmt): T
+    fun visitTryStmt(stmt: TryStmt): T
     fun visitRaiseStmt(stmt: RaiseStmt): T
     fun visitReturnStmt(stmt: ReturnStmt): T
     fun visitAssertStmt(stmt: AssertStmt): T

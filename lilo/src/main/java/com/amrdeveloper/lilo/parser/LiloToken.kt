@@ -16,6 +16,10 @@ enum class LiloTokenKind {
     FOR_KEYWORD,
     IN_KEYWORD,
 
+    TRY_KEYWORD,
+    EXCEPT_KEYWORD,
+    FINALLY_KEYWORD,
+
     GLOBAL_KEYWORD,
     NON_LOCAL_KEYWORD,
     DEL_KEYWORD,
@@ -107,6 +111,10 @@ val liloKeywordsMap = mapOf(
     "while" to LiloTokenKind.WHILE_KEYWORD,
     "for" to LiloTokenKind.FOR_KEYWORD,
     "in" to LiloTokenKind.IN_KEYWORD,
+
+    "try" to LiloTokenKind.TRY_KEYWORD,
+    "except" to LiloTokenKind.EXCEPT_KEYWORD,
+    "finally" to LiloTokenKind.FINALLY_KEYWORD,
 
     "global" to LiloTokenKind.GLOBAL_KEYWORD,
     "nonlocal" to LiloTokenKind.NON_LOCAL_KEYWORD,

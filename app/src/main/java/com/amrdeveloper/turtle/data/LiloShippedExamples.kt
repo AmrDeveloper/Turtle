@@ -421,5 +421,18 @@ val liloShippedExamples = listOf(
         normal_vec_add(a, b, c)
         print("CPU Time ", time.time() - start2)    
         """.trimIndent()
-    )
+    ),
+    LiloFileEntity(
+        name = "Exception",
+        sourceCode = """
+         try:
+            raise NameError
+         except NameError:
+            print(2)
+         else:
+            print(3)
+        finally:
+            print(4)
+        """.trimIndent()
+    ),
 )

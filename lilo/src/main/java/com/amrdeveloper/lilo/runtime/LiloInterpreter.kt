@@ -18,6 +18,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
+import com.amrdeveloper.lilo.ast.ExceptHandler
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.ForStmt
@@ -45,6 +46,7 @@ import com.amrdeveloper.lilo.ast.SetExpr
 import com.amrdeveloper.lilo.ast.StrExpr
 import com.amrdeveloper.lilo.ast.NameExpr
 import com.amrdeveloper.lilo.ast.SetCompExpr
+import com.amrdeveloper.lilo.ast.TryStmt
 import com.amrdeveloper.lilo.ast.TupleExpr
 import com.amrdeveloper.lilo.ast.UnaryOp
 import com.amrdeveloper.lilo.ast.UnaryOpExpr
@@ -389,6 +391,54 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
             else -> throw createLiloException(liloSyntaxErrorType, "cannot assign to literal here. Maybe you meant '==' instead of '='?")
         }
+    }
+
+    override fun visitTryStmt(stmt: TryStmt): LiloResult<Unit> {
+        // - Execute the try body first, before visiting the handlers
+        // - If try body raises an exception, find possible handler to handle it,
+        //   - if one exists, execute it, then execute finally block if exists.
+        //   - if not exists, rethrow the exception.
+        // - If no exception thrown, execute else, then finally block if exists.
+
+        var hasRTException = false
+        try { visit(stmt.body).valueOr { return it.toFailure() } }
+        catch (activeException: LiloRaise) {
+            hasRTException = true
+            val raisedExn = activeException.exception
+            var selectedHandler: ExceptHandler? = null
+            for (handler in stmt.handlers) {
+                if (handler.type == null) {
+                    selectedHandler = handler
+                    break
+                }
+
+                val except = visit(expr = handler.type).valueOr { return it.toFailure() }
+                if (raisedExn.type == except || raisedExn.type == except.type) {
+                    selectedHandler = handler
+                    break
+                }
+            }
+
+            if (selectedHandler != null) {
+                // Note that except block doesn't create a new namespace to insert `as <N>`,
+                // it just define it and undefine it again at the end of scope
+                if (selectedHandler.name != null) environment.set(selectedHandler.name, raisedExn)
+                visit(stmt = selectedHandler.body).valueOr { return it.toFailure() }
+                if (selectedHandler.name != null) environment.delete(selectedHandler.name)
+            }
+
+            else throw activeException
+        }
+
+        if (!hasRTException && stmt.elseBlock != null) {
+            visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
+        }
+
+        if (stmt.finallyBody != null) {
+            visit(stmt = stmt.finallyBody).valueOr { return it.toFailure() }
+        }
+
+        return LiloResult.Success(data = Unit)
     }
 
     override fun visitRaiseStmt(stmt: RaiseStmt): LiloResult<Unit> {

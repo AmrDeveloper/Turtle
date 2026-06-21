@@ -14,6 +14,10 @@ val keywords = listOf(
     "for",
     "in",
 
+    "try",
+    "except",
+    "finally",
+
     "global",
     "nonlocal",
     "del",

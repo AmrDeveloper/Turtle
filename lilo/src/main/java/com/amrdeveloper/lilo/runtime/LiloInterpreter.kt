@@ -413,7 +413,11 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 }
 
                 val except = visit(expr = handler.type).valueOr { return it.toFailure() }
-                if (raisedExn.type == except || raisedExn.type == except.type) {
+                if (except !is LiloType) {
+                    throw createLiloException(liloTypeErrorType, "catching classes that do not inherit from BaseException is not allowed")
+                }
+
+                if (raisedExn.type == except) {
                     selectedHandler = handler
                     break
                 }

@@ -138,17 +138,17 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         shouldDefine: Boolean = false
     ): LiloResult<LiloObject> {
         var liloModule = LiloEnvironment.builtins[names[0]]
-        if (liloModule == null)
-            throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")
+            ?: throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")
 
         if (liloModule !is LiloModule)
             throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")
+
         if (shouldDefine && (names.size == 1 || alias == null)) {
             environment.set(name = alias ?: names[0], value = liloModule)
         }
 
         for (name in names.drop(n = 1)) {
-            liloModule = liloModule?.getAttr(name)
+            liloModule = liloModule.getAttr(name)
                 ?: throw createLiloException(liloModuleNotFoundErrorType, "No module named `${name}` inside ${names[0]}")
             if (liloModule !is LiloModule) {
                 throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")

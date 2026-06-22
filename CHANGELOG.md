@@ -1,11 +1,12 @@
 Change Log
 ==========
 
-Version 2.0.4 *(2026-[M]-[D])*
+Version 2.0.4 *(2026-06-22)*
 -----------------------------
 
 * Implement `del` statement with identifiers.
 * Implement `try ... except ... else ... finally` statement.
+* Support active exception at the runtime.
 
 Version 2.0.3 *(2026-06-16)*
 -----------------------------

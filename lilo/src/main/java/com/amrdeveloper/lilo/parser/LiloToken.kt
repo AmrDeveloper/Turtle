@@ -179,6 +179,7 @@ fun LiloTokenKind.isTermOperator() = this in listOf(
     LiloTokenKind.SLASH,
     LiloTokenKind.DOUBLE_SLASH,
     LiloTokenKind.PERCENT,
+    LiloTokenKind.AT,
 )
 
 fun LiloTokenKind.isUnaryOperator() = this in listOf(

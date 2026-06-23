@@ -11,6 +11,7 @@ object LiloMagicMethod {
     const val FLOOR_DIV = "__floordiv__"
     const val MOD = "__mod__"
     const val POW = "__pow__"
+    const val MATRIX_MUL = "__matmul__"
 
     // Shift Op
     const val RIGHT_SHIFT = "__rshift__"

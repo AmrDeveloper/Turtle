@@ -22,6 +22,7 @@ enum class BinaryOp {
     FLOOR_DIV,
     MOD,
     POW,
+    MAT_MUL,
     RIGHT_SHIFT,
     LEFT_SHIFT,
     BIT_AND,

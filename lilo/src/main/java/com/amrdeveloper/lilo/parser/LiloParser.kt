@@ -850,6 +850,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             LiloTokenKind.SLASH -> BinaryOp.TRUE_DIV
             LiloTokenKind.DOUBLE_SLASH -> BinaryOp.FLOOR_DIV
             LiloTokenKind.PERCENT -> BinaryOp.MOD
+            LiloTokenKind.AT -> BinaryOp.MAT_MUL
             LiloTokenKind.RIGHT_SHIFT -> BinaryOp.RIGHT_SHIFT
             LiloTokenKind.LEFT_SHIFT -> BinaryOp.LEFT_SHIFT
             LiloTokenKind.AMPER -> BinaryOp.BIT_AND

@@ -611,6 +611,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             BinaryOp.FLOOR_DIV -> LiloMagicMethod.FLOOR_DIV
             BinaryOp.MOD -> LiloMagicMethod.MOD
             BinaryOp.POW -> LiloMagicMethod.POW
+            BinaryOp.MAT_MUL -> LiloMagicMethod.MATRIX_MUL
             BinaryOp.RIGHT_SHIFT -> LiloMagicMethod.RIGHT_SHIFT
             BinaryOp.LEFT_SHIFT -> LiloMagicMethod.LEFT_SHIFT
             BinaryOp.BIT_AND -> LiloMagicMethod.BIT_AND

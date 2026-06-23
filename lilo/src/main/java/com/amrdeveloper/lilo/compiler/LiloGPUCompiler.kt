@@ -255,6 +255,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
             BinaryOp.FLOOR_DIV -> "floor($lhs / $rhs)"
             BinaryOp.MOD -> "$lhs % $rhs"
             BinaryOp.POW -> "pow($lhs, $rhs)"
+            BinaryOp.MAT_MUL -> "$lhs * $rhs"
             BinaryOp.RIGHT_SHIFT -> "$lhs >> $rhs"
             BinaryOp.LEFT_SHIFT -> "$lhs << $rhs"
             BinaryOp.BIT_AND -> "$lhs & $rhs"

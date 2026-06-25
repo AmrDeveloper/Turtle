@@ -1,0 +1,4 @@
+-keep class com.amrdeveloper.colorschema.colorschema.ColorSchemasKt { *; }
+-keep class com.amrdeveloper.colorschema.core.EditorSchema { *; }
+-keep class com.amrdeveloper.colorschema.core.LiloColorSchema { *; }
+-keep class com.amrdeveloper.colorschema.core.TerminalSchema { *; }

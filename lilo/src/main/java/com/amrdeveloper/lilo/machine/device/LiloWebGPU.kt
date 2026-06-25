@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.machine.device
 
+import androidx.annotation.Keep
 import androidx.webgpu.BufferUsage
 import androidx.webgpu.GPUBindGroupDescriptor
 import androidx.webgpu.GPUBindGroupEntry
@@ -22,6 +23,7 @@ import com.amrdeveloper.lilo.objects.LiloNone
 import com.amrdeveloper.lilo.objects.LiloObject
 import java.nio.ByteOrder
 
+@Keep
 class LiloWebGPU : LiloAbstractGPU {
 
     private lateinit var webGpu: WebGpu

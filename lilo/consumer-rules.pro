@@ -1,0 +1,21 @@
+-keep class com.amrdeveloper.lilo.ast.LiloProgram { *; }
+-keep class com.amrdeveloper.lilo.common.LiloDiagnostic { *; }
+-keep class com.amrdeveloper.lilo.common.LiloResult { *; }
+-keep class com.amrdeveloper.lilo.common.LiloResultKt { *; }
+-keep class com.amrdeveloper.lilo.machine.LiloAbstractMachine { *; }
+-keep class com.amrdeveloper.lilo.machine.LiloMachine { *; }
+-keep class com.amrdeveloper.lilo.machine.device.LiloAbstractGPU { *; }
+-keep class com.amrdeveloper.lilo.machine.device.LiloWebGPU { *; }
+-keep class com.amrdeveloper.lilo.machine.host.LiloAbstractHost { *; }
+-keep class com.amrdeveloper.lilo.machine.host.LiloHost { *; }
+-keep class com.amrdeveloper.lilo.machine.screen.LiloAbstractScreen { *; }
+-keep class com.amrdeveloper.lilo.machine.screen.LiloPathSegment { *; }
+-keep class com.amrdeveloper.lilo.machine.screen.LiloPointer { *; }
+-keep class com.amrdeveloper.lilo.machine.screen.LiloScreen { *; }
+-keep class com.amrdeveloper.lilo.parser.LiloLexer { *; }
+-keep class com.amrdeveloper.lilo.parser.LiloLoc { *; }
+-keep class com.amrdeveloper.lilo.parser.LiloParser { *; }
+-keep class com.amrdeveloper.lilo.runtime.LiloExceptionMessage { *; }
+-keep class com.amrdeveloper.lilo.runtime.LiloInterpreter { *; }
+
+-keep class androidx.webgpu.** { *; }

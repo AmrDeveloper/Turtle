@@ -1,0 +1,5 @@
+-keep class com.amrdeveloper.terminal.TerminalKt { *; }
+-keep class com.amrdeveloper.terminal.TerminalLine$Error { *; }
+-keep class com.amrdeveloper.terminal.TerminalLine$Exit { *; }
+-keep class com.amrdeveloper.terminal.TerminalLine$Normal { *; }
+-keep class com.amrdeveloper.terminal.TerminalLine$Start { *; }

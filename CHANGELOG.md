@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 2.0.5 *(2026-06-25)*
+-----------------------------
+
+* Add fastlane config/screenshots.
+* Update Proguard rules for release.
+
 Version 2.0.4 *(2026-06-22)*
 -----------------------------
 

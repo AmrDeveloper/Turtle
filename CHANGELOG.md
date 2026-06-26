@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 2.0.6 *(2026-06-26)*
+-----------------------------
+
+* Support ABI builds.
+* Update fastlane config for F-Droid.
+
 Version 2.0.5 *(2026-06-25)*
 -----------------------------
 

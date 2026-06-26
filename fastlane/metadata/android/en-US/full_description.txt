@@ -1,13 +1,18 @@
-<i>TurtleGraphics</i> is a Platform with Pythonic language to practice CPU/GPU programming on mobile
+<p><i>TurtleGraphics</i> is a platform with a Pythonic language for learning and practicing CPU and GPU programming on
+    mobile devices.</p>
 
-<i>TurtleGraphics</i> started as a re-implementation of TurtleGraphics on Android OS with simple language, but then that simple language `Lilo`
-turned into a platform with Heterogeneous Pythonic like language to practice targeting CPU & GPU in the same program
-Influenced by Python, Mojo and CUDA.
+<p><i>TurtleGraphics</i> began as a reimplementation of the classic Turtle Graphics environment for Android using a
+    simple language. Over time, that language, <i>Lilo</i>, evolved into a platform featuring a heterogeneous
+    Python-inspired language that allows targeting both the CPU and GPU within the same program, influenced by Python,
+    Mojo, and CUDA.</p>
 
-<b>Features:</b>
+<b>Features</b>
 
-- Free And open source with no ads or data collecting.
-- Python implementation from scratch that support GPU Programming with user-friendly error messages.
-- Supports most of Python stdlib modules.
-- Preview custom view for turtle graphics execution.
-- Shipped with a lot of examples to learn how to use GPU, Turtle and Python features.
+<ul>
+    <li>Free and open source with no ads or data collection.</li>
+    <li>A Python implementation written from scratch with built-in GPU programming support and user-friendly error
+        messages.</li>
+    <li>Supports many modules from the Python standard library.</li>
+    <li>Interactive preview for Turtle Graphics programs.</li>
+    <li>Includes numerous examples demonstrating GPU programming, Turtle Graphics, and Python language features.</li>
+</ul>

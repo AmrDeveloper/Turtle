@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+Version 2.0.6 *(2026-06-27)*
+-----------------------------
+
+* Change the version code calculation for each ABI.
+* Update Toolbar options depending on current route.
+* Not crash if no browser is provided when open url.
+
 Version 2.0.6 *(2026-06-26)*
 -----------------------------
 

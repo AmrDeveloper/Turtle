@@ -1,6 +1,7 @@
 package com.amrdeveloper.turtle.ui.settings
 
-import android.util.Log
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -36,7 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -45,7 +46,7 @@ import com.amrdeveloper.colorschema.colorschema.colorSchemasMap
 import com.amrdeveloper.turtle.BuildConfig
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.ui.components.TurtleToolbar
-import com.amrdeveloper.turtle.ui.theme.supportedFontFamiliesMap
+import androidx.core.net.toUri
 
 private const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle"
 private const val REPOSITORY_URL = "https://github.com/AmrDeveloper/Turtle"
@@ -60,16 +61,16 @@ fun SettingsScreen(
 
     val scrollState = rememberScrollState()
     val currentColorSchema by viewModel.colorSchema.collectAsState()
-    var selectedColorSchemaIndex = remember(currentColorSchema) {
+    val selectedColorSchemaIndex = remember(currentColorSchema) {
         colorSchemasMap().keys.toList().indexOf(currentColorSchema).coerceAtLeast(minimumValue = 0)
     }
 
     var selectedUrlOptionToOpen by remember { mutableStateOf(value = "") }
-    val uriHandler = LocalUriHandler.current
+    val currentContext = LocalContext.current
 
     LaunchedEffect(selectedUrlOptionToOpen) {
         if (selectedUrlOptionToOpen.isNotEmpty()) {
-            uriHandler.openUri(selectedUrlOptionToOpen)
+            openUrl(currentContext, selectedUrlOptionToOpen)
         }
     }
 
@@ -99,16 +100,6 @@ fun SettingsScreen(
                         viewModel.setColorSchema(colorSchema)
                     }
                 )
-
-                //                DropdownSettingOption(
-                //                    text = "Font family",
-                //                    icon = R.drawable.ic_dark_mode,
-                //                    defaultSelectedIndex = 0,
-                //                    options = supportedFontFamiliesMap().keys.toList(),
-                //                    onOptionSelected = { font ->
-                //
-                //                    }
-                //                )
 
                 SettingSectionDivider(text = "Open source")
 
@@ -287,5 +278,15 @@ private fun DropdownSettingOption(
             }
         }
     }
+}
 
+// TODO: Move to helper later
+fun openUrl(context: Context, url: String): Boolean {
+    return try {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        context.startActivity(intent)
+        true
+    } catch (_: Exception) {
+        false
+    }
 }

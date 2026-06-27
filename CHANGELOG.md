@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 2.0.6 *(2026-06-27)*
+Version 2.0.7 *(2026-06-27)*
 -----------------------------
 
 * Change the version code calculation for each ABI.

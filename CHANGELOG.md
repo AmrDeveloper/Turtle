@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+Version 2.0.8 *(2026-06-28)*
+-----------------------------
+
+* Remove singing by debug config.
+* Update HILT library to 2.60.
+* Support x86 ABI build target.
+* Setup version code function for different ABIs.
+
 Version 2.0.7 *(2026-06-27)*
 -----------------------------
 

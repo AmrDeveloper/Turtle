@@ -64,8 +64,6 @@ fun SettingsScreen(
         colorSchemasMap().keys.toList().indexOf(currentColorSchema).coerceAtLeast(minimumValue = 0)
     }
 
-    Log.d("AmrDeveloper", "Theme index ${currentColorSchema} -> ${selectedColorSchemaIndex} \n ${colorSchemasMap().keys.toList().indexOf(currentColorSchema)}")
-
     var selectedUrlOptionToOpen by remember { mutableStateOf(value = "") }
     val uriHandler = LocalUriHandler.current
 
@@ -77,7 +75,7 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            TurtleToolbar(isRunActionEnabled = false, navController = navController)
+            TurtleToolbar(navController = navController)
         },
         content = { padding ->
             Column(modifier = Modifier

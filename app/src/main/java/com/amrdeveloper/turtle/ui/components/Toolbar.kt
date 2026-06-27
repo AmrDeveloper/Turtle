@@ -28,18 +28,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.amrdeveloper.turtle.R
 import com.amrdeveloper.turtle.ui.navigation.AppRoute
 import com.amrdeveloper.turtle.ui.search.SearchScreen
 
 @Composable
 fun TurtleToolbar(
-    isRunActionEnabled: Boolean = false,
     onRunActionClicked: () -> Unit = {},
     navController: NavController,
 ) {
     var expanded by rememberSaveable { mutableStateOf(value = false) }
     val borderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val isHome =
+        navBackStackEntry?.destination?.hasRoute<AppRoute.Home>() == true
 
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -82,16 +87,14 @@ fun TurtleToolbar(
                 }
             )
 
-            if (!expanded) {
+            if (!expanded && isHome) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (isRunActionEnabled) {
-                        IconButton(onClick = onRunActionClicked) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_run),
-                                contentDescription = "Run",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
+                    IconButton(onClick = onRunActionClicked) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_run),
+                            contentDescription = "Run",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
 
                     OptionsMenuWithDropDownActions(

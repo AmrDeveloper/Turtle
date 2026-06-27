@@ -55,7 +55,6 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TurtleToolbar(
-                isRunActionEnabled = true,
                 onRunActionClicked = {
                     viewModel.runLiloCode(source = currentCodeInEditor.text.toString())
                 },

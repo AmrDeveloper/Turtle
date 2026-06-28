@@ -701,7 +701,7 @@ class LiloParser(val tokens: List<LiloToken>) {
     //    | NAME '=' expression
     //    | NAME ':' expression '=' expression
     private fun parseAssignmentStmt(): LiloResult<LiloStmt> {
-        val lhs = parseExpr().valueOr { return it.toFailure() }
+        val targets = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
 
         // Annotated assignment
         if (match(kind = LiloTokenKind.COLON)) {
@@ -713,18 +713,18 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             val value = parseExpr().valueOr { return it.toFailure() }
             consumeOptionalSemi()
-            return LiloResult.Success(data = AnnAssignStmt(target = lhs, annotation, value = value))
+            return LiloResult.Success(data = AnnAssignStmt(target = targets, annotation, value = value))
         }
 
         // Assignment
         if (match(kind = LiloTokenKind.EQ)) {
             val value = parseExpr().valueOr { return it.toFailure() }
             consumeOptionalSemi()
-            return LiloResult.Success(data = AssignStmt(target = lhs, value = value))
+            return LiloResult.Success(data = AssignStmt(target = targets, value = value))
         }
 
         consumeOptionalSemi()
-        return LiloResult.Success(data = ExprStmt(expr = lhs))
+        return LiloResult.Success(data = ExprStmt(expr = targets))
     }
 
     private fun parseExpr(): LiloResult<LiloExpr> {

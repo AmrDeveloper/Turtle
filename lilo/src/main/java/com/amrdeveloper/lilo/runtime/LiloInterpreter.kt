@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.runtime
 
+import android.util.Log
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignStmt
@@ -33,6 +34,7 @@ import com.amrdeveloper.lilo.ast.IfStmt
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.IntExpr
 import com.amrdeveloper.lilo.ast.LambdaExpr
+import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
 import com.amrdeveloper.lilo.ast.ListCompExpr
@@ -337,6 +339,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): LiloResult<Unit> {
         // Annotation will be ignored in the interpreter, but it will be used in the GPU Compiler
         val target = stmt.target
+        if (target is TupleExpr) {
+            throw createLiloException(liloSyntaxErrorType, "only single target (not tuple) can be annotated")
+        }
+
         val value = visit(expr = stmt.value).valueOr { return it.toFailure() }
         return when (target) {
             is NameExpr -> {
@@ -363,32 +369,57 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         }
     }
 
-    override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {
-        val target = stmt.target
-        val value = visit(expr = stmt.value).valueOr { return it.toFailure() }
-        return when (target) {
+    private fun assign(lValue: LiloExpr, rValue: LiloObject): LiloResult<Unit> {
+        return when (lValue) {
             is NameExpr -> {
-                environment.set(name = target.value.lexeme!!, value = value)
+                environment.set(name = lValue.value.lexeme!!, value = rValue)
                 LiloResult.Success(data = Unit)
             }
 
+            is TupleExpr -> {
+                val targets = lValue.values
+                if (rValue is LiloTuple && targets.size == rValue.values.size) {
+                    for (idx in targets.indices) {
+                        assign(lValue = targets[idx], rValue = rValue.values[idx])
+                    }
+                    return LiloResult.Success(data = Unit)
+                }
+
+                throw createLiloException(
+                    liloSyntaxErrorType,
+                    "Assign targets to tuple with different size is not supported yet"
+                )
+            }
+
             is GetItemExpr -> {
-                val obj = visit(expr = target.obj).valueOr { return it.toFailure() }
-                val index = visit(expr = target.index).valueOr { return it.toFailure() }
+                val obj = visit(expr = lValue.obj).valueOr { return it.toFailure() }
+                val index = visit(expr = lValue.index).valueOr { return it.toFailure() }
 
                 val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
                 if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
-                    throw createLiloException(liloTypeErrorType, "Object $obj doesn't support item assignment")
+                    throw createLiloException(
+                        liloTypeErrorType,
+                        "Object $obj doesn't support item assignment"
+                    )
                 }
 
                 val invokeResult =
-                    liloSetItemMethod.invoke(interpreter = this, args = listOf(obj, index, value))
+                    liloSetItemMethod.invoke(interpreter = this, args = listOf(obj, index, rValue))
                 if (invokeResult.isFailure()) return invokeResult.toFailure()
                 LiloResult.Success(data = Unit)
             }
 
-            else -> throw createLiloException(liloSyntaxErrorType, "cannot assign to literal here. Maybe you meant '==' instead of '='?")
+            else -> throw createLiloException(
+                liloSyntaxErrorType,
+                "cannot assign to literal here. Maybe you meant '==' instead of '='?"
+            )
         }
+    }
+
+    override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {
+        val lValue = stmt.target
+        val rValue = visit(expr = stmt.value).valueOr { return it.toFailure() }
+        return assign(lValue, rValue)
     }
 
     override fun visitTryStmt(stmt: TryStmt): LiloResult<Unit> {

@@ -711,7 +711,7 @@ class LiloParser(val tokens: List<LiloToken>) {
                 message = "expected '=' after annotated variable"
             ).valueOr { return it.toFailure() }
 
-            val value = parseExpr().valueOr { return it.toFailure() }
+            val value = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
             consumeOptionalSemi()
             return LiloResult.Success(data = AnnAssignStmt(target = targets, annotation, value = value))
         }

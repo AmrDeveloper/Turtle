@@ -337,39 +337,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         return LiloResult.Success(data = Unit)
     }
 
-    override fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): LiloResult<Unit> {
-        // Annotation will be ignored in the interpreter, but it will be used in the GPU Compiler
-        val target = stmt.target
-        if (target is TupleExpr) {
-            throw createLiloException(liloSyntaxErrorType, "only single target (not tuple) can be annotated")
-        }
-
-        val value = visit(expr = stmt.value).valueOr { return it.toFailure() }
-        return when (target) {
-            is NameExpr -> {
-                environment.set(name = target.value.lexeme!!, value = value)
-                LiloResult.Success(data = Unit)
-            }
-
-            is GetItemExpr -> {
-                val obj = visit(expr = target.obj).valueOr { return it.toFailure() }
-                val index = visit(expr = target.index).valueOr { return it.toFailure() }
-
-                val liloSetItemMethod = obj.getAttr(name = LiloMagicMethod.SET_ITEM)
-                if (liloSetItemMethod == null || liloSetItemMethod !is LiloCallable) {
-                    throw createLiloException(liloTypeErrorType, "Object $obj doesn't support item assignment")
-                }
-
-                val invokeResult =
-                    liloSetItemMethod.invoke(interpreter = this, args = listOf(obj, index, value))
-                if (invokeResult.isFailure()) return invokeResult.toFailure()
-                LiloResult.Success(data = Unit)
-            }
-
-            else -> throw createLiloException(liloSyntaxErrorType, "cannot assign to literal here. Maybe you meant '==' instead of '='?")
-        }
-    }
-
     private fun assign(lValue: LiloExpr, rValue: LiloObject): LiloResult<Unit> {
         return when (lValue) {
             is NameExpr -> {
@@ -421,6 +388,16 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 "cannot assign to literal here. Maybe you meant '==' instead of '='?"
             )
         }
+    }
+
+    override fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): LiloResult<Unit> {
+        // Annotation will be ignored in the interpreter, but it will be used in the GPU Compiler
+        val lValue = stmt.target
+        if (lValue is TupleExpr) {
+            throw createLiloException(liloSyntaxErrorType, "only single target (not tuple) can be annotated")
+        }
+        val rValue = visit(expr = stmt.value).valueOr { return it.toFailure() }
+        return assign(lValue, rValue)
     }
 
     override fun visitAssignStmt(stmt: AssignStmt): LiloResult<Unit> {

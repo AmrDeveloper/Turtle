@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+Version 2.0.9 *(2026-06-29)*
+-----------------------------
+
+* Implement targets support in assignment expr `a, b, c = (.., .., ..)`.
+* Implement parsing star_expressions in assignments `t = a, b, c`.
+* Fix throwing `only single target (not tuple) can be annotated`.
+* Implement `tuple_iterator` and integrate it in `for` statement.
+* Improve unpacking error message to throw ValueError similar to Python.
+* Remove screen orientation.
+* Disable tuple assignment on GPU as NYI.
+
 Version 2.0.8 *(2026-06-28)*
 -----------------------------
 

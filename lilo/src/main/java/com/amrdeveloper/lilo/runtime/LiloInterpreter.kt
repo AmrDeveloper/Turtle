@@ -97,6 +97,7 @@ import com.amrdeveloper.lilo.objects.liloStopIterationType
 import com.amrdeveloper.lilo.objects.liloSyntaxErrorType
 import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import com.amrdeveloper.lilo.objects.liloUnboundLocalErrorType
+import com.amrdeveloper.lilo.objects.liloValueErrorType
 import com.amrdeveloper.lilo.objects.str
 import kotlin.collections.set
 
@@ -378,17 +379,23 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
             is TupleExpr -> {
                 val targets = lValue.values
-                if (rValue is LiloTuple && targets.size == rValue.values.size) {
-                    for (idx in targets.indices) {
-                        assign(lValue = targets[idx], rValue = rValue.values[idx])
-                    }
+                if (rValue !is LiloTuple) {
+                    throw createLiloException(liloValueErrorType, "cannot unpack non-iterable int object")
+                }
+
+                val lValueCount = targets.size
+                val rValueCount = rValue.values.size
+                if (lValueCount == rValueCount) {
+                    targets.indices.forEach { assign(lValue = targets[it], rValue = rValue.values[it]) }
                     return LiloResult.Success(data = Unit)
                 }
 
-                throw createLiloException(
-                    liloSyntaxErrorType,
-                    "Assign targets to tuple with different size is not supported yet"
-                )
+                if (lValueCount > rValueCount) {
+                    throw createLiloException(liloValueErrorType, "not enough values to unpack (expected ${lValueCount}, got ${rValueCount})")
+                }
+
+                // lValueSize < rValueSize
+                throw createLiloException(liloSyntaxErrorType, "too many values to unpack (expected ${lValueCount}, got ${rValueCount})")
             }
 
             is GetItemExpr -> {

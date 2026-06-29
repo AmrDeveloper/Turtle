@@ -576,12 +576,23 @@ class LiloInterpreterTest {
             a, b, c = (10, 20, 30)
             print(a, ",", b, ",", c)
             """.trimIndent(),
+            """
+            a, b, c = 10, 20, 30
+            print(a, ",", b, ",", c)
+            """.trimIndent(),
+            """
+            t = 10, 20, 30
+            a, b, c = t
+            print(a, ",", b, ",", c)
+            """.trimIndent(),
         )
 
         val expectedOutput = listOf(
             "10",
             "10,20",
-            "10,20,30"
+            "10,20,30",
+            "10,20,30",
+            "10,20,30",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
@@ -593,7 +604,7 @@ class LiloInterpreterTest {
 
             val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
             if (parseResult.isFailure()) {
-                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
             }
             assertTrue("Parser error", parseResult.isSuccess())
 

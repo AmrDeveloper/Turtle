@@ -718,7 +718,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         // Assignment
         if (match(kind = LiloTokenKind.EQ)) {
-            val value = parseExpr().valueOr { return it.toFailure() }
+            val value = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
             consumeOptionalSemi()
             return LiloResult.Success(data = AssignStmt(target = targets, value = value))
         }
@@ -731,8 +731,14 @@ class LiloParser(val tokens: List<LiloToken>) {
         return parseIfExpr()
     }
 
-    // | expr (',' expr )+ [',']
-    // | expr
+    // star_expressions:
+    //    | star_expression (',' star_expression )+ [',']
+    //    | star_expression ','
+    //    | star_expression
+    //
+    // star_expression:
+    //    | '*' bitwise_or
+    //    | expression
     private fun parseCommaSeparatedExpr(): LiloResult<LiloExpr> {
         val elements = mutableListOf<LiloExpr>()
         val expr = parseExpr().valueOr { return it.toFailure() }

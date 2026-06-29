@@ -447,7 +447,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             message = "Expect `in` after for target"
         ).valueOr { return it.toFailure() }
 
-        val iter = parseExpr().valueOr { return it.toFailure() }
+        val iter = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
         consumeOr(kind = LiloTokenKind.COLON) {
             return createDiagnostic(peek().loc, message = "Expected `:` after for iter")
         }

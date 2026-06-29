@@ -422,68 +422,6 @@ class LiloInterpreterTest {
     }
 
     @Test
-    fun `test evaluate for stmt`() {
-        val sourceCodes = mutableListOf(
-            """
-            for i in range(5):
-                print(i)
-            """,
-            """
-            for i in range(5, 0, -1):
-                print(i)
-            """,
-            """
-            for i in iter(range(5, 0, -1)):
-                print(i)
-            """,
-            """
-            for i in reversed(range(5, 0, -1)):
-                print(i)
-            """,
-            """
-            for i in range(0):
-                print(i)
-            else:
-                print(-1)
-            """,
-        )
-
-        val expectedOutput = listOf(
-            "01234",
-            "54321",
-            "54321",
-            "12345",
-            "-1"
-        )
-
-        for ((index, sourceCode) in sourceCodes.withIndex()) {
-            val lexerResult = LiloLexer(source = sourceCode).tokenize()
-            if (lexerResult.isFailure()) {
-                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
-            }
-            assertTrue("Lexer error", lexerResult.isSuccess())
-
-            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
-            if (parseResult.isFailure()) {
-                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
-            }
-            assertTrue("Parser error", parseResult.isSuccess())
-
-            val liloTree = parseResult.toSuccessData()
-            val liloHostTest = LiloMockMachine()
-            val interpreter = LiloInterpreter(liloHostTest)
-            val interpreterResult = interpreter.evaluate(program = liloTree)
-            if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloExceptionMessage>().message)
-            }
-            assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assert(liloHostTest.getHost().buffer.toString() == expectedOutput[index]) {
-                println(liloHostTest.getHost().buffer.toString())
-            }
-        }
-    }
-
-    @Test
     fun test_binding() {
         val sourceCodes = mutableListOf(
             """

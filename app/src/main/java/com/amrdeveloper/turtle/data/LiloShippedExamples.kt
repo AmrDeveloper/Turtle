@@ -18,6 +18,19 @@ val liloShippedExamples = listOf(
         """.trimIndent()
     ),
     LiloFileEntity(
+        name = "TupleIterators",
+        sourceCode = """
+        for i in (1, 2, 3):
+            print(i)
+            
+        for i in 1, 2, 3:
+            print(i)
+            
+       for i in reversed((1, 2, 3)):
+            print(i) 
+        """.trimIndent()
+    ),
+    LiloFileEntity(
         name = "Inspect",
         sourceCode = """
         import inspect

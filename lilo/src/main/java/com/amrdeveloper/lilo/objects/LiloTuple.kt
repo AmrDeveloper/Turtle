@@ -4,13 +4,54 @@ import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import com.amrdeveloper.lilo.runtime.LiloRaise
 
 val liloTupleType = LiloType(name = "tuple", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = TupleGetItem)
     it.setAttr(name = LiloMagicMethod.LEN, value = TupleLen)
+
+    it.setAttr(name = LiloMagicMethod.ITER, value = TupleIter)
+    it.setAttr(name = LiloMagicMethod.REVERSED, value = TupleReversedIter)
 }
+
+private object TupleIter : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "tuple.__iter__ expected 1 arguments but got ${args.size}")
+        }
+
+        if (args[0] !is LiloTuple) {
+            throw createLiloException(liloTypeErrorType, "tuple.__iter__ expected 1 arguments `tuple` but got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloTuple
+        return LiloResult.Success(data = LiloTupleIter(values = self.values, index = 0, isReversed = false))
+    }
+}
+
+private object TupleReversedIter : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "tuple.__reversed__ expected 1 arguments but got ${args.size}")
+        }
+
+        if (args[0] !is LiloTuple) {
+            throw createLiloException(liloTypeErrorType, "tuple.__reversed__ expected 1 arguments `tuple` but got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloTuple
+        return LiloResult.Success(data = LiloTupleIter(values = self.values, index = self.values.lastIndex, isReversed = true))
+    }
+}
+
 
 private object TupleGetItem : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
@@ -56,3 +97,65 @@ data class LiloTuple(val values: List<LiloObject>) : LiloObject(liloTupleType) {
         return "(".plus(values.joinToString(", ") { it.toString() }).plus(")")
     }
 }
+
+val liloTupleIterType =
+    LiloType(name = "tuple_iterator", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
+        it.type = LiloBaseType.LILO_TYPE_TYPE
+
+        it.setAttr(name = LiloMagicMethod.ITER, value = TupleIterIter)
+        it.setAttr(name = LiloMagicMethod.NEXT, value = TupleIterNext)
+    }
+
+private object TupleIterIter : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "tuple_iterator.__iter__ expected 1 arguments but got ${args.size}")
+        }
+
+        if (args[0] !is LiloTupleIter) {
+            throw createLiloException(liloTypeErrorType, "tuple_iterator.__iter__ expected 1 arguments `range_iterator` but got ${args[0].type}")
+        }
+
+        return LiloResult.Success(data = args[0])
+    }
+}
+
+private object TupleIterNext : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "tuple_iterator.__next__ expected 1 arguments but got ${args.size}")
+        }
+
+        if (args[0] !is LiloTupleIter) {
+            throw createLiloException(liloTypeErrorType, "tuple_iterator.__next__ expected 1 arguments `range_iterator` but got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloTupleIter
+        if (self.isReversed) {
+            if (self.index >= 0) {
+                val result = self.values[self.index]
+                self.index--
+                return LiloResult.Success(data = result)
+            }
+        } else {
+            if (self.index < self.values.size) {
+                val result = self.values[self.index]
+                self.index++
+                return LiloResult.Success(data = result)
+            }
+        }
+        throw LiloRaise(exception = liloStopIterationType)
+    }
+}
+
+data class LiloTupleIter (
+    val values : List<LiloObject>,
+    var index : Int = 0,
+    val isReversed: Boolean = false,
+) : LiloObject(liloTupleIterType)

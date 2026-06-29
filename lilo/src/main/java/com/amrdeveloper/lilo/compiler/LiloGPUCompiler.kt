@@ -144,6 +144,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitAnnotatedAssignStmt(stmt: AnnAssignStmt): LiloResult<String> {
+        if (stmt.target is TupleExpr) {
+            return LiloResult.Failure(error = LiloExceptionMessage("Tuple targets LValue is NYI on GPU"))
+        }
+
         val value = visit(stmt.value).valueOr { return it.toFailure() }
         if (stmt.target is NameExpr ) {
             val targetName = stmt.target.value.lexeme!!

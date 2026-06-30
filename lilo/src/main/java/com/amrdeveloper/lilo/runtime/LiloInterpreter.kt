@@ -1,8 +1,8 @@
 package com.amrdeveloper.lilo.runtime
 
-import android.util.Log
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
+import com.amrdeveloper.lilo.ast.AssignExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryOpExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
@@ -531,6 +531,12 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitPassStmt(stmt: PassStmt): LiloResult<Unit> {
         return LiloResult.Success(data = Unit)
+    }
+
+    override fun visitAssignExpr(expr: AssignExpr): LiloResult<LiloObject> {
+        val rValue = visit(expr = expr.value).valueOr { return it.toFailure() }
+        assign(lValue = expr.target, rValue).valueOr { return it.toFailure() }
+        return LiloResult.Success(data = rValue)
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<LiloObject> {

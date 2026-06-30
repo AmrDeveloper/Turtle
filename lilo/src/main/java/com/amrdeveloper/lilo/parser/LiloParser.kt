@@ -2,6 +2,7 @@ package com.amrdeveloper.lilo.parser
 
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
+import com.amrdeveloper.lilo.ast.AssignExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryOpExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
@@ -119,10 +120,11 @@ class LiloParser(val tokens: List<LiloToken>) {
         }
     }
 
+    // decorators: ('@' named_expression NEWLINE )+
     private fun parseDecorators(): LiloResult<List<LiloExpr>> {
         val decorators = mutableListOf<LiloExpr>()
         while (match(kind = LiloTokenKind.AT)) {
-            val name = parseExpr().valueOr { return it.toFailure() }
+            val name = parseNamedExpr().valueOr { return it.toFailure() }
             if (name !is NameExpr) {
                 return createDiagnostic(
                     loc = peek().loc,
@@ -401,10 +403,11 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'if' keyword
         advance()
 
-        val condition = parseExpr().valueOr { return it.toFailure() }
+        val condition = parseNamedExpr().valueOr { return it.toFailure() }
         consumeOr(kind = LiloTokenKind.COLON) {
             return createDiagnostic(peek().loc, message = "Expected `:` after if condition")
         }
+
         val body = parseBlockStmt().valueOr { return it.toFailure() }
 
         val ifs = mutableListOf<Pair<LiloExpr, LiloStmt>>()
@@ -412,7 +415,7 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         // Parse zero or multiples else if statements
         while (match(kind = LiloTokenKind.ELIF_KEYWORD)) {
-            val elifCondition = parseExpr().valueOr { return it.toFailure() }
+            val elifCondition = parseNamedExpr().valueOr { return it.toFailure() }
             consumeOr(kind = LiloTokenKind.COLON) {
                 return createDiagnostic(peek().loc, message = "Expected `:` after elif condition")
             }
@@ -558,7 +561,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         // Advance 'while' keyword
         advance()
 
-        val condition = parseExpr().valueOr { return it.toFailure() }
+        val condition = parseNamedExpr().valueOr { return it.toFailure() }
 
         consumeOr(kind = LiloTokenKind.COLON) {
             return createDiagnostic(peek().loc, message = "Expected `:` after while condition")
@@ -724,6 +727,19 @@ class LiloParser(val tokens: List<LiloToken>) {
 
         consumeOptionalSemi()
         return LiloResult.Success(data = ExprStmt(expr = targets))
+    }
+
+    // named_expression:
+    //    | assignment_expression
+    //    | expression !':='
+    private fun parseNamedExpr() : LiloResult<LiloExpr> {
+        val expr =  parseExpr()
+        if (match(kind = LiloTokenKind.COLON_EQ)) {
+            val lValue = expr.valueOr { return it.toFailure() }
+            val rValue = parseExpr().valueOr { return it.toFailure() }
+            return LiloResult.Success(data = AssignExpr(lValue, rValue))
+        }
+        return expr
     }
 
     private fun parseExpr(): LiloResult<LiloExpr> {
@@ -1000,7 +1016,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             if (match(kind = LiloTokenKind.L_PAR)) {
                 val args = mutableListOf<LiloExpr>()
                 loop@ while (isPeek(LiloTokenKind.R_PAR).not()) {
-                    val expr = parseExpr().valueOr { return it.toFailure() }
+                    val expr = parseNamedExpr().valueOr { return it.toFailure() }
                     args.add(expr)
 
                     consumeCommaOr { break@loop }
@@ -1175,7 +1191,7 @@ class LiloParser(val tokens: List<LiloToken>) {
         var hasComma = false
         val values = mutableListOf<LiloExpr>()
         loop@ while (isPeek(kind = LiloTokenKind.R_PAR).not()) {
-            val expr = parseExpr().valueOr { return it.toFailure() }
+            val expr = parseNamedExpr().valueOr { return it.toFailure() }
             values.add(expr)
 
             hasComma = consumeCommaOr { break@loop }

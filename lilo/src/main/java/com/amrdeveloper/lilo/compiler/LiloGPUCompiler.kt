@@ -2,6 +2,7 @@ package com.amrdeveloper.lilo.compiler
 
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
+import com.amrdeveloper.lilo.ast.AssignExpr
 import com.amrdeveloper.lilo.ast.AssignStmt
 import com.amrdeveloper.lilo.ast.BinaryOpExpr
 import com.amrdeveloper.lilo.ast.BinaryOp
@@ -210,6 +211,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
 
     override fun visitPassStmt(stmt: PassStmt): LiloResult<String> {
         return LiloResult.Success(data = "return;")
+    }
+
+    override fun visitAssignExpr(expr: AssignExpr): LiloResult<String> {
+        return LiloResult.Failure(error = LiloExceptionMessage("AssignExpr NYI on GPU"))
     }
 
     override fun visitLambdaExpr(expr: LambdaExpr): LiloResult<String> {

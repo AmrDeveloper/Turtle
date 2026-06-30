@@ -48,6 +48,7 @@ interface LiloStmtVisitor<T> {
 
 interface LiloExprVisitor<T> {
     fun visit(expr: LiloExpr): T = when (expr) {
+        is AssignExpr -> visitAssignExpr(expr)
         is LambdaExpr -> visitLambdaExpr(expr)
         is GetExpr -> visitGetExpr(expr)
         is GetItemExpr -> visitGetItemExpr(expr)
@@ -74,6 +75,7 @@ interface LiloExprVisitor<T> {
         is NoneExpr -> visitNoneExpr(expr)
     }
 
+    fun visitAssignExpr(expr: AssignExpr): T
     fun visitLambdaExpr(expr: LambdaExpr): T
     fun visitGetExpr(expr: GetExpr): T
     fun visitGetItemExpr(expr: GetItemExpr): T

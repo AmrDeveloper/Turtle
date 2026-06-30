@@ -80,7 +80,8 @@ class LiloLexer(val source: String) {
                     if (peek() == '=') {
                         advance()
                         tokens.add(createToken(kind = LiloTokenKind.EQ_EQ))
-                    } else {
+                    }
+                    else {
                         tokens.add(createToken(kind = LiloTokenKind.EQ))
                     }
                 }
@@ -132,7 +133,17 @@ class LiloLexer(val source: String) {
                     advance()
                 }
 
-                '@', '.', ',', ':', ';' -> {
+                ':' -> {
+                    advance()
+                    if (peek() == '=') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.COLON_EQ))
+                    } else {
+                        tokens.add(createToken(kind = LiloTokenKind.COLON))
+                    }
+                }
+
+                '@', '.', ',', ';' -> {
                     tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
                 }
 

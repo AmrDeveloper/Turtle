@@ -86,6 +86,14 @@ class LiloIterTest {
                 print(i)
             """,
             """
+            for i in ((1, 1), (2, 2), (3, 3)):
+                print(i)
+            """,
+            """
+            for f, s in ((1, 1), (2, 2), (3, 3)):
+                print(f, s)
+            """,
+            """
             for i in 1, 2, 3:
                 print(i)
             """,
@@ -97,6 +105,8 @@ class LiloIterTest {
 
         val expectedOutput = listOf(
             "123",
+            "(1, 1)(2, 2)(3, 3)",
+            "112233",
             "123",
             "321",
         )

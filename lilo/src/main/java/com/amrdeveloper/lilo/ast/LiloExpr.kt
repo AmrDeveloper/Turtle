@@ -9,15 +9,31 @@ data class AssignExpr(
     val value: LiloExpr
 ) : LiloExpr
 
-data class LambdaExpr(val parameters: List<Parameter>, val body: LiloStmt) : LiloExpr
+data class LambdaExpr(
+    val parameters: List<Parameter>,
+    val body: LiloStmt
+) : LiloExpr
 
-data class CallExpr(val callee: LiloExpr, val args: List<LiloExpr>) : LiloExpr
+data class CallExpr(
+    val callee: LiloExpr,
+    val args: List<LiloExpr>
+) : LiloExpr
 
-data class GetExpr(val obj: LiloExpr, val name: NameExpr) : LiloExpr
+data class GetExpr(
+    val obj: LiloExpr,
+    val name: NameExpr
+) : LiloExpr
 
-data class GetItemExpr(val obj: LiloExpr, val index: LiloExpr) : LiloExpr
+data class GetItemExpr(
+    val obj: LiloExpr,
+    val index: LiloExpr
+) : LiloExpr
 
-data class IfExpr(val condition: LiloExpr, val thenValue: LiloExpr, val elseValue: LiloExpr) : LiloExpr
+data class IfExpr(
+    val condition: LiloExpr,
+    val thenValue: LiloExpr,
+    val elseValue: LiloExpr
+) : LiloExpr
 
 enum class BinaryOp {
     PLUS,
@@ -35,7 +51,11 @@ enum class BinaryOp {
     BIT_XOR,
 }
 
-data class BinaryOpExpr(val lhs: LiloExpr, val op: BinaryOp, val rhs: LiloExpr) : LiloExpr
+data class BinaryOpExpr(
+    val lhs: LiloExpr,
+    val op: BinaryOp,
+    val rhs: LiloExpr
+) : LiloExpr
 
 enum class ComparisonOp {
     EQ,
@@ -46,14 +66,22 @@ enum class ComparisonOp {
     LE,
 }
 
-data class ComparisonOpExpr(val lhs: LiloExpr, val op: ComparisonOp, val rhs: LiloExpr) : LiloExpr
+data class ComparisonOpExpr(
+    val lhs: LiloExpr,
+    val op: ComparisonOp,
+    val rhs: LiloExpr
+) : LiloExpr
 
 enum class BoolOp {
     AND,
     OR
 }
 
-data class BoolOpExpr(val lhs: LiloExpr, val op: BoolOp, val rhs: LiloExpr) : LiloExpr
+data class BoolOpExpr(
+    val lhs: LiloExpr,
+    val op: BoolOp,
+    val rhs: LiloExpr
+) : LiloExpr
 
 enum class UnaryOp {
     PLUS,
@@ -62,7 +90,10 @@ enum class UnaryOp {
     INVERT,
 }
 
-data class UnaryOpExpr(val op: UnaryOp, val operand: LiloExpr) : LiloExpr
+data class UnaryOpExpr(
+    val op: UnaryOp,
+    val operand: LiloExpr
+) : LiloExpr
 
 data class GroupExpr(val expr: LiloExpr) : LiloExpr
 
@@ -72,17 +103,26 @@ data class ForIfClause(
     val filter: LiloExpr? = null,
 )
 
-data class ListCompExpr(val elt: LiloExpr, val generator: List<ForIfClause>) : LiloExpr
+data class ListCompExpr(
+    val elt: LiloExpr,
+    val generator: List<ForIfClause>
+) : LiloExpr
 
 data class ListExpr(val values: List<LiloExpr>) : LiloExpr
 
-data class SetCompExpr(val elt: LiloExpr, val generator: List<ForIfClause>) : LiloExpr
+data class SetCompExpr(
+    val elt: LiloExpr,
+    val generator: List<ForIfClause>
+) : LiloExpr
 
 data class SetExpr(val values: List<LiloExpr>) : LiloExpr
 
 data class DictExpr(val values: List<Pair<LiloExpr, LiloExpr>>) : LiloExpr
 
-data class DictCompExpr(val elt: Pair<LiloExpr, LiloExpr>, val generator: List<ForIfClause>) : LiloExpr
+data class DictCompExpr(
+    val elt: Pair<LiloExpr, LiloExpr>,
+    val generator: List<ForIfClause>
+) : LiloExpr
 
 data class TupleExpr(val values: List<LiloExpr>) : LiloExpr
 

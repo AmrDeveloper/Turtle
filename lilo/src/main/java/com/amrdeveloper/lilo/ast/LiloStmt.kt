@@ -7,7 +7,9 @@ data class FromImportStmt(
     val symbols: List<Pair<String, String?>>? = null
 ) : LiloStmt
 
-data class ImportStmt(val modules: List<Pair<List<String>, String?>>) : LiloStmt
+data class ImportStmt(
+    val modules: List<Pair<List<String>, String?>>
+) : LiloStmt
 
 data class Parameter(
     val name: String,
@@ -75,11 +77,17 @@ data class TryStmt(
     val finallyBody: LiloStmt? = null,
 ) : LiloStmt
 
-data class RaiseStmt(val exc: LiloExpr? = null, val cause: LiloExpr? = null) : LiloStmt
+data class RaiseStmt(
+    val exc: LiloExpr? = null,
+    val cause: LiloExpr? = null
+) : LiloStmt
 
 data class ReturnStmt(val value: LiloExpr? = null) : LiloStmt
 
-data class AssertStmt(val test: LiloExpr, val msg: LiloExpr? = null) : LiloStmt
+data class AssertStmt(
+    val test: LiloExpr,
+    val msg: LiloExpr? = null
+) : LiloStmt
 
 class BreakStmt : LiloStmt
 

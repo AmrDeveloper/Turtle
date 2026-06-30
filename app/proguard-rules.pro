@@ -21,3 +21,5 @@
 -renamesourcefileattribute SourceFile
 
 -keep class androidx.webgpu.** { *; }
+
+-dontobfuscate

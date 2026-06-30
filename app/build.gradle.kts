@@ -35,10 +35,20 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
+            // Keep PNGs as they are in the source
+            isCrunchPngs = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    packaging {
+        jniLibs {
+            keepDebugSymbols += "**/*.so"
         }
     }
 
@@ -51,6 +61,8 @@ android {
         buildConfig = true
         compose = true
     }
+
+    project.extensions.extraProperties["android.buildConfig.generateBuildTime"] = false
 
     dependenciesInfo {
         // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
@@ -78,11 +90,6 @@ androidComponents {
             }
         }
     }
-}
-
-tasks.withType<AbstractArchiveTask>().configureEach {
-    isPreserveFileTimestamps = false
-    isReproducibleFileOrder = true
 }
 
 dependencyLocking {

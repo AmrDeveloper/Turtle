@@ -1,10 +1,18 @@
 Change Log
 ==========
 
+Version 2.0.11 *(2026-07-01)*
+-----------------------------
+
+* Support unpack target in for statement `for x, y in ...`.
+* Support AssignExpr `(a := b)`.
+* Make build reproducible.
+* Switch JavaVersion from 17 to 21.
+
 Version 2.0.10 *(2026-06-29)*
 -----------------------------
 
-* Make release build reproducable.
+* Make release build reproducible.
 
 Version 2.0.9 *(2026-06-29)*
 -----------------------------

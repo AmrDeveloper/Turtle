@@ -13,16 +13,28 @@ Influenced by Python, Mojo and CUDA.
 # Download
 
 <p align="center">
-
-<a href='https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle'><img alt='Get it on Google Play' 
-src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' 
-width="auto" height="80"/></a>
-<a href='https://github.com/AmrDeveloper/Turtle/releases'><img alt='Get it on Google Play' 
-src='media/badges/get_on_github.png'
-width="auto" height="80"/></a>
+<a href='https://play.google.com/store/apps/details?id=com.amrdeveloper.turtle'>
+    <img alt='Get it on Google Play' 
+    src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' 
+    width="auto" height="80"/>
+</a>
+<a href='https://github.com/AmrDeveloper/Turtle/releases'>
+    <img alt='Get it on Google Play' 
+    src='media/badges/get_on_github.png'
+    width="auto" 
+    height="80"/>
+</a>
+<a href="https://f-droid.org/packages/com.amrdeveloper.turtle">
+    <img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">
+</a>
 <a href='https://apt.izzysoft.de/packages/com.amrdeveloper.turtle'>
-<img alt='Get it on Google Play'
-src='https://codeberg.org/IzzyOnDroid/assets/raw/branch/main/IzzyOnDroidButtonGreyBorder.svg' width="189" height="80"/></a>
+    <img src='https://codeberg.org/IzzyOnDroid/assets/raw/branch/main/IzzyOnDroidButtonGreyBorder.svg'
+    alt='Get it on Google Play' 
+    width="189"
+    height="80"/>
+</a>    
 </p>
 
 ## Screenshots

@@ -1,7 +1,7 @@
 <h1 align="center">Turtle Graphics</h1>
 
 <p align="center">
-  <img src="media/turtle_graphics_logo.svg" style="width: 20%; aspect-ratio: 1/1; border-radius: 50%; object-fit: cover;" />
+  <img src="media/turtle_logo.png" />
 </p>
 
 <p align="center">

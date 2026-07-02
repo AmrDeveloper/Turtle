@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+Version 2.0.12 *(2026-<M>-<D>)*
+-------------------------------
+
+* Fix GPU GroupExpr and Dmi3 default values.
+* Implement abs builtin function.
+* Improve exception handling for GPU errors.
+* Implement Comparisons expressions for builtin float.
+* Implement `math.atan2` function.
+* Implement `__mod__` for builtin float.
+* Fix Codegen for select in GPU Compiler.
+
 Version 2.0.11 *(2026-07-01)*
 -----------------------------
 

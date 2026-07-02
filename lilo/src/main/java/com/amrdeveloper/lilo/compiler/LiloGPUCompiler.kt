@@ -246,7 +246,9 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
         val cond = visit(expr.condition).valueOr { return it.toFailure() }
         val thenValue = visit(expr.thenValue).valueOr { return it.toFailure() }
         val elseValue = visit(expr.elseValue).valueOr { return it.toFailure() }
-        return LiloResult.Success(data = "select($thenValue, $elseValue, $cond)")
+        // fn select(f: T, t: T, cond: bool) -> T
+        // https://webgpufundamentals.org/webgpu/lessons/webgpu-wgsl-function-reference.html#func-select
+        return LiloResult.Success(data = "select($elseValue, $thenValue, $cond)")
     }
 
     override fun visitCallExpr(expr: CallExpr): LiloResult<String> {

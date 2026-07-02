@@ -77,7 +77,7 @@ class LiloGPUCompilerTest {
               @builtin(global_invocation_id) global_id: vec3<u32>
             )
             {
-              var i = select(0, global_id.x, global_id.x < 4);
+              var i = select(global_id.x, 0, global_id.x < 4);
               c[i] = a[i] + b[i];
             }
             """.trimIndent()

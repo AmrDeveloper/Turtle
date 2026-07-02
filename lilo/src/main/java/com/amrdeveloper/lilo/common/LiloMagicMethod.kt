@@ -13,6 +13,8 @@ object LiloMagicMethod {
     const val POW = "__pow__"
     const val MATRIX_MUL = "__matmul__"
 
+    const val ABS = "__abs__"
+
     // Shift Op
     const val RIGHT_SHIFT = "__rshift__"
     const val LEFT_SHIFT = "__lshift__"

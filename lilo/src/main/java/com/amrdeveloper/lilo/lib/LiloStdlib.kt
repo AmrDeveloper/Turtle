@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.lib
 
+import com.amrdeveloper.lilo.lib.builtins.LiloAbsFunction
 import com.amrdeveloper.lilo.objects.liloAssertionErrorType
 import com.amrdeveloper.lilo.objects.liloBaseExceptionType
 import com.amrdeveloper.lilo.objects.liloBoolType
@@ -91,6 +92,7 @@ fun registerLiloStandardLibrary() {
     LiloEnvironment.builtins["inspect"]   = liloInspectModule
 
     // Register Stdlib functions
+    LiloEnvironment.builtins["abs"]       = LiloAbsFunction
     LiloEnvironment.builtins["print"]     = LiloPrintFunction
     LiloEnvironment.builtins["len"]       = LiloLenFunction
     LiloEnvironment.builtins["type"]      = LiloTypeFunction

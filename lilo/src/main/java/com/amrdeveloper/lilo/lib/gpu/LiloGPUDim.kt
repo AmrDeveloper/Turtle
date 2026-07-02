@@ -31,9 +31,9 @@ private object GPUDimInit : LiloObject(liloFunctionType), LiloCallable {
             throw createLiloException(liloTypeErrorType, "Dim expects 1 to 3 args not ${args.size}")
         }
 
-        var x = 0
-        var y = 0
-        var z = 0
+        var x = 1
+        var y = 1
+        var z = 1
         for ((index, arg) in args.withIndex()) {
             if (arg !is LiloInt)
                 throw createLiloException(liloTypeErrorType, "Dim arg $index expected to be Int but got ${arg.type}")

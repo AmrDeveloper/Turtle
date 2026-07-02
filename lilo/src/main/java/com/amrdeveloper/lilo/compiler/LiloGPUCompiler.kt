@@ -304,7 +304,7 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitGroupExpr(expr: GroupExpr): LiloResult<String> {
-        val result = visit(expr).valueOr { return it.toFailure() }
+        val result = visit(expr.expr).valueOr { return it.toFailure() }
         return LiloResult.Success(data = "(${result})")
     }
 

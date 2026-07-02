@@ -4,6 +4,7 @@ import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import kotlin.math.absoluteValue
 import kotlin.math.pow
 
 val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
@@ -19,6 +20,8 @@ val liloIntType = LiloType(name = "int", bases = listOf(LiloBaseType.LILO_OBJECT
     it.setAttr(name = LiloMagicMethod.FLOOR_DIV, value = IntFloorDiv)
     it.setAttr(name = LiloMagicMethod.MOD, value = IntMod)
     it.setAttr(name = LiloMagicMethod.POW, value = IntPow)
+
+    it.setAttr(name = LiloMagicMethod.ABS, value = IntAbs)
 
     // Shifts
     it.setAttr(name = LiloMagicMethod.RIGHT_SHIFT, value = IntRightShift)
@@ -262,6 +265,24 @@ private object IntPow : LiloObject(liloFunctionType), LiloCallable {
             is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.toDouble().pow( rhs.value)))
             else -> LiloResult.Success(data = LiloInt(value = 0))
         }
+    }
+}
+
+private object IntAbs : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`int.__abs__` Expect 1 argument got ${args.size}")
+        }
+
+        if (args[0] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`int.__abs__` Expect argument to be int, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloInt
+        return LiloResult.Success(data = LiloInt(value = lhs.value.absoluteValue))
     }
 }
 

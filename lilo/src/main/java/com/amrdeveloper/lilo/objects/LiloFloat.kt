@@ -4,6 +4,7 @@ import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import kotlin.math.absoluteValue
 import kotlin.math.pow
 
 val liloFloatType = LiloType(name = "float", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
@@ -15,6 +16,8 @@ val liloFloatType = LiloType(name = "float", bases = listOf(LiloBaseType.LILO_OB
     it.setAttr(name = LiloMagicMethod.MUL, value = FloatMul)
     it.setAttr(name = LiloMagicMethod.TRUE_DIV, value = FloatTrueDiv)
     it.setAttr(name = LiloMagicMethod.POW, value = FloatPow)
+
+    it.setAttr(name = LiloMagicMethod.ABS, value = FloatAbs)
 
     // Comparisons
     it.setAttr(name = LiloMagicMethod.GT, value = FloatGT)
@@ -165,6 +168,25 @@ private object FloatPow : LiloObject(liloFunctionType), LiloCallable {
         }
     }
 }
+
+private object FloatAbs : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`float.__abs__` Expect 1 argument got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__abs__` Expect argument to be float, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        return LiloResult.Success(data = LiloFloat(value = lhs.value.absoluteValue))
+    }
+}
+
 
 private object FloatGT : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(

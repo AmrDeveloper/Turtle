@@ -11,6 +11,7 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.objects.liloFunctionType
 import com.amrdeveloper.lilo.objects.liloTypeErrorType
 import kotlin.math.PI
+import kotlin.math.atan2
 import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.floor
@@ -35,6 +36,7 @@ val liloMathModule = LiloModule(name = MODULE_NAME).also {
     it.setAttr(name = "cos", value = LiloMathCos)
     it.setAttr(name = "tan", value = LiloMathTan)
     it.setAttr(name = "tanh", value = LiloMathTanh)
+    it.setAttr(name = "atan2", value = LiloMathAtan2)
     it.setAttr(name = "sqrt", value = LiloMathSqrt)
     it.setAttr(name = "radians", value = LiloMathRadians)
     it.setAttr(name = "floor", value = LiloMathFloor)
@@ -114,6 +116,30 @@ object LiloMathTanh : LiloObject(liloFunctionType), LiloCallable {
 
         val sin = tanh(argument.value)
         return LiloResult.Success(data = LiloFloat(value = sin))
+    }
+}
+
+object LiloMathAtan2 : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`math.atan2` expected 2 argument, got ${args.size}")
+        }
+
+        val x = args[0]
+        val y = args[0]
+        if (x !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`math.atan2` expect x parameter to be `float` type but got `${x.type.toString()}`")
+        }
+
+        if (y !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`math.atan2` expect y parameter to be `float` type but got `${y.type.toString()}`")
+        }
+
+        val result = atan2(x.value, y.value)
+        return LiloResult.Success(data = LiloFloat(value = result))
     }
 }
 

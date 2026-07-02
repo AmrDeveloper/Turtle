@@ -15,6 +15,7 @@ val liloFloatType = LiloType(name = "float", bases = listOf(LiloBaseType.LILO_OB
     it.setAttr(name = LiloMagicMethod.SUB, value = FloatSub)
     it.setAttr(name = LiloMagicMethod.MUL, value = FloatMul)
     it.setAttr(name = LiloMagicMethod.TRUE_DIV, value = FloatTrueDiv)
+    it.setAttr(name = LiloMagicMethod.MOD, value = FloatMod)
     it.setAttr(name = LiloMagicMethod.POW, value = FloatPow)
 
     it.setAttr(name = LiloMagicMethod.ABS, value = FloatAbs)
@@ -143,6 +144,32 @@ private object FloatTrueDiv : LiloObject(liloFunctionType), LiloCallable {
                 }
                 LiloResult.Success(data = LiloFloat(value = lhs.value / rhs.value))
             }
+            else -> LiloResult.Success(data = LiloFloat(value = 0.0))
+        }
+    }
+}
+
+private object FloatMod : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__mod__` Expect at most 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__mod__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__mod__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        return when (val rhs = args[1]) {
+            is LiloInt -> LiloResult.Success(data = LiloFloat(value = lhs.value.mod(other = rhs.value.toDouble())))
+            is LiloFloat -> LiloResult.Success(data = LiloFloat(value = lhs.value.mod(other = rhs.value)))
             else -> LiloResult.Success(data = LiloFloat(value = 0.0))
         }
     }

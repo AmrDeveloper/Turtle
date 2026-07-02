@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.runtime
 
+import androidx.webgpu.ValidationException
 import com.amrdeveloper.lilo.ast.AnnAssignStmt
 import com.amrdeveloper.lilo.ast.AssertStmt
 import com.amrdeveloper.lilo.ast.AssignExpr
@@ -120,7 +121,12 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     fun evaluate(program: LiloProgram): LiloResult<Unit> {
         try {
             visitProgram(program).valueOr { return it.toFailure() }
-        } catch (e: LiloRaise) {
+        }
+        catch (e : ValidationException) {
+            // TODO: Parse and simplify the error message
+            return LiloResult.Failure(error = LiloExceptionMessage(e.message ?: "GPU runtime error"))
+        }
+        catch (e: LiloRaise) {
             val exceptionMessage = e.exception.str(this).valueOr { return it.toFailure() }
             return LiloResult.Failure(error = LiloExceptionMessage(exceptionMessage))
         }

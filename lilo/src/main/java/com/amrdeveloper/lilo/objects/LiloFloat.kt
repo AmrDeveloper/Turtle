@@ -20,7 +20,12 @@ val liloFloatType = LiloType(name = "float", bases = listOf(LiloBaseType.LILO_OB
     it.setAttr(name = LiloMagicMethod.ABS, value = FloatAbs)
 
     // Comparisons
+    it.setAttr(name = LiloMagicMethod.EQ, value = FloatEQ)
+    it.setAttr(name = LiloMagicMethod.NE, value = FloatNE)
     it.setAttr(name = LiloMagicMethod.GT, value = FloatGT)
+    it.setAttr(name = LiloMagicMethod.GE, value = FloatGE)
+    it.setAttr(name = LiloMagicMethod.LT, value = FloatLT)
+    it.setAttr(name = LiloMagicMethod.LE, value = FloatLE)
 
     // Unary
     it.setAttr(name = LiloMagicMethod.POS, value = FloatPos)
@@ -187,6 +192,60 @@ private object FloatAbs : LiloObject(liloFunctionType), LiloCallable {
     }
 }
 
+private object FloatEQ : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__eq__` Expect at most 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__eq__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__eq__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        val rhsValue = when (val rhs = args[1]) {
+            is LiloFloat -> rhs.value
+            is LiloInt -> rhs.value.toDouble()
+            else -> 0.0
+        }
+        return LiloResult.Success(data = LiloBool(value = lhs.value == rhsValue))
+    }
+}
+
+private object FloatNE : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__ne__` Expect at most 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__ne__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__ne__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        val rhsValue = when (val rhs = args[1]) {
+            is LiloFloat -> rhs.value
+            is LiloInt -> rhs.value.toDouble()
+            else -> 0.0
+        }
+        return LiloResult.Success(data = LiloBool(value = lhs.value != rhsValue))
+    }
+}
+
 
 private object FloatGT : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(
@@ -215,6 +274,86 @@ private object FloatGT : LiloObject(liloFunctionType), LiloCallable {
     }
 }
 
+private object FloatGE : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__ge__` Expect at most 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__ge__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__ge__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        val rhsValue = when (val rhs = args[1]) {
+            is LiloFloat -> rhs.value
+            is LiloInt -> rhs.value.toDouble()
+            else -> 0.0
+        }
+        return LiloResult.Success(data = LiloBool(value = lhs.value >= rhsValue))
+    }
+}
+
+private object FloatLT : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__lt__` Expect at most 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__lt__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__lt__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        val rhsValue = when (val rhs = args[1]) {
+            is LiloFloat -> rhs.value
+            is LiloInt -> rhs.value.toDouble()
+            else -> 0.0
+        }
+        return LiloResult.Success(data = LiloBool(value = lhs.value < rhsValue))
+    }
+}
+
+private object FloatLE : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`float.__le__` Expect at most 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloFloat) {
+            throw createLiloException(liloTypeErrorType, "`float.__le__` Expect first argument to be float, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloFloat && args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`float.__le__` Expect second argument to be number, got ${args[0].type}")
+        }
+
+        val lhs = args[0] as LiloFloat
+        val rhsValue = when (val rhs = args[1]) {
+            is LiloFloat -> rhs.value
+            is LiloInt -> rhs.value.toDouble()
+            else -> 0.0
+        }
+        return LiloResult.Success(data = LiloBool(value = lhs.value <= rhsValue))
+    }
+}
 
 private object FloatPos : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(

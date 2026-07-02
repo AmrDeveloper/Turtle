@@ -117,11 +117,11 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitIfStmt(stmt: IfStmt): LiloResult<String> {
-        return LiloResult.Failure(error = LiloExceptionMessage("Import NYI on GPU"))
+        return LiloResult.Failure(error = LiloExceptionMessage("IfStmt NYI on GPU"))
     }
 
     override fun visitForStmt(stmt: ForStmt): LiloResult<String> {
-        return LiloResult.Failure(error = LiloExceptionMessage("Import NYI on GPU"))
+        return LiloResult.Failure(error = LiloExceptionMessage("ForStmt NYI on GPU"))
     }
 
     override fun visitWhileStmt(stmt: WhileStmt): LiloResult<String> {

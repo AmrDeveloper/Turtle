@@ -781,7 +781,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitSetCompExpr(expr: SetCompExpr): LiloResult<LiloObject> {
         val set = mutableSetOf<LiloObject>()
         for (forIfClause in expr.generator) {
-            val target = (forIfClause.target as NameExpr).value.lexeme!!
             val iter = visit(expr = forIfClause.iter).valueOr { return it.toFailure() }
             val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
             if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
@@ -802,7 +801,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 try {
                     val value = nextFunc.invoke(interpreter = this, args = listOf(iterator))
                         .valueOr { return it.toFailure() }
-                    environment.set(name = target, value = value)
+                    assign(lValue = forIfClause.target, rValue = value)
                     if (forIfClause.filter != null) {
                         val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
                         val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }
@@ -838,7 +837,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitDictCompExpr(expr: DictCompExpr): LiloResult<LiloObject> {
         val map = mutableMapOf<LiloObject, LiloObject>()
         for (forIfClause in expr.generator) {
-            val target = (forIfClause.target as NameExpr).value.lexeme!!
             val iter = visit(expr = forIfClause.iter).valueOr { return it.toFailure() }
             val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
             if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
@@ -859,7 +857,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 try {
                     val value = nextFunc.invoke(interpreter = this, args = listOf(iterator))
                         .valueOr { return it.toFailure() }
-                    environment.set(name = target, value = value)
+                    assign(lValue = forIfClause.target, rValue = value)
                     if (forIfClause.filter != null) {
                         val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
                         val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }

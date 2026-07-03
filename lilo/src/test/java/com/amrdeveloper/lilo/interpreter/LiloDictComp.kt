@@ -21,12 +21,14 @@ class LiloDictComp {
             "print({x:x for x in range(3)})",
             "print({x:x for x in range(3) for x in range(3)})",
             "print({x:x for x in range(3) if x > 0})",
+            "print({x:x+y for x, y in ((1, 2), (2, 3), (4, 5)) if x > 0})",
         )
 
         val expectedOutput = listOf(
             "{0:0, 1:1, 2:2}",
             "{0:0, 1:1, 2:2}",
             "{1:1, 2:2}",
+            "{1:3, 2:5, 4:9}",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

@@ -1,9 +1,16 @@
 package com.amrdeveloper.turtle.ui.home
 
+import android.icu.text.CompactDecimalFormat
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -22,15 +30,22 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.createBitmap
 import com.amrdeveloper.turtle.R
+import java.util.Locale
+
+private val formatter by lazy {
+    CompactDecimalFormat.getInstance(
+        Locale.US,
+        CompactDecimalFormat.CompactStyle.SHORT
+    )
+}
 
 @Composable
-fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
+fun DrawScreen(viewModel: HomeViewModel, instCount: MutableLongState) {
     val screen = viewModel.getLiloMachine().getScreen() ?: return
-    val instCount = value.longValue
-
     val logo = vectorToBitmap(id = R.drawable.ic_turtle_pointer)
 
     var canvasSize by remember { mutableStateOf(value = IntSize.Zero) }
@@ -41,12 +56,12 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
     }
 
     // Color of drawing screen should be white and controlled only from Lilo
-    Column(modifier = Modifier.background(Color.White)) {
-        Text(
-            text = "Instructions: ${"%,d".format(instCount)}",
-            color = Color.Black
-        )
-        Canvas(modifier = Modifier.fillMaxSize().onSizeChanged { canvasSize = it }) {
+    Box(modifier = Modifier.background(Color.White)) {
+        DrawScreenTitlebar(instCount = instCount.longValue)
+
+        Canvas(modifier = Modifier
+            .fillMaxSize()
+            .onSizeChanged { canvasSize = it }) {
             // Similar to Turtle Graphics the turtle starts from (0, 0)
             // which is the center of the screen
             //
@@ -98,6 +113,29 @@ fun DrawScreen(viewModel: HomeViewModel, value: MutableLongState) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun DrawScreenTitlebar(instCount: Long) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surfaceContainer),
+        verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "Turtle",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .weight(1f)
+                .padding(4.dp))
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = "Inst ${formatter.format(instCount)}",
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(4.dp))
     }
 }
 

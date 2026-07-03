@@ -77,7 +77,10 @@ fun HomeScreen(
                             editorState = currentCodeInEditor,
                             colorSchema = colorSchema.editorSchema
                         )
-                        1 -> DrawScreen(viewModel, value = viewModel.screenUpdate)
+                        1 -> DrawScreen(
+                            viewModel = viewModel,
+                            instCount = viewModel.graphicInstCount
+                        )
                         2 -> Terminal(
                             colorSchema = colorSchema.terminalSchema,
                             output = viewModel.terminalOutput

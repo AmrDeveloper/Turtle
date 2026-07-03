@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(uiConfig: UIConfig) : ViewModel() {
         )
 
     val terminalOutput = mutableStateListOf<TerminalLine>()
-    val screenUpdate = mutableLongStateOf(value = 0)
+    val graphicInstCount = mutableLongStateOf(value = 0)
 
     private val _uiState = MutableStateFlow(value = TabActiveState())
     val uiState: StateFlow<TabActiveState> = _uiState.asStateFlow()
@@ -49,8 +49,8 @@ class HomeViewModel @Inject constructor(uiConfig: UIConfig) : ViewModel() {
         onStdout = { terminalOutput.add(TerminalLine.Normal(text = it)) })
 
     private val liloScreen = LiloScreen(update = {
-        screenUpdate.longValue++
-        if (screenUpdate.longValue > 0)
+        graphicInstCount.longValue++
+        if (graphicInstCount.longValue > 0)
             _uiState.update { it.copy(draw = true) }
     })
 
@@ -68,7 +68,7 @@ class HomeViewModel @Inject constructor(uiConfig: UIConfig) : ViewModel() {
     }
 
     fun runLiloCode(source: String) {
-        screenUpdate.longValue = 0
+        graphicInstCount.longValue = 0
         liloScreen.clearScreen()
         _uiState.value = TabActiveState()
 

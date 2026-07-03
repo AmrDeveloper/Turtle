@@ -1115,7 +1115,7 @@ class LiloParser(val tokens: List<LiloToken>) {
             advance()
 
             // Parse for target
-            val target = parseExpr().valueOr { return it.toFailure() }
+            val target = parseCommaSeparatedExpr().valueOr { return it.toFailure() }
 
             expectAndConsume(
                 kind = LiloTokenKind.IN_KEYWORD,

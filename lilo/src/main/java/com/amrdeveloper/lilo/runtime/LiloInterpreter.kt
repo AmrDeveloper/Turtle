@@ -289,7 +289,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
             try {
                 val value = nextFunc.invoke(interpreter = this, args = listOf(iterator))
                     .valueOr { return it.toFailure() }
-                assign(stmt.target, value)
+                assign(lValue = stmt.target, rValue = value)
                 visit(stmt = stmt.body).valueOr { return it.toFailure() }
                 hasIteratorCount = true
             } catch (e: LiloRaise) {
@@ -726,7 +726,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitListCompExpr(expr: ListCompExpr): LiloResult<LiloObject> {
         val list = mutableListOf<LiloObject>()
         for (forIfClause in expr.generator) {
-            val target = (forIfClause.target as NameExpr).value.lexeme!!
             val iter = visit(expr = forIfClause.iter).valueOr { return it.toFailure() }
             val iteratorFunc = iter.getAttr(name = LiloMagicMethod.ITER)
             if (iteratorFunc == null || iteratorFunc !is LiloCallable) {
@@ -747,7 +746,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
                 try {
                     val value = nextFunc.invoke(interpreter = this, args = listOf(iterator))
                         .valueOr { return it.toFailure() }
-                    environment.set(name = target, value = value)
+                    assign(lValue = forIfClause.target, rValue = value)
                     if (forIfClause.filter != null) {
                         val condition = visit(expr = forIfClause.filter).valueOr { return it.toFailure() }
                         val isTruth = condition.isTrue(interpreter = this).valueOr { return it.toFailure() }

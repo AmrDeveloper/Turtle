@@ -8,6 +8,8 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
+    it.setAttr(name = LiloMagicMethod.MUL, value = ListMul)
+
     it.setAttr(name = LiloMagicMethod.SET_ITEM, value = ListSetItem)
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = ListGetItem)
     it.setAttr(name = LiloMagicMethod.LEN, value = ListLen)
@@ -50,6 +52,34 @@ private object ListExtend : LiloObject(liloFunctionType), LiloCallable {
         val other = args[1] as LiloList
         self.values.addAll(elements = other.values)
         return LiloResult.Success(data = LiloNone)
+    }
+}
+
+private object ListMul : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`list.__mul__` Expect 2 arguments got ${args.size}")
+        }
+
+        if (args[0] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.__mul__` Expect first argument to be list, got ${args[0].type}")
+        }
+
+        if (args[1] !is LiloInt) {
+            throw createLiloException(liloTypeErrorType, "`list.__mul__` Expect second argument to be int, got ${args[1].type}")
+        }
+
+        val self = args[0] as LiloList
+        val times = args[1] as LiloInt
+        val newList = buildList {
+            repeat(times = times.value) {
+                addAll(elements = self.values)
+            }
+        }
+        return LiloResult.Success(data = LiloList(values = newList.toMutableList()))
     }
 }
 

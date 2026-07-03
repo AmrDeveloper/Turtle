@@ -11,6 +11,7 @@ Version 2.0.12 *(2026-<M>-<D>)*
 * Implement `math.atan2` function.
 * Implement `__mod__` for builtin float.
 * Fix Codegen for select in GPU Compiler.
+* Implement `__mul__` for builtin list.
 
 Version 2.0.11 *(2026-07-01)*
 -----------------------------

@@ -2,6 +2,8 @@ package com.amrdeveloper.lilo.objects
 
 import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.common.toFailure
+import com.amrdeveloper.lilo.common.valueOr
 import com.amrdeveloper.lilo.runtime.LiloCallable
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.runtime.LiloRaise
@@ -9,11 +11,56 @@ import com.amrdeveloper.lilo.runtime.LiloRaise
 val liloTupleType = LiloType(name = "tuple", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
+    it.setAttr(name = "index", value = TupleIndex)
+
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = TupleGetItem)
     it.setAttr(name = LiloMagicMethod.LEN, value = TupleLen)
 
     it.setAttr(name = LiloMagicMethod.ITER, value = TupleIter)
     it.setAttr(name = LiloMagicMethod.REVERSED, value = TupleReversedIter)
+}
+
+private object TupleIndex : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size !in 2..4) {
+            throw createLiloException(liloTypeErrorType, "`tuple.index` Expect 1 to 3 arguments but got `${args.size}`")
+        }
+
+        if (args[0] !is LiloTuple) {
+            throw createLiloException(liloTypeErrorType, "`tuple.index` expected first argument to be Tuple, got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloTuple
+        val count = self.values.size
+
+        val target = args[1]
+
+        var start = 0
+        if (args.size > 2) {
+            if (args[2] !is LiloInt)
+                throw createLiloException(liloTypeErrorType, "`tuple.index` expected second argument to be int, got ${args[2].type}")
+            start = (args[2] as LiloInt).value
+        }
+
+        var end = count
+        if (args.size > 3) {
+            if (args[3] !is LiloInt)
+                throw createLiloException(liloTypeErrorType, "`tuple.index` expected third argument to be int, got ${args[3].type}")
+            end = (args[3] as LiloInt).value
+        }
+
+        for (index in start until end) {
+            if (index in self.values.indices) {
+                val areEquals = self.values[index].eq(interpreter, other = target).valueOr { return it.toFailure() }
+                if (areEquals) return LiloResult.Success(data = LiloInt(value = index))
+            }
+        }
+
+        throw createLiloException(liloValueErrorType, "tuple.index(x): x not in tuple")
+    }
 }
 
 private object TupleIter : LiloObject(liloFunctionType), LiloCallable {

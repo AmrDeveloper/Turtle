@@ -60,6 +60,23 @@ fun LiloObject.isTrue(interpreter: LiloInterpreter) : LiloResult<Boolean> {
     return LiloResult.Success(data = true)
 }
 
+// Return true if two lilo objects are equals
+fun LiloObject.eq(interpreter: LiloInterpreter, other : LiloObject) : LiloResult<Boolean> {
+    if (this == other) return LiloResult.Success(data = true)
+
+    val boolMethod = getAttr(name = LiloMagicMethod.EQ)
+    if (boolMethod != null && boolMethod is LiloCallable) {
+        val boolRet = boolMethod.invoke(interpreter = interpreter, args = listOf(this, other))
+            .valueOr { return it.toFailure() }
+        if (boolRet !is LiloBool) {
+            throw createLiloException(liloTypeErrorType, "__bool__ should return bool, returned ${boolRet.type}")
+        }
+        return LiloResult.Success(data = boolRet.value)
+    }
+
+    throw createLiloException(liloTypeErrorType, "__bool__ can't be applied between ${this.type.toString()} and ${other.type.toString()}")
+}
+
 // Return the string representation of the LiloObject
 fun LiloObject.str(interpreter: LiloInterpreter) : LiloResult<String> {
     val boolMethod = getAttr(name = LiloMagicMethod.STR)

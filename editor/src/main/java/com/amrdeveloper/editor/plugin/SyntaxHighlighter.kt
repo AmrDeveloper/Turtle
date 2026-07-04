@@ -40,24 +40,6 @@ class SyntaxHighlighter(colorSchema: EditorSchema) : OutputTransformation {
                 )
             }
 
-        // Strings
-        Regex(pattern = "'[^']*'|\"[^\"]*\"").findAll(text).forEach { match ->
-            addStyle(
-                stringStyle,
-                match.range.first,
-                match.range.last + 1
-            )
-        }
-
-        // Comments
-        Regex(pattern = "#.*").findAll(text).forEach { match ->
-            addStyle(
-                commentStyle,
-                match.range.first,
-                match.range.last + 1
-            )
-        }
-
         // Functions
         Regex(pattern = "def\\s+(\\w+)").findAll(text).forEach { match ->
             match.groups[1]?.let { name ->
@@ -102,6 +84,24 @@ class SyntaxHighlighter(colorSchema: EditorSchema) : OutputTransformation {
         Regex(pattern = "[()\\[\\]{}.]").findAll(text).forEach { match ->
             addStyle(
                 bracketStyle,
+                match.range.first,
+                match.range.last + 1
+            )
+        }
+
+        // Comments
+        Regex(pattern = "#.*").findAll(text).forEach { match ->
+            addStyle(
+                commentStyle,
+                match.range.first,
+                match.range.last + 1
+            )
+        }
+
+        // Strings
+        Regex(pattern = "'[^']*'|\"[^\"]*\"").findAll(text).forEach { match ->
+            addStyle(
+                stringStyle,
                 match.range.first,
                 match.range.last + 1
             )

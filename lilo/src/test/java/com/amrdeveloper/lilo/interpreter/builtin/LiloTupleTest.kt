@@ -17,6 +17,51 @@ import org.junit.Test
 class LiloTupleTest {
 
     @Test
+    fun tuple_count_test() {
+        val sourceCodes = mutableListOf(
+            """
+            c = (1, 2, 3, 1).count(5)
+            print(c)
+            """,
+            """
+            c = (1, 2, 3, 1).count(1)
+            print(c)
+            """,
+        )
+
+        val expectedOutput = listOf(
+            "0",
+            "2",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val lexerResult = LiloLexer(source = sourceCode).tokenize()
+            if (lexerResult.isFailure()) {
+                println("Error[Lexer]: " + lexerResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Lexer error", lexerResult.isSuccess())
+
+            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+            if (parseResult.isFailure()) {
+                println("Error[Parser]: " + parseResult.toFailureError<LiloResult.Failure<LiloDiagnostic>>().error.message)
+            }
+            assertTrue("Parser error", parseResult.isSuccess())
+
+            val liloTree = parseResult.toSuccessData()
+            val liloMachine = LiloMockMachine()
+            val interpreter = LiloInterpreter(liloMachine = liloMachine)
+            val interpreterResult = interpreter.evaluate(program = liloTree)
+            if (interpreterResult.isFailure()) {
+                println("Error[RT]: " + interpreterResult.toFailureError<LiloExceptionMessage>().message)
+            }
+            assertTrue("Interpreter error", interpreterResult.isSuccess())
+            assert(value = liloMachine.getHost().buffer.toString() == expectedOutput[index]) {
+                print(liloMachine.getHost().buffer.toString())
+            }
+        }
+    }
+
+    @Test
     fun tuple_index_test() {
         val sourceCodes = mutableListOf(
             """

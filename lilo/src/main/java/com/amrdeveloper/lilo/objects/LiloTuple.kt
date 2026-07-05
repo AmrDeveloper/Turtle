@@ -11,6 +11,7 @@ import com.amrdeveloper.lilo.runtime.LiloRaise
 val liloTupleType = LiloType(name = "tuple", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
+    it.setAttr(name = "count", value = TupleCount)
     it.setAttr(name = "index", value = TupleIndex)
 
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = TupleGetItem)
@@ -18,6 +19,28 @@ val liloTupleType = LiloType(name = "tuple", bases = listOf(LiloBaseType.LILO_OB
 
     it.setAttr(name = LiloMagicMethod.ITER, value = TupleIter)
     it.setAttr(name = LiloMagicMethod.REVERSED, value = TupleReversedIter)
+}
+
+private object TupleCount : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`tuple.count(value)` takes exactly one argument (${args.size} given)")
+        }
+
+        val self = args[0] as LiloTuple
+
+        var countResult = 0
+        val target = args[1]
+        for (value in self.values) {
+            val areEquals = value.eq(interpreter, other = target).valueOr { return it.toFailure() }
+            countResult += if (areEquals) 1 else 0
+        }
+
+        return LiloResult.Success(data = LiloInt(value = countResult))
+    }
 }
 
 private object TupleIndex : LiloObject(liloFunctionType), LiloCallable {

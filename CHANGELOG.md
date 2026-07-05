@@ -13,7 +13,7 @@ Version 2.0.12 *(2026-<M>-<D>)*
 * Fix Codegen for select in GPU Compiler.
 * Implement `__mul__` for builtin list.
 * Extend ListComp, SetComp and DictComp to support targets, eg `[x + y for x, y in ((1, 2), (2, 3), (4, 5))]`.
-* Implement `index` function in builtin tuple type.
+* Implement `count` and `index` functions in builtin tuple type.
 
 Version 2.0.11 *(2026-07-01)*
 -----------------------------

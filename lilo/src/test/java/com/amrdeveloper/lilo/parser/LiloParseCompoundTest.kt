@@ -1,6 +1,6 @@
 package com.amrdeveloper.lilo.parser
 
-import com.amrdeveloper.lilo.utils.isValidLiloSyntax
+import com.amrdeveloper.lilo.utils.testLiloParser
 import org.junit.Test
 
 class LiloParserCompoundTest {
@@ -70,7 +70,7 @@ class LiloParserCompoundTest {
             """,
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -88,7 +88,7 @@ class LiloParserCompoundTest {
             """
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -106,7 +106,7 @@ class LiloParserCompoundTest {
             """
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -132,6 +132,6 @@ class LiloParserCompoundTest {
             """,
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 }

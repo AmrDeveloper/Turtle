@@ -6,8 +6,10 @@ import com.amrdeveloper.lilo.common.toFailureError
 import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
+import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
+import com.amrdeveloper.lilo.runtime.LiloInterpreter
 
-fun isValidLiloTokens(sourceCode: String) : Boolean {
+fun testLiloLexer(sourceCode: String) : Boolean {
     val lexerResult = LiloLexer(source = sourceCode).tokenize()
     if (lexerResult.isFailure()) {
         println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>())
@@ -16,7 +18,7 @@ fun isValidLiloTokens(sourceCode: String) : Boolean {
     return true
 }
 
-fun isValidLiloSyntax(sourceCode: String): Boolean {
+fun testLiloParser(sourceCode: String): Boolean {
     val lexerResult = LiloLexer(source = sourceCode).tokenize()
     if (lexerResult.isFailure()) {
         println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
@@ -33,4 +35,34 @@ fun isValidLiloSyntax(sourceCode: String): Boolean {
         return false
     }
     return true
+}
+
+fun testLiloInterpreter(sourceCode: String): String? {
+    val lexerResult = LiloLexer(source = sourceCode).tokenize()
+    if (lexerResult.isFailure()) {
+        println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
+        return null
+    }
+
+    val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
+    if (parseResult.isFailure()) {
+        println("Tokens: ")
+        for (token in lexerResult.toSuccessData()) {
+            println("  ${token}")
+        }
+        println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
+        return null
+    }
+
+    val liloTree = parseResult.toSuccessData()
+    val liloMachine = LiloMockMachine()
+    val interpreter = LiloInterpreter(liloMachine = liloMachine)
+    val interpreterResult = interpreter.evaluate(program = liloTree)
+    if (interpreterResult.isFailure()) {
+        val message = interpreterResult.toFailureError<LiloExceptionMessage>().message
+        println("Error[Interpreter]: $message")
+        return message
+    }
+
+    return liloMachine.getHost().buffer.toString()
 }

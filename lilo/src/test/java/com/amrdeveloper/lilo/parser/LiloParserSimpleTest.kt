@@ -1,6 +1,6 @@
 package com.amrdeveloper.lilo.parser
 
-import com.amrdeveloper.lilo.utils.isValidLiloSyntax
+import com.amrdeveloper.lilo.utils.testLiloParser
 import org.junit.Test
 
 class LiloParserSimpleTest {
@@ -34,7 +34,7 @@ class LiloParserSimpleTest {
             """,
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -46,7 +46,7 @@ class LiloParserSimpleTest {
             "(a and b) or c",
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -60,7 +60,7 @@ class LiloParserSimpleTest {
             "raise StopIterator from Exception;",
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -69,7 +69,7 @@ class LiloParserSimpleTest {
             "a.b", "random.random", "a.__add__"
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -78,7 +78,7 @@ class LiloParserSimpleTest {
             "b = [1]", "b = [1, 2, 3]"
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -87,7 +87,7 @@ class LiloParserSimpleTest {
             "b = { 1 }", "b = {1, 2, 3}"
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -96,7 +96,7 @@ class LiloParserSimpleTest {
             "b = (1)", "b = (1, 2, 3)", "b = (1,)"
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -105,7 +105,7 @@ class LiloParserSimpleTest {
             "a = { 1 : 2 }", "a = {}", "a = { 1 : [1, 2, 3], 2 : [4, 5, 6] }"
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
 
@@ -115,7 +115,7 @@ class LiloParserSimpleTest {
             "list[1]", "list[1][2]", "list[1, 2]", "list[1, 2, 3]", "kernal[blocks, threads]"
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -126,7 +126,7 @@ class LiloParserSimpleTest {
             "a = (2 if (True) else 3) if (True) else 2",
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -137,7 +137,7 @@ class LiloParserSimpleTest {
             "foo = lambda a : a + 1;",
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -149,7 +149,7 @@ class LiloParserSimpleTest {
             "nonlocal a, b",
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -160,7 +160,7 @@ class LiloParserSimpleTest {
             "a : float = 1.0",
             "a : float = 1.0;",
         )
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 
     @Test
@@ -172,6 +172,6 @@ class LiloParserSimpleTest {
             "assert a, b;",
         )
 
-        sourceCodes.forEach { assert(isValidLiloSyntax(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloParser(sourceCode = it)) }
     }
 }

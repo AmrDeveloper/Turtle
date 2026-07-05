@@ -1,6 +1,6 @@
 package com.amrdeveloper.lilo.lexer
 
-import com.amrdeveloper.lilo.utils.isValidLiloTokens
+import com.amrdeveloper.lilo.utils.testLiloLexer
 import org.junit.Test
 
 class LiloLexerTest {
@@ -30,7 +30,7 @@ class LiloLexerTest {
             """
         )
 
-        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloLexer(sourceCode = it)) }
     }
 
     @Test
@@ -44,7 +44,7 @@ class LiloLexerTest {
             """
         )
 
-        sourceCodes.forEach { assert(!isValidLiloTokens(sourceCode = it)) }
+        sourceCodes.forEach { assert(!testLiloLexer(sourceCode = it)) }
     }
 
     @Test
@@ -57,7 +57,7 @@ class LiloLexerTest {
             """
         )
 
-        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloLexer(sourceCode = it)) }
     }
 
     @Test
@@ -85,7 +85,7 @@ class LiloLexerTest {
             """
         )
 
-        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloLexer(sourceCode = it)) }
     }
 
     @Test
@@ -99,7 +99,7 @@ class LiloLexerTest {
             """
         )
 
-        sourceCodes.forEach { assert(isValidLiloTokens(sourceCode = it)) }
+        sourceCodes.forEach { assert(testLiloLexer(sourceCode = it)) }
     }
 
     @Test
@@ -113,6 +113,6 @@ class LiloLexerTest {
                 print(x)
         """.trimIndent()
 
-        assert(isValidLiloTokens(sourceCode = sourceCode))
+        assert(testLiloLexer(sourceCode = sourceCode))
     }
 }

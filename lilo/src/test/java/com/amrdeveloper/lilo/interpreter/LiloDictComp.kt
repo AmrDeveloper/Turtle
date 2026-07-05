@@ -10,6 +10,7 @@ import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
 import com.amrdeveloper.lilo.utils.LiloMockMachine
+import com.amrdeveloper.lilo.utils.testLiloInterpreter
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -32,29 +33,9 @@ class LiloDictComp {
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {
-            val lexerResult = LiloLexer(source = sourceCode).tokenize()
-            if (lexerResult.isFailure()) {
-                println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
-            }
-            assertTrue("Lexer error", lexerResult.isSuccess())
-
-            val parseResult = LiloParser(tokens = lexerResult.toSuccessData()).parse()
-            if (parseResult.isFailure()) {
-                println("Error[Parser]: " + parseResult.toFailureError<LiloDiagnostic>().message)
-            }
-            assertTrue("Parser error", parseResult.isSuccess())
-
-            val liloTree = parseResult.toSuccessData()
-            val liloMachine = LiloMockMachine()
-            val interpreter = LiloInterpreter(liloMachine)
-            val interpreterResult = interpreter.evaluate(program = liloTree)
-            if (interpreterResult.isFailure()) {
-                println("Error[RT]: " + interpreterResult.toFailureError<LiloExceptionMessage>().message)
-            }
-            assertTrue("Interpreter error", interpreterResult.isSuccess())
-            assert(liloMachine.getHost().buffer.toString() == expectedOutput[index]) {
-                println(liloMachine.getHost().buffer.toString())
-            }
+            val result = testLiloInterpreter(sourceCode)
+            assertTrue(result != null)
+            assert(value = result == expectedOutput[index])
         }
     }
 }

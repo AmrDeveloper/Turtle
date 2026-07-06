@@ -8,14 +8,15 @@ import com.amrdeveloper.lilo.runtime.LiloInterpreter
 val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJECT_TYPE)).also {
     it.type = LiloBaseType.LILO_TYPE_TYPE
 
+    it.setAttr(name = "append", value = ListAppend)
+    it.setAttr(name = "extend", value = ListExtend)
+    it.setAttr(name = "clear", value = ListClear)
+
     it.setAttr(name = LiloMagicMethod.MUL, value = ListMul)
 
     it.setAttr(name = LiloMagicMethod.SET_ITEM, value = ListSetItem)
     it.setAttr(name = LiloMagicMethod.GET_ITEM, value = ListGetItem)
     it.setAttr(name = LiloMagicMethod.LEN, value = ListLen)
-
-    it.setAttr(name = "append", value = ListAppend)
-    it.setAttr(name = "extend", value = ListExtend)
 }
 
 private object ListAppend : LiloObject(liloFunctionType), LiloCallable {
@@ -51,6 +52,25 @@ private object ListExtend : LiloObject(liloFunctionType), LiloCallable {
         val self = args[0] as LiloList
         val other = args[1] as LiloList
         self.values.addAll(elements = other.values)
+        return LiloResult.Success(data = LiloNone)
+    }
+}
+
+private object ListClear : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`list.extend` Expect ! arguments but got `${args.size}`")
+        }
+
+        if (args[0] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.extend` Expect first argument to be list, got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloList
+        self.values.clear()
         return LiloResult.Success(data = LiloNone)
     }
 }

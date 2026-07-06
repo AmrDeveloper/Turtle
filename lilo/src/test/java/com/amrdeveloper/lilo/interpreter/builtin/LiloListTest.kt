@@ -34,4 +34,25 @@ class LiloListTest {
         }
     }
 
+    @Test
+    fun list_clear() {
+        val sourceCodes = mutableListOf(
+            """
+            v = [1, 2, 3]
+            v.clear()
+            print(len(v))
+            """,
+        )
+
+        val expectedOutput = listOf(
+            "0",
+        )
+
+        for ((index, sourceCode) in sourceCodes.withIndex()) {
+            val result = testLiloInterpreter(sourceCode)
+            assertTrue(result != null)
+            assert(value = result == expectedOutput[index])
+        }
+    }
+
 }

@@ -24,10 +24,17 @@ private object ListAppend : LiloObject(liloFunctionType), LiloCallable {
         interpreter: LiloInterpreter,
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
-        val self = args[0]
+        if (args.size != 2) {
+            throw createLiloException(liloTypeErrorType, "`list.append` Expect 2 arguments but got `${args.size}`")
+        }
+
+        if (args[0] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.append` Expect first argument to be list, got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloList
         val index = args[1]
-        val list = self as LiloList
-        list.values.add(index)
+        self.values.add(index)
         return LiloResult.Success(data = LiloNone)
     }
 }
@@ -62,11 +69,11 @@ private object ListClear : LiloObject(liloFunctionType), LiloCallable {
         args: List<LiloObject>
     ): LiloResult<LiloObject> {
         if (args.size != 1) {
-            throw createLiloException(liloTypeErrorType, "`list.extend` Expect ! arguments but got `${args.size}`")
+            throw createLiloException(liloTypeErrorType, "`list.clear` Expect ! arguments but got `${args.size}`")
         }
 
         if (args[0] !is LiloList) {
-            throw createLiloException(liloTypeErrorType, "`list.extend` Expect first argument to be list, got ${args[0].type}")
+            throw createLiloException(liloTypeErrorType, "`list.clear` Expect first argument to be list, got ${args[0].type}")
         }
 
         val self = args[0] as LiloList

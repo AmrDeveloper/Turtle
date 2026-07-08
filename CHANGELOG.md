@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 2.0.12 *(2026-<M>-<D>)*
+Version 2.0.12 *(2026-07-08)*
 -------------------------------
 
 * Fix GPU GroupExpr and Dmi3 default values.

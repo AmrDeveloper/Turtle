@@ -10,6 +10,7 @@ val liloListType = LiloType(name = "list", bases = listOf(LiloBaseType.LILO_OBJE
 
     it.setAttr(name = "append", value = ListAppend)
     it.setAttr(name = "extend", value = ListExtend)
+    it.setAttr(name = "reverse", value = ListReverse)
     it.setAttr(name = "clear", value = ListClear)
 
     it.setAttr(name = LiloMagicMethod.MUL, value = ListMul)
@@ -59,6 +60,25 @@ private object ListExtend : LiloObject(liloFunctionType), LiloCallable {
         val self = args[0] as LiloList
         val other = args[1] as LiloList
         self.values.addAll(elements = other.values)
+        return LiloResult.Success(data = LiloNone)
+    }
+}
+
+private object ListReverse : LiloObject(liloFunctionType), LiloCallable {
+    override fun invoke(
+        interpreter: LiloInterpreter,
+        args: List<LiloObject>
+    ): LiloResult<LiloObject> {
+        if (args.size != 1) {
+            throw createLiloException(liloTypeErrorType, "`list.reverse` Expect ! arguments but got `${args.size}`")
+        }
+
+        if (args[0] !is LiloList) {
+            throw createLiloException(liloTypeErrorType, "`list.reverse` Expect first argument to be list, got ${args[0].type}")
+        }
+
+        val self = args[0] as LiloList
+        self.values.reverse()
         return LiloResult.Success(data = LiloNone)
     }
 }

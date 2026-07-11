@@ -1,5 +1,12 @@
 import com.android.build.api.variant.FilterConfiguration
 
+val supportedAbiCodesMap = mapOf(
+    "armeabi-v7a" to 1,
+    "arm64-v8a" to 2,
+    "x86" to 3,
+    "x86_64" to 4,
+)
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
@@ -22,11 +29,27 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // App Bundle for Google Play
+    bundle {
+        language { enableSplit =  false }
+        density { enableSplit = false }
+        abi { enableSplit = false }
+    }
+
+    val isBundleTask: Boolean by lazy {
+        gradle.startParameter.taskRequests.any { request ->
+            request.args.any { taskName ->
+                taskName.contains(other = "bundle", ignoreCase = true)
+            }
+        }
+    }
+
+    // APK's for the Github and Open source app stores
     splits {
         abi {
-            isEnable = true
+            isEnable = isBundleTask.not()
             reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            include(includes = supportedAbiCodesMap.keys.toTypedArray())
             isUniversalApk = true
         }
     }
@@ -72,18 +95,11 @@ android {
     }
 }
 
-val abiCodes = mapOf(
-    "armeabi-v7a" to 1,
-    "arm64-v8a" to 2,
-    "x86" to 3,
-    "x86_64" to 4,
-)
-
 androidComponents {
     onVariants { variant ->
         variant.outputs.forEach { output ->
             val abi = output.filters.find { it.filterType == FilterConfiguration.FilterType.ABI }?.identifier
-            val abiCode = abiCodes[abi]
+            val abiCode = supportedAbiCodesMap[abi]
             if (abiCode != null) {
                 val versionCode = output.versionCode.orNull ?: 0
                 output.versionCode.set(10 * versionCode + abiCode)

@@ -86,6 +86,16 @@ val liloShippedExamples = listOf(
             print(i)
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "FString",
+        sourceCode = """
+        print(f"Hello")
+        print(f"Hello {1}")
+        print(f"Hello {10}")
+        print(f"Hello {10 * 2}")
+        print(f"Hello {10 * 2 * 2}")
+        """.trimIndent()
+    ),
     // Turtle Examples
     LiloFileEntity(
         name = "TurtleSquare",

@@ -40,6 +40,7 @@ fun testLiloParser(sourceCode: String): Boolean {
 fun testLiloInterpreter(sourceCode: String): String? {
     val lexerResult = LiloLexer(source = sourceCode).tokenize()
     if (lexerResult.isFailure()) {
+        println(lexerResult)
         println("Error[Lexer]: " + lexerResult.toFailureError<LiloDiagnostic>().message)
         return null
     }

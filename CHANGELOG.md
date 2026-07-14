@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 2.0.13 *(2026-xx-xx)*
+-------------------------------
+
+* Implement String Interpolation f-string.
+* Config Gradle for both APK ABI splits.
+
 Version 2.0.12 *(2026-07-08)*
 -------------------------------
 

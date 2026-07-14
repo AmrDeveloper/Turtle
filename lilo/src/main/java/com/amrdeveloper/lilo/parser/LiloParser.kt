@@ -34,6 +34,7 @@ import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.IfStmt
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.IntExpr
+import com.amrdeveloper.lilo.ast.JoinedStrExpr
 import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
@@ -1066,9 +1067,11 @@ class LiloParser(val tokens: List<LiloToken>) {
                 LiloResult.Success(data = NameExpr(value = advance()))
             }
 
-            LiloTokenKind.STRING -> {
+            LiloTokenKind.STRING, LiloTokenKind.F_STRING_MIDDLE -> {
                 LiloResult.Success(data = StrExpr(value = advance()))
             }
+
+            LiloTokenKind.F_STRING_START -> parseJoinedStrExpr()
 
             LiloTokenKind.INT_LITERAL -> {
                 LiloResult.Success(data = IntExpr(value = advance()))
@@ -1205,6 +1208,49 @@ class LiloParser(val tokens: List<LiloToken>) {
         val expr =
             if (values.size == 1 && !hasComma) GroupExpr(expr = values[0]) else TupleExpr(values = values)
         return LiloResult.Success(data = expr)
+    }
+
+    // f-string:
+    //    | F_STRING_START f-string_middle* F_STRING_END
+    private fun parseJoinedStrExpr(): LiloResult<JoinedStrExpr> {
+        val values= mutableListOf<LiloExpr>()
+        // F_STRING_START
+        advance()
+
+        // Unterminated expression in f-string; expecting "}"
+
+        // f-string_middle*
+        var isTerminated = true
+        while (isPeek(kind = LiloTokenKind.F_STRING_END).not()) {
+            if (isPeek(kind = LiloTokenKind.L_BRACE)) {
+                advance()
+                isTerminated = false
+            }
+
+            val expr = parseExpr().valueOr { return it.toFailure() }
+            values.add(expr)
+
+            if (!isTerminated) {
+                if (isPeek(kind = LiloTokenKind.R_BRACE)) {
+                    advance()
+                    isTerminated = true
+                    continue
+                }
+
+
+                return createDiagnostic(
+                    loc = peek().loc,
+                    message = "Unterminated expression in f-string; expecting `}`"
+                )
+            }
+        }
+
+        // F_STRING_END
+        expectAndConsume(
+            kind = LiloTokenKind.F_STRING_END,
+            message = "expected 'f-string end' after end of f-string values"
+        ).valueOr { return it.toFailure() }
+        return LiloResult.Success(data = JoinedStrExpr(values))
     }
 
     private fun parseLambdaExpr(): LiloResult<LambdaExpr> {

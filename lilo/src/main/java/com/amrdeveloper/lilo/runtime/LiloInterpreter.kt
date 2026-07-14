@@ -34,6 +34,7 @@ import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.IfStmt
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.IntExpr
+import com.amrdeveloper.lilo.ast.JoinedStrExpr
 import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
@@ -900,6 +901,16 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
     override fun visitStrExpr(expr: StrExpr): LiloResult<LiloObject> {
         return runtimeObject(obj = LiloStr(value = expr.value.lexeme!!))
+    }
+
+    override fun visitJoinedStrExpr(expr: JoinedStrExpr): LiloResult<LiloObject> {
+        val output = StringBuilder()
+        for (value in expr.values) {
+            val valueObj = visit(expr = value).valueOr { return it.toFailure() }
+            val stringVal = valueObj.str(interpreter = this).valueOr { return it.toFailure() }
+            output.append(stringVal)
+        }
+        return runtimeObject(obj = LiloStr(value = output.toString()))
     }
 
     override fun visitIntExpr(expr: IntExpr): LiloResult<LiloObject> {

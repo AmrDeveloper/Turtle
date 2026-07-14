@@ -84,6 +84,9 @@ enum class LiloTokenKind {
 
     NAME,
     STRING,
+    F_STRING_START,
+    F_STRING_MIDDLE,
+    F_STRING_END,
     INT_LITERAL,
     FLOAT_LITERAL,
     COMPLEX_LITERAL,

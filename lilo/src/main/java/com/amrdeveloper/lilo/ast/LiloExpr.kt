@@ -130,6 +130,8 @@ data class NameExpr(val value: LiloToken) : LiloExpr
 
 data class StrExpr(val value: LiloToken) : LiloExpr
 
+data class JoinedStrExpr(val values: List<LiloExpr>) : LiloExpr
+
 data class IntExpr(val value: LiloToken) : LiloExpr
 
 data class FloatExpr(val value: LiloToken) : LiloExpr

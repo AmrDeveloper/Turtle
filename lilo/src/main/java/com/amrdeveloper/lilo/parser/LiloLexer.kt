@@ -2,6 +2,7 @@ package com.amrdeveloper.lilo.parser
 
 import com.amrdeveloper.lilo.common.LiloDiagnostic
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.common.toFailure
 import com.amrdeveloper.lilo.common.valueOr
 import java.util.Stack
 
@@ -22,144 +23,8 @@ class LiloLexer(val source: String) {
     fun tokenize(): LiloResult<List<LiloToken>> {
         val tokens: MutableList<LiloToken> = mutableListOf()
         while (!isAtEnd()) {
-            val indentTokens = consumeCommentsAndIndentations().valueOr { return it }
-            tokens.addAll(elements = indentTokens)
-
-            if (isAtEnd()) break
-
-            startPos = currentPos
-            columnStart = columnEnd
-
-            when (val c = peek()) {
-                in 'a'..'z', in 'A'..'Z', '_' -> {
-                    val token = consumeSymbolOrKeyword().valueOr { return it }
-                    tokens.add(token)
-                }
-
-                in '0'..'9' -> {
-                    val token = consumeNumber().valueOr { return it }
-                    tokens.add(token)
-                }
-
-                '+', '%' -> {
-                    tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
-                }
-
-                '-' -> {
-                    advance()
-                    if (peek() == '>') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.R_ARROW))
-                    } else {
-                        tokens.add(createToken(kind = LiloTokenKind.MINUS))
-                    }
-                }
-
-                '*' -> {
-                    advance()
-                    if (peek() == '*') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.DOUBLE_STAR))
-                    } else {
-                        tokens.add(createToken(kind = LiloTokenKind.STAR))
-                    }
-                }
-
-                '/' -> {
-                    advance()
-                    if (peek() == '/') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.DOUBLE_SLASH))
-                    } else {
-                        tokens.add(createToken(kind = LiloTokenKind.SLASH))
-                    }
-                }
-
-                '=' -> {
-                    advance()
-                    if (peek() == '=') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.EQ_EQ))
-                    }
-                    else {
-                        tokens.add(createToken(kind = LiloTokenKind.EQ))
-                    }
-                }
-
-                '!' -> {
-                    advance()
-                    if (peek() == '=') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.BANG_EQ))
-                    } else {
-                        tokens.add(createToken(kind = LiloTokenKind.BANG))
-                    }
-                }
-
-                '>' -> {
-                    advance()
-                    if (peek() == '=') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.GE))
-                    } else if (peek() == '>') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.RIGHT_SHIFT))
-                    } else {
-                        tokens.add(createToken(kind = LiloTokenKind.GT))
-                    }
-                }
-
-                '<' -> {
-                    advance()
-                    if (peek() == '=') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.LE))
-                    } else if (peek() == '<') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.LEFT_SHIFT))
-                    } else {
-                        tokens.add(createToken(kind = LiloTokenKind.LT))
-                    }
-                }
-
-                '(', ')', '[', ']', '{', '}' -> {
-                    val kind = liloOneCharTokenMap[peek()]!!
-                    if (kind == LiloTokenKind.L_PAR || kind == LiloTokenKind.L_SQB || kind == LiloTokenKind.L_BRACE) {
-                        nestingLevel++
-                    } else {
-                        nestingLevel--
-                    }
-                    tokens.add(createToken(kind = kind))
-                    advance()
-                }
-
-                ':' -> {
-                    advance()
-                    if (peek() == '=') {
-                        advance()
-                        tokens.add(createToken(kind = LiloTokenKind.COLON_EQ))
-                    } else {
-                        tokens.add(createToken(kind = LiloTokenKind.COLON))
-                    }
-                }
-
-                '@', '.', ',', ';' -> {
-                    tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
-                }
-
-                '&', '|', '^' -> {
-                    tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
-                }
-
-                '\'', '"' -> {
-                    val stringToken = consumeStringLiteral().valueOr { return it }
-                    tokens.add(stringToken)
-                }
-
-                else -> {
-                    return createDiagnostic(message = "Unexpected char `${c}`")
-                }
-            }
+            val consumedToken = consumeToken().valueOr { return it.toFailure() }
+            tokens.addAll(elements = consumedToken)
         }
 
         // Generate `DEDENT` for all remaining `INDENT` in the stack
@@ -169,6 +34,155 @@ class LiloLexer(val source: String) {
         }
 
         tokens.add(createToken(kind = LiloTokenKind.END_MARKER))
+        return LiloResult.Success(data = tokens)
+    }
+
+    private fun consumeToken(): LiloResult<List<LiloToken>> {
+        val tokens: MutableList<LiloToken> = mutableListOf()
+        val indentTokens = consumeCommentsAndIndentations().valueOr { return it.toFailure() }
+        tokens.addAll(elements = indentTokens)
+
+        if (isAtEnd()) return LiloResult.Success(data = tokens)
+
+        startPos = currentPos
+        columnStart = columnEnd
+
+        when (val c = peek()) {
+            in 'a'..'z', in 'A'..'Z', '_' -> {
+                if (c == 'f' && (peekNext() == '"' || peekNext() == '\'')) {
+                    val joinedStrTokens = consumeJoinedStringLiteral().valueOr { return it.toFailure() }
+                    tokens.addAll(elements = joinedStrTokens)
+                } else {
+                    val token = consumeSymbolOrKeyword().valueOr { return it.toFailure() }
+                    tokens.add(token)
+                }
+            }
+
+            in '0'..'9' -> {
+                val token = consumeNumber().valueOr { return it.toFailure() }
+                tokens.add(token)
+            }
+
+            '+', '%' -> {
+                tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
+            }
+
+            '-' -> {
+                advance()
+                if (peek() == '>') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.R_ARROW))
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.MINUS))
+                }
+            }
+
+            '*' -> {
+                advance()
+                if (peek() == '*') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.DOUBLE_STAR))
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.STAR))
+                }
+            }
+
+            '/' -> {
+                advance()
+                if (peek() == '/') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.DOUBLE_SLASH))
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.SLASH))
+                }
+            }
+
+            '=' -> {
+                advance()
+                if (peek() == '=') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.EQ_EQ))
+                }
+                else {
+                    tokens.add(createToken(kind = LiloTokenKind.EQ))
+                }
+            }
+
+            '!' -> {
+                advance()
+                if (peek() == '=') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.BANG_EQ))
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.BANG))
+                }
+            }
+
+            '>' -> {
+                advance()
+                if (peek() == '=') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.GE))
+                } else if (peek() == '>') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.RIGHT_SHIFT))
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.GT))
+                }
+            }
+
+            '<' -> {
+                advance()
+                if (peek() == '=') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.LE))
+                } else if (peek() == '<') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.LEFT_SHIFT))
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.LT))
+                }
+            }
+
+            '(', ')', '[', ']', '{', '}' -> {
+                val kind = liloOneCharTokenMap[peek()]!!
+                if (kind == LiloTokenKind.L_PAR || kind == LiloTokenKind.L_SQB || kind == LiloTokenKind.L_BRACE) {
+                    nestingLevel++
+                } else {
+                    nestingLevel--
+                }
+                tokens.add(createToken(kind = kind))
+                advance()
+            }
+
+            ':' -> {
+                advance()
+                if (peek() == '=') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.COLON_EQ))
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.COLON))
+                }
+            }
+
+            '@', '.', ',', ';' -> {
+                tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
+            }
+
+            '&', '|', '^' -> {
+                tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
+            }
+
+            '\'', '"' -> {
+                val stringToken = consumeStringLiteral().valueOr { return it.toFailure() }
+                tokens.add(stringToken)
+            }
+
+            else -> {
+                return createDiagnostic(message = "Unexpected char `${c}`")
+            }
+        }
+
         return LiloResult.Success(data = tokens)
     }
 
@@ -226,6 +240,58 @@ class LiloLexer(val source: String) {
         val lexeme = source.substring(startPos + 1, currentPos - 1)
         val str = createToken(kind = LiloTokenKind.STRING, lexeme = lexeme)
         return LiloResult.Success(data = str)
+    }
+
+    private fun consumeJoinedStringLiteral(): LiloResult<List<LiloToken>> {
+        val tokens = mutableListOf<LiloToken>()
+
+        // 'f'
+        advance()
+        // ' or "
+        val start = advance()
+
+        tokens.add(createToken(kind = LiloTokenKind.F_STRING_START))
+
+        var fStringMiddle = ""
+        while (!isAtEnd() && peek() != start) {
+            if (peek() == '{') {
+                if (fStringMiddle.isNotEmpty()) {
+                    tokens.add(createToken(kind = LiloTokenKind.F_STRING_MIDDLE, lexeme = fStringMiddle))
+                    fStringMiddle = ""
+                }
+
+                advance()
+                tokens.add(createToken(kind = LiloTokenKind.L_BRACE))
+
+                while (!isAtEnd() && peek() != '}') {
+                    tokens.addAll(elements = consumeToken().valueOr { return it.toFailure() })
+                }
+
+                if (peek() == '}') {
+                    advance()
+                    tokens.add(createToken(kind = LiloTokenKind.R_BRACE))
+                }
+                continue
+            }
+
+            fStringMiddle += advance()
+        }
+
+        // Consume fString middle before the fString end
+        if (fStringMiddle.isNotEmpty()) {
+            val token = createToken(kind = LiloTokenKind.F_STRING_MIDDLE, lexeme = fStringMiddle)
+            tokens.add(token)
+        }
+
+        if (isAtEnd() || peek() != start) {
+            return LiloResult.Failure(error = createDiagnostic(message = "Unterminated f-string"))
+        }
+
+        // Consume terminator
+        advance()
+
+        tokens.add(createToken(kind = LiloTokenKind.F_STRING_END))
+        return LiloResult.Success(data = tokens)
     }
 
     private fun consumeCommentsAndIndentations() : LiloResult<List<LiloToken>> {
@@ -356,7 +422,7 @@ class LiloLexer(val source: String) {
 
     private fun peek() = if (isAtEnd()) '\u0000' else source[currentPos]
 
-    private fun peekNext() = if (currentPos + 1 < source.length) '\u0000' else source[currentPos]
+    private fun peekNext() = if (currentPos + 1 < source.length) source[currentPos + 1] else '\u0000'
 
     private fun isAtEnd() = currentPos >= source.length
 }

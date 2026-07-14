@@ -31,6 +31,7 @@ import com.amrdeveloper.lilo.ast.IfExpr
 import com.amrdeveloper.lilo.ast.IfStmt
 import com.amrdeveloper.lilo.ast.ImportStmt
 import com.amrdeveloper.lilo.ast.IntExpr
+import com.amrdeveloper.lilo.ast.JoinedStrExpr
 import com.amrdeveloper.lilo.ast.LambdaExpr
 import com.amrdeveloper.lilo.ast.LiloProgram
 import com.amrdeveloper.lilo.ast.LiloTreeVisitor
@@ -348,6 +349,10 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
 
     override fun visitStrExpr(expr: StrExpr): LiloResult<String> {
         return LiloResult.Success(data = "\"${expr.value.lexeme!!}\"")
+    }
+
+    override fun visitJoinedStrExpr(expr: JoinedStrExpr): LiloResult<String> {
+        return LiloResult.Failure(error = LiloExceptionMessage("JoinedStrExpr NYI on GPU"))
     }
 
     override fun visitIntExpr(expr: IntExpr): LiloResult<String> {

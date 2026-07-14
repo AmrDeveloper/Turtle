@@ -68,6 +68,7 @@ interface LiloExprVisitor<T> {
         is TupleExpr -> visitTupleExpr(expr)
         is NameExpr -> visitNameExpr(expr)
         is StrExpr -> visitStrExpr(expr)
+        is JoinedStrExpr -> visitJoinedStrExpr(expr)
         is IntExpr -> visitIntExpr(expr)
         is FloatExpr -> visitFloatExpr(expr)
         is ComplexExpr -> visitComplexExpr(expr)
@@ -95,6 +96,7 @@ interface LiloExprVisitor<T> {
     fun visitTupleExpr(expr: TupleExpr): T
     fun visitNameExpr(expr: NameExpr): T
     fun visitStrExpr(expr: StrExpr): T
+    fun visitJoinedStrExpr(expr: JoinedStrExpr): T
     fun visitIntExpr(expr: IntExpr): T
     fun visitFloatExpr(expr: FloatExpr): T
     fun visitComplexExpr(expr: ComplexExpr): T

@@ -1,5 +1,6 @@
 package com.amrdeveloper.lilo.lib
 
+import com.amrdeveloper.lilo.lib.bui.LiloRoundFunction
 import com.amrdeveloper.lilo.lib.builtins.LiloAbsFunction
 import com.amrdeveloper.lilo.objects.liloAssertionErrorType
 import com.amrdeveloper.lilo.objects.liloBaseExceptionType
@@ -106,4 +107,5 @@ fun registerLiloStandardLibrary() {
     LiloEnvironment.builtins["next"]      = LiloNextFunction
     LiloEnvironment.builtins["reversed"]  = LiloReversedFunction
     LiloEnvironment.builtins["callable"]  = LiloCallableFunction
+    LiloEnvironment.builtins["round"]     = LiloRoundFunction
 }

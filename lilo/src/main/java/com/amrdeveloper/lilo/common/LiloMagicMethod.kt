@@ -3,6 +3,9 @@ package com.amrdeveloper.lilo.common
 object LiloMagicMethod {
     const val INIT = "__init__"
 
+    // Numeric conversion
+    const val ROUND = "__round__"
+
     // Arithmetic Op
     const val ADD = "__add__"
     const val SUB = "__sub__"

@@ -1,6 +1,9 @@
 package com.amrdeveloper.lilo.lib.math
 
+import com.amrdeveloper.lilo.common.LiloMagicMethod
 import com.amrdeveloper.lilo.common.LiloResult
+import com.amrdeveloper.lilo.common.isFailure
+import com.amrdeveloper.lilo.common.toSuccessData
 import com.amrdeveloper.lilo.objects.LiloFloat
 import com.amrdeveloper.lilo.objects.LiloInt
 import com.amrdeveloper.lilo.objects.LiloModule
@@ -176,13 +179,17 @@ object LiloMathFloor : LiloObject(liloFunctionType), LiloCallable {
         }
 
         val argument = args[0]
-        if ((argument !is LiloFloat) && argument !is LiloInt) {
-            throw createLiloException(liloTypeErrorType, "`math.floor` expect must be real number, not `${argument.type.toString()}`")
+        val magicFloorFunction = argument.getAttr(name = LiloMagicMethod.FLOOR)
+        if ((magicFloorFunction == null) || magicFloorFunction !is LiloCallable) {
+            throw createLiloException(liloTypeErrorType, "`${argument}` doesn't support __floor__")
         }
 
-        if (argument is LiloInt) return LiloResult.Success(data = argument)
-        val result = floor(x = (argument as LiloFloat).value)
-        return LiloResult.Success(data = LiloFloat(value = result))
+        val floorResult = magicFloorFunction.invoke(interpreter, args = listOf(argument))
+        if (floorResult.isFailure()) {
+            throw createLiloException(liloTypeErrorType, "floor function failed with input `${argument}")
+        }
+        val round = floorResult.toSuccessData()
+        return LiloResult.Success(data = round)
     }
 }
 
@@ -196,16 +203,19 @@ object LiloMathCeil : LiloObject(liloFunctionType), LiloCallable {
         }
 
         val argument = args[0]
-        if ((argument !is LiloFloat) && argument !is LiloInt) {
-            throw createLiloException(liloTypeErrorType, "`math.ceil` expect must be real number, not `${argument.type.toString()}`")
+        val magicCeilFunction = argument.getAttr(name = LiloMagicMethod.CEIL)
+        if ((magicCeilFunction == null) || magicCeilFunction !is LiloCallable) {
+            throw createLiloException(liloTypeErrorType, "`${argument}` doesn't support __ceil__")
         }
 
-        if (argument is LiloInt) return LiloResult.Success(data = argument)
-        val result = ceil(x = (argument as LiloFloat).value)
-        return LiloResult.Success(data = LiloFloat(value = result))
+        val ceilResult = magicCeilFunction.invoke(interpreter, args = listOf(argument))
+        if (ceilResult.isFailure()) {
+            throw createLiloException(liloTypeErrorType, "ceil function failed with input `${argument}")
+        }
+        val round = ceilResult.toSuccessData()
+        return LiloResult.Success(data = round)
     }
 }
-
 
 object LiloMathRadians : LiloObject(liloFunctionType), LiloCallable {
     override fun invoke(

@@ -28,7 +28,7 @@ object LiloRoundFunction : LiloObject(liloFunctionType), LiloCallable {
 
         val roundResult = magicRoundFunction.invoke(interpreter, args = listOf(argument))
         if (roundResult.isFailure()) {
-            throw createLiloException(liloTypeErrorType, "Len function failed with input `${argument}")
+            throw createLiloException(liloTypeErrorType, "round function failed with input `${argument}")
         }
         val round = roundResult.toSuccessData()
         return LiloResult.Success(data = round)

@@ -7,6 +7,8 @@ Version 2.0.13 *(2026-xx-xx)*
 * Implement String Interpolation f-string.
 * Config Gradle for both APK ABI splits.
 * Implement `__round__` magic function.
+* Implement `__floor__` magic function.
+* Implement `__ceil__` magic function.
 
 Version 2.0.12 *(2026-07-08)*
 -------------------------------

@@ -5,6 +5,9 @@ object LiloMagicMethod {
 
     // Numeric conversion
     const val ROUND = "__round__"
+    const val FLOOR = "__floor__"
+    const val CEIL = "__ceil__"
+    const val ABS = "__abs__"
 
     // Arithmetic Op
     const val ADD = "__add__"
@@ -15,8 +18,6 @@ object LiloMagicMethod {
     const val MOD = "__mod__"
     const val POW = "__pow__"
     const val MATRIX_MUL = "__matmul__"
-
-    const val ABS = "__abs__"
 
     // Shift Op
     const val RIGHT_SHIFT = "__rshift__"

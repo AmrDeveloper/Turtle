@@ -8,6 +8,7 @@ class LiloEnvironment(val enclosing: LiloEnvironment? = null) {
     val globals = mutableSetOf<String>()
 
     companion object {
+        val modules = mutableMapOf<String, LiloObject>()
         val builtins = mutableMapOf<String, LiloObject>()
     }
 

@@ -85,6 +85,7 @@ import com.amrdeveloper.lilo.runtime.signal.LiloBreakSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloContinueSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.lib.registerLiloAutoImportedModule
+import com.amrdeveloper.lilo.lib.registerLiloBuiltinModules
 import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.createLiloException
@@ -114,6 +115,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     val globals = LiloEnvironment().also {
         // Register builtins
         registerLiloAutoImportedModule()
+        registerLiloBuiltinModules()
         registerLiloStandardLibrary()
     }
 
@@ -147,7 +149,7 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
         alias: String? = null,
         shouldDefine: Boolean = false
     ): LiloResult<LiloObject> {
-        var liloModule = LiloEnvironment.builtins[names[0]]
+        var liloModule = LiloEnvironment.modules[names[0]]
             ?: throw createLiloException(liloModuleNotFoundErrorType, "No module named '${names[0]}'")
 
         if (liloModule !is LiloModule)

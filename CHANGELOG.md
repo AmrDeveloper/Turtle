@@ -9,6 +9,7 @@ Version 2.0.13 *(2026-xx-xx)*
 * Implement `__round__` magic function.
 * Implement `__floor__` magic function.
 * Implement `__ceil__` magic function.
+* Fix resolving modules in nested scopes.
 
 Version 2.0.12 *(2026-07-08)*
 -------------------------------

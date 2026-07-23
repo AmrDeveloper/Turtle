@@ -81,17 +81,19 @@ fun registerLiloAutoImportedModule() {
     LiloEnvironment.builtins["ZeroDivisionError"]       = liloZeroDivisionErrorType
 }
 
-fun registerLiloStandardLibrary() {
+fun registerLiloBuiltinModules() {
     // Register Stdlib modules
-    LiloEnvironment.builtins["random"]    = liloRandomModule
-    LiloEnvironment.builtins["math"]      = liloMathModule
-    LiloEnvironment.builtins["gpu"]       = liloGPUModule
-    LiloEnvironment.builtins["time"]      = liloTimeModule
-    LiloEnvironment.builtins["turtle"]    = liloTurtleModule
-    LiloEnvironment.builtins["colorsys"]  = liloColorSysModule
-    LiloEnvironment.builtins["keyword"]   = liloKeywordModule
-    LiloEnvironment.builtins["inspect"]   = liloInspectModule
+    LiloEnvironment.modules["random"]    = liloRandomModule
+    LiloEnvironment.modules["math"]      = liloMathModule
+    LiloEnvironment.modules["gpu"]       = liloGPUModule
+    LiloEnvironment.modules["time"]      = liloTimeModule
+    LiloEnvironment.modules["turtle"]    = liloTurtleModule
+    LiloEnvironment.modules["colorsys"]  = liloColorSysModule
+    LiloEnvironment.modules["keyword"]   = liloKeywordModule
+    LiloEnvironment.modules["inspect"]   = liloInspectModule
+}
 
+fun registerLiloStandardLibrary() {
     // Register Stdlib functions
     LiloEnvironment.builtins["abs"]       = LiloAbsFunction
     LiloEnvironment.builtins["print"]     = LiloPrintFunction

@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-Version 2.0.13 *(2026-xx-xx)*
+Version 2.0.13 *(2026-07-25)*
 -------------------------------
 
 * Implement String Interpolation f-string.

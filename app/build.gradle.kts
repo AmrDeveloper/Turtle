@@ -24,8 +24,8 @@ android {
         applicationId = "com.amrdeveloper.turtle"
         minSdk = libs.versions.minSdk.get().toInt()
 
-        versionCode = 33
-        versionName = "2.0.12"
+        versionCode = 34
+        versionName = "2.0.13"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

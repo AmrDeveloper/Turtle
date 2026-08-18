@@ -18,6 +18,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
+import com.amrdeveloper.lilo.ast.EllipsisExpr
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
 import com.amrdeveloper.lilo.ast.ForStmt
@@ -364,11 +365,15 @@ class LiloGPUCompiler(val config : LiloLaunchConfig) : LiloTreeVisitor<LiloResul
     }
 
     override fun visitComplexExpr(expr: ComplexExpr): LiloResult<String> {
-        return LiloResult.Failure(error = LiloExceptionMessage("ComplexType NYI on GPU"))
+        return LiloResult.Failure(error = LiloExceptionMessage("ComplexExpr NYI on GPU"))
     }
 
     override fun visitBoolExpr(expr: BoolExpr): LiloResult<String> {
         return LiloResult.Success(data = if (expr.value.kind == LiloTokenKind.TRUE_KEYWORD) "true" else "false")
+    }
+
+    override fun visitEllipsisExpr(expr: EllipsisExpr): LiloResult<String> {
+        return LiloResult.Failure(error = LiloExceptionMessage("EllipsisExpr NYI on GPU"))
     }
 
     override fun visitNoneExpr(expr: NoneExpr): LiloResult<String> {

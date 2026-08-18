@@ -73,6 +73,7 @@ interface LiloExprVisitor<T> {
         is FloatExpr -> visitFloatExpr(expr)
         is ComplexExpr -> visitComplexExpr(expr)
         is BoolExpr -> visitBoolExpr(expr)
+        is EllipsisExpr -> visitEllipsisExpr(expr)
         is NoneExpr -> visitNoneExpr(expr)
     }
 
@@ -101,6 +102,7 @@ interface LiloExprVisitor<T> {
     fun visitFloatExpr(expr: FloatExpr): T
     fun visitComplexExpr(expr: ComplexExpr): T
     fun visitBoolExpr(expr: BoolExpr): T
+    fun visitEllipsisExpr(expr: EllipsisExpr): T
     fun visitNoneExpr(expr: NoneExpr): T
 }
 

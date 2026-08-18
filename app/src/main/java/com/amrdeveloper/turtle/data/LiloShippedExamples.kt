@@ -458,4 +458,12 @@ val liloShippedExamples = listOf(
             print(4)
         """.trimIndent()
     ),
+    LiloFileEntity(
+        name = "Ellipsis",
+        sourceCode = """
+        def foo():
+            return ...
+        print(foo())    
+        """.trimIndent()
+    )
 )

@@ -140,4 +140,6 @@ data class ComplexExpr(val value: LiloToken) : LiloExpr
 
 data class BoolExpr(val value: LiloToken) : LiloExpr
 
+data class EllipsisExpr(val value: LiloToken) : LiloExpr
+
 data class NoneExpr(val value: LiloToken) : LiloExpr

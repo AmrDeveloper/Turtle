@@ -90,6 +90,7 @@ enum class LiloTokenKind {
     INT_LITERAL,
     FLOAT_LITERAL,
     COMPLEX_LITERAL,
+    ELLIPSIS,
 
     NEW_LINE,
     INDENT,

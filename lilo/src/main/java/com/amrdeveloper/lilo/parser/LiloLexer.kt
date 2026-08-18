@@ -165,7 +165,22 @@ class LiloLexer(val source: String) {
                 }
             }
 
-            '@', '.', ',', ';' -> {
+            '.' -> {
+                advance()
+                if (peek() == '.') {
+                    advance()
+                    if (peek() == '.') {
+                        advance()
+                        tokens.add(createToken(kind = LiloTokenKind.ELLIPSIS))
+                    } else {
+                        return createDiagnostic(message = "Unexpected token `..`")
+                    }
+                } else {
+                    tokens.add(createToken(kind = LiloTokenKind.DOT))
+                }
+            }
+
+            '@', ',', ';' -> {
                 tokens.add(createToken(kind = liloOneCharTokenMap[advance()]!!))
             }
 

@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 2.0.14 *(2026-xx-xx)*
+-------------------------------
+
+* Implement support for Ellipsis expr `...`.
+
 Version 2.0.13 *(2026-07-25)*
 -------------------------------
 

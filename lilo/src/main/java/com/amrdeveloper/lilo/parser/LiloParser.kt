@@ -19,6 +19,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
+import com.amrdeveloper.lilo.ast.EllipsisExpr
 import com.amrdeveloper.lilo.ast.ExceptHandler
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
@@ -1091,6 +1092,10 @@ class LiloParser(val tokens: List<LiloToken>) {
 
             LiloTokenKind.NONE_KEYWORD -> {
                 LiloResult.Success(data = NoneExpr(value = advance()))
+            }
+
+            LiloTokenKind.ELLIPSIS -> {
+                LiloResult.Success(data = EllipsisExpr(value = advance()))
             }
 
             LiloTokenKind.LAMBDA_KEYWORD -> parseLambdaExpr()

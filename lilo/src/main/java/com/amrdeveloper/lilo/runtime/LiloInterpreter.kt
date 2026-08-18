@@ -20,6 +20,7 @@ import com.amrdeveloper.lilo.ast.ContinueStmt
 import com.amrdeveloper.lilo.ast.DelStmt
 import com.amrdeveloper.lilo.ast.DictCompExpr
 import com.amrdeveloper.lilo.ast.DictExpr
+import com.amrdeveloper.lilo.ast.EllipsisExpr
 import com.amrdeveloper.lilo.ast.ExceptHandler
 import com.amrdeveloper.lilo.ast.ExprStmt
 import com.amrdeveloper.lilo.ast.FloatExpr
@@ -87,6 +88,7 @@ import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
 import com.amrdeveloper.lilo.lib.registerLiloAutoImportedModule
 import com.amrdeveloper.lilo.lib.registerLiloBuiltinModules
 import com.amrdeveloper.lilo.lib.registerLiloStandardLibrary
+import com.amrdeveloper.lilo.objects.LiloEllipsis
 import com.amrdeveloper.lilo.objects.LiloType
 import com.amrdeveloper.lilo.objects.createLiloException
 import com.amrdeveloper.lilo.objects.isTrue
@@ -934,6 +936,10 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     override fun visitBoolExpr(expr: BoolExpr): LiloResult<LiloObject> {
         val value = if (expr.value.kind == LiloTokenKind.TRUE_KEYWORD) TRUE else FALSE
         return runtimeObject(obj = value)
+    }
+
+    override fun visitEllipsisExpr(expr: EllipsisExpr): LiloResult<LiloObject> {
+        return runtimeObject(obj = LiloEllipsis)
     }
 
     override fun visitNoneExpr(expr: NoneExpr): LiloResult<LiloObject> {

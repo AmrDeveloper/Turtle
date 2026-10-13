@@ -83,7 +83,8 @@ fun HomeScreen(
                         )
                         2 -> Terminal(
                             colorSchema = colorSchema.terminalSchema,
-                            output = viewModel.terminalOutput
+                            onStdinSubmit = { viewModel.runCommand(fullCommand = it) },
+                            output = viewModel.terminalOutput,
                         )
                         3 -> LiloFilesScreen(navController = navController)
                     }

@@ -16,6 +16,7 @@ import com.amrdeveloper.lilo.parser.LiloLexer
 import com.amrdeveloper.lilo.parser.LiloParser
 import com.amrdeveloper.lilo.runtime.LiloExceptionMessage
 import com.amrdeveloper.lilo.runtime.LiloInterpreter
+import com.amrdeveloper.terminal.CommandManager
 import com.amrdeveloper.terminal.TerminalLine
 import com.amrdeveloper.turtle.ui.config.UIConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -113,6 +114,13 @@ class HomeViewModel @Inject constructor(uiConfig: UIConfig) : ViewModel() {
             }
         }
 
+    }
+
+    fun runCommand(fullCommand : String) {
+        viewModelScope.launch {
+            val output = CommandManager.executeCommand(viewModelScope, fullCommand)
+            terminalOutput.addAll(elements = output)
+        }
     }
 
     fun getLiloMachine() = liloMachine

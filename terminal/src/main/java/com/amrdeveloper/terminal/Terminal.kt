@@ -12,20 +12,33 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amrdeveloper.colorschema.core.TerminalSchema
@@ -34,7 +47,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun Terminal(
     colorSchema: TerminalSchema,
-    output: SnapshotStateList<TerminalLine>
+    output: SnapshotStateList<TerminalLine>,
+    onStdinSubmit: (String) -> Unit = {}
 ) {
     val scrollState = rememberLazyListState()
     LaunchedEffect(output.size) {
@@ -45,19 +59,93 @@ fun Terminal(
         }
     }
 
+    var isStdoutEnabled by remember { mutableStateOf(value = true) }
     Surface(modifier = Modifier.fillMaxSize(), color = colorSchema.background) {
-        LazyColumn(
-            state = scrollState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            items(output) { line ->
-                TerminalLineItem(colorSchema, line)
-            }
+        Column {
+            TerminalStandardOutout(
+                modifier = Modifier.fillMaxWidth().weight(0.8f),
+                stdout = output,
+                colorSchema = colorSchema,
+                scrollState = scrollState,
+                isStdinFinished = { isFinished ->
+                    isStdoutEnabled = isFinished
+                }
+            )
+
+            TerminalStandardInput(
+                modifier = Modifier.fillMaxWidth().weight(0.2f),
+                isStdoutEnabled = isStdoutEnabled,
+                onStdinSubmit = onStdinSubmit
+            )
         }
     }
 }
+
+@Composable
+private fun TerminalStandardOutout(
+    modifier: Modifier,
+    stdout: SnapshotStateList<TerminalLine>,
+    colorSchema: TerminalSchema,
+    scrollState: LazyListState,
+    isStdinFinished: (Boolean) -> Unit,
+) {
+    LazyColumn(
+        state = scrollState,
+        modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        content = {
+            isStdinFinished(false)
+            items(stdout) { line ->
+                TerminalLineItem(colorSchema, line)
+            }
+            isStdinFinished(true)
+        }
+    )
+}
+
+@Composable
+private fun TerminalStandardInput(
+    modifier: Modifier,
+    isStdoutEnabled :  Boolean = true,
+    onStdinSubmit : (String) -> Unit = {},
+) {
+    var command by remember { mutableStateOf(value = "") }
+
+    val submitTest = {
+        if (command.isNotBlank()) {
+            onStdinSubmit(command)
+            command = ""
+        }
+    }
+
+    Row(
+        modifier = modifier.padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        content = {
+            TextField(
+                enabled = isStdoutEnabled,
+                value = command,
+                onValueChange = { command = it },
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("Enter command...") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                keyboardActions = KeyboardActions(onSend = { submitTest() })
+            )
+
+            IconButton(
+                onClick = { submitTest() },
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_send),
+                        contentDescription = "Execute command",
+                        tint = Color.Unspecified
+                    )
+                }
+            )
+        }
+    )
+}
+
 
 @Composable
 private fun TerminalLineItem(colorSchema: TerminalSchema, line: TerminalLine) {
@@ -113,7 +201,7 @@ private fun TerminalLineItem(colorSchema: TerminalSchema, line: TerminalLine) {
             }
 
             is TerminalLine.Error -> {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
                             .padding(top = 4.dp)

@@ -454,8 +454,23 @@ val liloShippedExamples = listOf(
             print(2)
          else:
             print(3)
-        finally:
-            print(4)
+        """.trimIndent()
+    ),
+    LiloFileEntity(
+        name = "Finally",
+        sourceCode = """
+        def foo():
+            try:
+                raise NameError
+            except NameError:
+                print(2)
+                return
+            else:
+                print(3)
+            finally:
+                print(4)
+                raise ValueError
+        foo()
         """.trimIndent()
     ),
     LiloFileEntity(

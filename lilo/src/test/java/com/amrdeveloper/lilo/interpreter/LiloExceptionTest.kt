@@ -73,6 +73,28 @@ class LiloExceptionTest {
             finally:
                print(4)
             """,
+            """
+            def foo():
+                try:
+                   print(1)
+                   return
+                finally:
+                   print(4)
+                print(5)
+            foo()
+            """,
+            """
+            def foo():
+                try:
+                   print(1)
+                   raise NameError
+                except:
+                   print(2)
+                   return
+                finally:
+                   print(4)
+            foo()
+            """
         )
 
         val expectedOutput = listOf(
@@ -84,6 +106,8 @@ class LiloExceptionTest {
             "134",
             "24",
             "24",
+            "14",
+            "124",
         )
 
         for ((index, sourceCode) in sourceCodes.withIndex()) {

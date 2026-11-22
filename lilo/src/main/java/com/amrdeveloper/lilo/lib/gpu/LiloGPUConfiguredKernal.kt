@@ -54,7 +54,7 @@ private object LiloConfiguredKernalCall : LiloObject(liloFunctionType), LiloCall
         val kernalArgs = args.drop(n = 1)
         val gpuCompiler = LiloGPUCompiler(self.config)
         val gpuCode = gpuCompiler.visit(stmt = self.definition).valueOr { return@runBlocking it.toFailure() }
-        gpuDevice.launchKernal(gpuCode.toString(), kernal = self, kernalArgs)
+        gpuDevice.launchKernal(gpuCode, kernal = self, kernalArgs)
         return@runBlocking LiloResult.Success(data = LiloNone)
     }
 }

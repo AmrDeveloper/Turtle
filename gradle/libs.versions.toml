@@ -2,6 +2,7 @@
 kotlin = "2.4.21"
 androidGradlePlugin = "9.4.1"
 compileSdk = "37"
+compileSdkMinor = "1"
 minSdk = "26"
 
 webgpu = "1.0.0-alpha06"

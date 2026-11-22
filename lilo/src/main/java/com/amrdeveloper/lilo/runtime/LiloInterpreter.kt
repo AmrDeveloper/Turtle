@@ -82,6 +82,7 @@ import com.amrdeveloper.lilo.objects.liloAssertionErrorType
 import com.amrdeveloper.lilo.objects.liloBaseExceptionType
 import com.amrdeveloper.lilo.objects.liloRuntimeErrorType
 import com.amrdeveloper.lilo.parser.LiloTokenKind
+import com.amrdeveloper.lilo.runtime.signal.LiloSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloBreakSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloContinueSignal
 import com.amrdeveloper.lilo.runtime.signal.LiloReturnSignal
@@ -417,11 +418,42 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
     }
 
     override fun visitTryStmt(stmt: TryStmt): LiloResult<Unit> {
+        if (stmt.finallyBody == null) {
+            return visitTryStmtWithoutFinally(stmt)
+        }
+
+        var savedException: LiloRaise? = null
+        var savedSignal: LiloSignal? = null
+
+        try {
+            visitTryStmtWithoutFinally(stmt).valueOr { return it.toFailure() }
+        } catch (raisedExn: LiloRaise) {
+            savedException = raisedExn
+        } catch (raisedSignal: LiloSignal) {
+            savedSignal = raisedSignal
+        }
+
+        try {
+            visit(stmt = stmt.finallyBody).valueOr { return it.toFailure() }
+        } catch (raisedExn: LiloRaise) {
+            // If the finally clause raises another exception, the saved
+            // exception is set as the context of the new exception.
+            savedException?.let { raisedExn.exception.setAttr("__context__", it.exception) }
+            throw raisedExn
+        }
+
+        savedException?.let { throw it }
+        savedSignal?.let { throw it }
+
+        return LiloResult.Success(data = Unit)
+    }
+
+    fun visitTryStmtWithoutFinally(stmt: TryStmt): LiloResult<Unit> {
         // - Execute the try body first, before visiting the handlers
         // - If try body raises an exception, find possible handler to handle it,
-        //   - if one exists, execute it, then execute finally block if exists.
+        //   - if one exists, execute it.
         //   - if not exists, rethrow the exception.
-        // - If no exception thrown, execute else, then finally block if exists.
+        // - If no exception thrown, execute else.
 
         var hasRTException = false
         try { visit(stmt.body).valueOr { return it.toFailure() } }
@@ -461,10 +493,6 @@ class LiloInterpreter(val liloMachine: LiloAbstractMachine) :
 
         if (!hasRTException && stmt.elseBlock != null) {
             visit(stmt = stmt.elseBlock).valueOr { return it.toFailure() }
-        }
-
-        if (stmt.finallyBody != null) {
-            visit(stmt = stmt.finallyBody).valueOr { return it.toFailure() }
         }
 
         return LiloResult.Success(data = Unit)

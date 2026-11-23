@@ -1,10 +1,12 @@
 Change Log
 ==========
 
-Version 2.0.14 *(2026-xx-xx)*
+Version 2.0.14 *(2026-11-32)*
 -------------------------------
 
 * Implement support for Ellipsis expr `...`.
+* Make finally-block more Python-correct.
+* Support std in in terminal.
 
 Version 2.0.13 *(2026-07-25)*
 -------------------------------
